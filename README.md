@@ -19,7 +19,7 @@ val df:DataFrame = almaren.sourceSql("SELECT * FROM db.schema.table")
         |	name.firstName$first_name:StringType
         |	name.secondName$second_name:StringType
         |	name.lastName$last_name:StringType
-	    |source_id$source_id:LongType".stripMargin)
+        |source_id$source_id:LongType".stripMargin)
     .sql("""SELECT *,unix_timestamp() as timestamp from __TABLE__""")
     .targetSql("INSERT OVERWRITE TABLE default.target_table SELECT * FROM __TABLE__")
     .reactor

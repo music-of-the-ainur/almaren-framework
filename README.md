@@ -13,9 +13,8 @@ The Almaren Framework provides an interface layered over Apache Spark. It does a
 val almaren = Almaren("appName")
 val df:DataFrame = almaren.sourceSql("SELECT * FROM db.schema.table")
     .deserializer("JSON","json_str")
-    .dsl("
-        |uuid$id:StringType
-	    |code$area_code:LongType
+    .dsl("uuid$id:StringType
+        |code$area_code:LongType
 	    |names@name
 	    |	name.firstName$first_name:StringType
 	    |	name.secondName$second_name:StringType

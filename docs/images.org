@@ -1,7 +1,7 @@
 #+BEGIN_SRC dot :file images/example1.png :cmdline -Kdot -Tpng
   digraph G{
       rankdir=LR node [shape=box, color=black]
-      Source -> Deserializer -> DSL -> SQL -> Target
+      Hive -> Deserializer -> DSL -> SQL -> Hbase
   } 
 #+END_SRC
 
@@ -12,7 +12,7 @@
 #+BEGIN_SRC dot :file images/example2.png :cmdline -Kdot -Tpng
   digraph G{
       rankdir=LR node [shape=box, color=black]
-      Source -> Deserializer -> Cache
+      Hive -> Deserializer -> Cache
       Cache -> DSL1 -> SQL1 -> Cassandra1
       Cache -> DSL2 -> SQL2 -> Cassandra2
   } 
@@ -20,3 +20,15 @@
 
 #+RESULTS:
 [[file:images/example2.png]]
+
+#+BEGIN_SRC dot :file images/example3.png :cmdline -Kdot -Tpng
+  digraph G{
+      rankdir=LR node [shape=box, color=black]
+      Hbase1 -> Filter1 -> SQL1 -> JOIN
+      Hbase2 -> Filter2 -> SQL2 -> JOIN
+      JOIN -> SQL -> Coalesce -> Hive
+  }
+#+END_SRC
+
+#+RESULTS:
+[[file:images/example3.png]]

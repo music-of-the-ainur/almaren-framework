@@ -34,23 +34,23 @@ val almaren = Almaren("appName")
 val sourceData = almaren.sourceSql("SELECT * FROM db.schema.table")
     .deserializer("XML","xml_str").cache.fork
         
-    sourceData.dsl("uuid$id:StringType
-        |code$area_code:LongType
-        |names@name
-        |    name.firstName$first_name:StringType
-        |    name.secondName$second_name:StringType
-        |    name.lastName$last_name:StringType
-        |source_id$source_id:LongType".stripMargin)
-    .sql("SELECT *,unix_timestamp() as timestamp from __TABLE__")
-    .targetSql("INSERT INTO TABLE output1 SELECT * FROM __TABLE__")
-
-    sourceData.dsl("uuid$id:StringType
-        |code$area_code:LongType
-        |phones@phone
-        |    phone.number$phone_number:StringType
-        |source_id$source_id:LongType".stripMargin)
-    .sql("SELECT *,unix_timestamp() as timestamp from __TABLE__")
-    .targetSql("INSERT INTO TABLE output2 SELECT * FROM __TABLE__")
+sourceData.dsl("uuid$id:StringType
+    |code$area_code:LongType
+    |names@name
+    |    name.firstName$first_name:StringType
+    |    name.secondName$second_name:StringType
+    |    name.lastName$last_name:StringType
+    |source_id$source_id:LongType".stripMargin)
+.sql("SELECT *,unix_timestamp() as timestamp from __TABLE__")
+.targetSql("INSERT INTO TABLE output1 SELECT * FROM __TABLE__")
+    
+sourceData.dsl("uuid$id:StringType
+    |code$area_code:LongType
+    |phones@phone
+    |    phone.number$phone_number:StringType
+    |source_id$source_id:LongType".stripMargin)
+.sql("SELECT *,unix_timestamp() as timestamp from __TABLE__")
+.targetSql("INSERT INTO TABLE output2 SELECT * FROM __TABLE__")
 
 sourceData.batch
 ```

@@ -47,7 +47,7 @@ val sourceData = almaren.sourceSql("SELECT * FROM db.schema.table")
     sourceData.dsl("uuid$id:StringType
         |code$area_code:LongType
         |phones@phone
-        |phone.number$phone_number:StringType
+        |    phone.number$phone_number:StringType
         |source_id$source_id:LongType".stripMargin)
     .sql("SELECT *,unix_timestamp() as timestamp from __TABLE__")
     .targetSql("INSERT INTO TABLE output2 SELECT * FROM __TABLE__")

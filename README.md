@@ -52,5 +52,5 @@ val sourceData = almaren.sourceSql("SELECT * FROM db.schema.table")
     .sql("SELECT *,unix_timestamp() as timestamp from __TABLE__")
     .targetSql("INSERT INTO TABLE output2 SELECT * FROM __TABLE__")
 
-    sourceData.batch
+sourceData.batch
 ```

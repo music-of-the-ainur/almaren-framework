@@ -7,3 +7,16 @@
 
 #+RESULTS:
 [[file:images/example1.png]]
+
+
+#+BEGIN_SRC dot :file images/example2.png :cmdline -Kdot -Tpng
+  digraph G{
+      rankdir=LR node [shape=box, color=black]
+      Source -> Deserializer -> Cache
+      Cache -> DSL1 -> SQL1 -> Target1
+      Cache -> DSL2 -> SQL2 -> Target2
+  } 
+#+END_SRC
+
+#+RESULTS:
+[[file:images/example2.png]]

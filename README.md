@@ -42,7 +42,7 @@ sourceData.dsl("uuid$id:StringType
     |    name.lastName$last_name:StringType
     |source_id$source_id:LongType".stripMargin)
 .sql("SELECT *,unix_timestamp() as timestamp from __TABLE__")
-.targetSql("INSERT INTO TABLE output1 SELECT * FROM __TABLE__")
+.targetCassandra("test1","kv1")
     
 sourceData.dsl("uuid$id:StringType
     |code$area_code:LongType
@@ -50,7 +50,7 @@ sourceData.dsl("uuid$id:StringType
     |    phone.number$phone_number:StringType
     |source_id$source_id:LongType".stripMargin)
 .sql("SELECT *,unix_timestamp() as timestamp from __TABLE__")
-.targetSql("INSERT INTO TABLE output2 SELECT * FROM __TABLE__")
+.targetCassandra("test2","kv2")
 
 sourceData.batch
 ```

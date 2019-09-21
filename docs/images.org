@@ -13,8 +13,8 @@
   digraph G{
       rankdir=LR node [shape=box, color=black]
       Source -> Deserializer -> Cache
-      Cache -> DSL1 -> SQL1 -> Target1
-      Cache -> DSL2 -> SQL2 -> Target2
+      Cache -> DSL1 -> SQL1 -> Cassandra1
+      Cache -> DSL2 -> SQL2 -> Cassandra2
   } 
 #+END_SRC
 

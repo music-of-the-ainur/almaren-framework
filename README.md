@@ -1,7 +1,7 @@
 # Almaren Framework
 
 [![Build Status](https://travis-ci.org/music-of-the-ainur/almaren-framework.svg?branch=master)](https://travis-ci.org/music-of-the-ainur/almaren-framework)
-[![Slack](https://img.shields.io/badge/chat-Slack-brightgreen)](https://musicoftheainur.slack.com/messages/CNLK2LR4Y)
+[![Slack](https://img.shields.io/badge/chat-Slack-blue)](https://musicoftheainur.slack.com/messages/CNLK2LR4Y)
 
 The Almaren Framework provides an interface layered over Apache Spark. It does all the hard work using an elegant and minimalistic syntax while still allowing you to take advantage of native Apache Spark features. You can still combine it with standard Spark code.
 

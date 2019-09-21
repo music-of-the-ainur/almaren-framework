@@ -31,7 +31,8 @@ val df:DataFrame = almaren.sourceSql("SELECT * FROM db.schema.table")
 
 ```scala
 val almaren = Almaren("appName")
-val sourceData = almaren.sourceSql("SELECT * FROM db.schema.table").deserializer("XML","xml_str").cache.fork
+val sourceData = almaren.sourceSql("SELECT * FROM db.schema.table")
+    .deserializer("XML","xml_str").cache.fork
         
     sourceData.dsl("uuid$id:StringType
         |code$area_code:LongType

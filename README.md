@@ -28,7 +28,7 @@ val df:DataFrame = almaren.sourceSql("SELECT * FROM db.schema.table")
     .batch
 ```
 
-## Example 2
+### Example 2
 
 ![Example 2](https://raw.githubusercontent.com/music-of-the-ainur/almaren-framework/master/docs/images/example2.png)
 

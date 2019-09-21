@@ -1,5 +1,5 @@
 name := "almaren-framework"
-organization := "com.github.music.of.the.ainur"
+organization := "com.github.music.of.the.ainur.almaren"
 
 scalaVersion := "2.11.8"
 val sparkVersion = "2.3.0"

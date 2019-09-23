@@ -57,3 +57,40 @@ sourceData.dsl("uuid$id:StringType
 
 sourceData.batch
 ```
+
+### Example 3
+
+![Example 3](https://raw.githubusercontent.com/music-of-the-ainur/almaren-framework/master/docs/images/example3.png)
+
+```scala
+val almaren = Almaren("appName")
+
+val sourcePolicy = almaren.sourceHbase("""{
+    |"table":{"namespace":"default", "name":"policy"},
+    |"rowkey":"id",
+    |"columns":{
+    |"rowkey":{"cf":"rowkey", "col":"id", "type":"long"},
+    |"number":{"cf":"Policy", "col":"number", "type":"long"},
+    |"source":{"cf":"Policy", "col":"source", "type":"string"},
+    |"status":{"cf":"Policy", "col":"status", "type":"string"},
+    |"person_id":{"cf":"Policy", "col":"source", "type":"long"}
+    |}
+|}""").sql(""" SELECT * FROM __TABLE__ WHERE status = "ACTIVE" """).alias("policy")
+
+val sourcePerson = almaren.sourceHbase("""{
+    |"table":{"namespace":"default", "name":"person"},
+    |"rowkey":"id",
+    |"columns":{
+    |"rowkey":{"cf":"rowkey", "col":"id", "type":"long"},
+    |"name":{"cf":"Policy", "col":"number", "type":"string"},
+    |"type":{"cf":"Policy", "col":"type", "type":"string"},
+    |"age":{"cf":"Policy", "col":"source", "type":"string"}
+    |}
+|}""").sql(""" SELECT * FROM __TABLE__ WHERE type = "PREMIUM" """").alias("person")
+
+almaren.sql(""" SELECT * FROM person JOIN policy ON policy.person_id = person.id """)
+    .sql("SELECT *,unix_timestamp() as timestamp FROM __TABLE__")
+    .coalesce(100)
+    .targetSql("INSERT INTO TABLE area.premimum_users SELECT * FROM __TABLE__")
+    .batch
+```

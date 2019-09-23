@@ -86,7 +86,7 @@ val sourcePerson = almaren.sourceHbase("""{
     |"type":{"cf":"Policy", "col":"type", "type":"string"},
     |"age":{"cf":"Policy", "col":"source", "type":"string"}
     |}
-|}""").sql(""" SELECT * FROM __TABLE__ WHERE type = "PREMIUM" """").alias("person")
+|}""").sql(""" SELECT * FROM __TABLE__ WHERE type = "PREMIUM" """).alias("person")
 
 almaren.sql(""" SELECT * FROM person JOIN policy ON policy.person_id = person.id """)
     .sql("SELECT *,unix_timestamp() as timestamp FROM __TABLE__")

@@ -49,7 +49,7 @@ Deserialize data structures like XML, JSON, Avro etc to Spark DataFrame
 
 #### SQL Statement
 
-[Spark SQL](https://docs.databricks.com/spark/latest/spark-sql/index.html) syntax. You can query preview component through the special table __TABLE__.
+[Spark SQL](https://docs.databricks.com/spark/latest/spark-sql/index.html) syntax. You can query preview component through the special table `__TABLE__`.
 
 ### Target
 

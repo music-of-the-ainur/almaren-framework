@@ -55,6 +55,10 @@ Deserialize data structures like XML, JSON, Avro etc to Spark DataFrame.
 
 [Spark SQL](https://docs.databricks.com/spark/latest/spark-sql/index.html) syntax. You can query preview component through the special table `__TABLE__`.
 
+### DSL
+
+DSL(Domain Specific Language) simplifies the task to flatten, select, alias and properly set the datatype. It's very powerful to parser complex data structures.
+
 ### Target
 
 #### targetSql

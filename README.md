@@ -43,9 +43,13 @@ Reshuffle the data in the RDD randomly to create either more or fewer partitions
 
 Pipe each partition of the RDD through a shell command, e.g. a Perl or bash script. RDD elements are written to the process's stdin and lines output to its stdout are returned as an RDD of strings.
 
+#### Alias
+
+Creates a temporary view using the previews component, `createOrReplaceTempView`.
+
 #### Deserializer
 
-Deserialize data structures like XML, JSON, Avro etc to Spark DataFrame
+Deserialize data structures like XML, JSON, Avro etc to Spark DataFrame.
 
 #### SQL Statement
 

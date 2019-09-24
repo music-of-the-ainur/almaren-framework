@@ -73,6 +73,10 @@ Write to Cassandra using [Spark Cassandra Connector](https://github.com/datastax
 
 Write to JDBC using [Spark JDBC](https://spark.apache.org/docs/latest/sql-data-targets-jdbc.html)
 
+#### TargetRest
+
+Start a HTTP keep-alive connection for each partition of the RDD and send a request for each row.
+
 ## Examples
 
 ### Example 1

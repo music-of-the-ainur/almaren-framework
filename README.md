@@ -5,6 +5,70 @@
 
 The Almaren Framework provides an interface layered over Apache Spark. It does all the hard work using an elegant and minimalistic syntax while still allowing you to take advantage of native Apache Spark features. You can still combine it with standard Spark code.
 
+## Components
+
+### Source
+
+#### sourceSql
+
+Read native Spark/Hive tables using Spark SQL.
+
+#### sourceHbase
+
+Read from Hbase using [HBase Connector][https://github.com/hortonworks-spark/shc]
+
+#### sourceCassandra
+
+Read from Cassandra using [Spark Cassandra Connector][https://github.com/datastax/spark-cassandra-connector]
+
+#### SourceJdbc
+
+Read from JDBC using [Spark JDBC][https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html]
+
+### Core
+
+#### Cache
+
+Cache/Uncache both DataFrame or Table
+
+#### Coalesce
+
+Decrease the number of partitions in the RDD to numPartitions. Useful for running operations more efficiently after filtering down a large dataset.
+
+### Repartition
+
+Reshuffle the data in the RDD randomly to create either more or fewer partitions and balance it across them. This always shuffles all data over the network.
+
+### Pipe
+
+Pipe each partition of the RDD through a shell command, e.g. a Perl or bash script. RDD elements are written to the process's stdin and lines output to its stdout are returned as an RDD of strings.
+
+#### Deserializer
+
+Deserialize data structures like XML, JSON, Avro etc to Spark DataFrame
+
+#### SQL Statement
+
+[Spark SQL][https://docs.databricks.com/spark/latest/spark-sql/index.html] syntax. You can query preview component through the special table __TABLE__.
+
+### Target
+
+#### targetSql
+
+Write native Spark/Hive tables using Spark SQL.
+
+#### targetHbase
+
+Write to Hbase using [HBase Connector][https://github.com/hortonworks-spark/shc]
+
+#### targetCassandra
+
+Write to Cassandra using [Spark Cassandra Connector][https://github.com/datastax/spark-cassandra-connector]
+
+#### TargetJdbc
+
+Write to JDBC using [Spark JDBC][https://spark.apache.org/docs/latest/sql-data-targets-jdbc.html]
+
 
 ## Examples
 

@@ -15,15 +15,15 @@ Read native Spark/Hive tables using Spark SQL.
 
 #### sourceHbase
 
-Read from Hbase using [HBase Connector][https://github.com/hortonworks-spark/shc]
+Read from Hbase using [HBase Connector](https://github.com/hortonworks-spark/shc)
 
 #### sourceCassandra
 
-Read from Cassandra using [Spark Cassandra Connector][https://github.com/datastax/spark-cassandra-connector]
+Read from Cassandra using [Spark Cassandra Connector](https://github.com/datastax/spark-cassandra-connector)
 
 #### SourceJdbc
 
-Read from JDBC using [Spark JDBC][https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html]
+Read from JDBC using [Spark JDBC](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html)
 
 ### Core
 
@@ -49,7 +49,7 @@ Deserialize data structures like XML, JSON, Avro etc to Spark DataFrame
 
 #### SQL Statement
 
-[Spark SQL][https://docs.databricks.com/spark/latest/spark-sql/index.html] syntax. You can query preview component through the special table __TABLE__.
+[Spark SQL](https://docs.databricks.com/spark/latest/spark-sql/index.html) syntax. You can query preview component through the special table __TABLE__.
 
 ### Target
 
@@ -59,16 +59,15 @@ Write native Spark/Hive tables using Spark SQL.
 
 #### targetHbase
 
-Write to Hbase using [HBase Connector][https://github.com/hortonworks-spark/shc]
+Write to Hbase using [HBase Connector](https://github.com/hortonworks-spark/shc)
 
 #### targetCassandra
 
-Write to Cassandra using [Spark Cassandra Connector][https://github.com/datastax/spark-cassandra-connector]
+Write to Cassandra using [Spark Cassandra Connector](https://github.com/datastax/spark-cassandra-connector)
 
 #### TargetJdbc
 
-Write to JDBC using [Spark JDBC][https://spark.apache.org/docs/latest/sql-data-targets-jdbc.html]
-
+Write to JDBC using [Spark JDBC](https://spark.apache.org/docs/latest/sql-data-targets-jdbc.html)
 
 ## Examples
 

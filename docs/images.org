@@ -32,3 +32,13 @@
 
 #+RESULTS:
 [[file:images/example3.png]]
+
+#+BEGIN_SRC dot :file images/example4.png :cmdline -Kdot -Tpng
+  digraph G{
+      rankdir=LR node [shape=box, color=black]
+      Oracle -> SQL -> Coalesce -> REST -> Kafka
+  }
+#+END_SRC
+
+#+RESULTS:
+[[file:images/example4.png]]

@@ -94,3 +94,17 @@ almaren.sql(""" SELECT * FROM person JOIN policy ON policy.person_id = person.id
     .targetSql("INSERT INTO TABLE area.premimum_users SELECT * FROM __TABLE__")
     .batch
 ```
+
+### Example 4
+
+![Example 4](https://raw.githubusercontent.com/music-of-the-ainur/almaren-framework/master/docs/images/example4.png)
+
+```scala
+val almaren = Almaren("appName")
+val sourceData = almaren.sourceJdbc("jdbc:oracle:thin:@localhost:1521:xe","SELECT * FROM schema.table WHERE st_date >= (sysdate-1) AND st_date < sysdate")
+    .sql("SELECT to_json(*) from __TABLE__")
+    .coalesce(30)
+    .targetRest("https://host.com:9093/api/foo","post",Map("Authorization" -> "Basic QWxhZGRpbjpPcGVuU2VzYW1l"))
+    
+sourceData.batch
+```

@@ -59,7 +59,7 @@ Deserialize data structures like XML, JSON, Avro etc to Spark DataFrame.
 
 #### targetSql
 
-Write native Spark/Hive tables using Spark SQL.
+Write native Spark/Hive tables using [Spark SQL](https://docs.databricks.com/spark/latest/spark-sql/language-manual/insert.html).
 
 #### targetHbase
 

@@ -7,51 +7,47 @@ The Almaren Framework provides an interface layered over Apache Spark. It does a
 
 ## Components
 
-### Source
-
-#### sourceSql
+### sourceSql
 
 Read native Spark/Hive tables using Spark SQL.
 
-#### sourceHbase
+### sourceHbase
 
 Read from Hbase using [HBase Connector](https://github.com/hortonworks-spark/shc)
 
-#### sourceCassandra
+### sourceCassandra
 
 Read from Cassandra using [Spark Cassandra Connector](https://github.com/datastax/spark-cassandra-connector)
 
-#### SourceJdbc
+### SourceJdbc
 
 Read from JDBC using [Spark JDBC](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html)
 
-### Core
-
-#### Cache
+### Cache
 
 Cache/Uncache both DataFrame or Table
 
-#### Coalesce
+### Coalesce
 
 Decrease the number of partitions in the RDD to numPartitions. Useful for running operations more efficiently after filtering down a large dataset.
 
-#### Repartition
+### Repartition
 
 Reshuffle the data in the RDD randomly to create either more or fewer partitions and balance it across them. This always shuffles all data over the network.
 
-#### Pipe
+### Pipe
 
 Pipe each partition of the RDD through a shell command, e.g. a Perl or bash script. RDD elements are written to the process's stdin and lines output to its stdout are returned as an RDD of strings.
 
-#### Alias
+### Alias
 
 Creates a temporary view using the previews component, `createOrReplaceTempView`.
 
-#### Deserializer
+### Deserializer
 
 Deserialize data structures like XML, JSON, Avro etc to Spark DataFrame.
 
-#### SQL Statement
+### SQL Statement
 
 [Spark SQL](https://docs.databricks.com/spark/latest/spark-sql/index.html) syntax. You can query preview component through the special table `__TABLE__`.
 
@@ -63,25 +59,23 @@ DSL(Domain Specific Language) simplifies the task to flatten, select, alias and 
 
 Start a HTTP keep-alive connection for each partition of the RDD and send a request for each row returning two columns, `header` and `body`.
 
-### Target
-
-#### targetSql
+### targetSql
 
 Write native Spark/Hive tables using [Spark SQL](https://docs.databricks.com/spark/latest/spark-sql/language-manual/insert.html).
 
-#### targetHbase
+### targetHbase
 
 Write to Hbase using [HBase Connector](https://github.com/hortonworks-spark/shc)
 
-#### targetCassandra
+### targetCassandra
 
 Write to Cassandra using [Spark Cassandra Connector](https://github.com/datastax/spark-cassandra-connector)
 
-#### TargetJdbc
+### TargetJdbc
 
 Write to JDBC using [Spark JDBC](https://spark.apache.org/docs/latest/sql-data-targets-jdbc.html)
 
-#### TargetHttp
+### TargetHttp
 
 Start a HTTP keep-alive connection for each partition of the RDD and send a request for each row.
 

@@ -77,7 +77,7 @@ Write to Cassandra using [Spark Cassandra Connector](https://github.com/datastax
 
 Write to JDBC using [Spark JDBC](https://spark.apache.org/docs/latest/sql-data-targets-jdbc.html)
 
-#### TargetRest
+#### TargetHttp
 
 Start a HTTP keep-alive connection for each partition of the RDD and send a request for each row.
 
@@ -179,7 +179,7 @@ val almaren = Almaren("appName")
 val sourceData = almaren.sourceJdbc("oracle.jdbc.driver.OracleDriver","jdbc:oracle:thin:@localhost:1521:xe","SELECT * FROM schema.table WHERE st_date >= (sysdate-1) AND st_date < sysdate")
     .sql("SELECT to_json(*) from __TABLE__")
     .coalesce(30)
-    .targetRest("https://host.com:9093/api/foo","post",Map("Authorization" -> "Basic QWxhZGRpbjpPcGVuU2VzYW1l"))
+    .targetHttp("https://host.com:9093/api/foo","post",Map("Authorization" -> "Basic QWxhZGRpbjpPcGVuU2VzYW1l"))
     
 sourceData.batch
 ```

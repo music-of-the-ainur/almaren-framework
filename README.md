@@ -59,6 +59,10 @@ Deserialize data structures like XML, JSON, Avro etc to Spark DataFrame.
 
 DSL(Domain Specific Language) simplifies the task to flatten, select, alias and properly set the datatype. It's very powerful to parser complex data structures.
 
+### HTTP
+
+Start a HTTP keep-alive connection for each partition of the RDD and send a request for each row returning two columns, `header` and `body`.
+
 ### Target
 
 #### targetSql

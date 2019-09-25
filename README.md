@@ -23,6 +23,10 @@ Read from Cassandra using [Spark Cassandra Connector](https://github.com/datasta
 
 Read from JDBC using [Spark JDBC](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html)
 
+### sourceBigQuery
+
+Read from BigQuery using [Google BigQuery Connector](https://github.com/GoogleCloudPlatform/spark-bigquery-connector)
+
 ### Cache
 
 Cache/Uncache both DataFrame or Table
@@ -71,13 +75,17 @@ Write to Hbase using [HBase Connector](https://github.com/hortonworks-spark/shc)
 
 Write to Cassandra using [Spark Cassandra Connector](https://github.com/datastax/spark-cassandra-connector)
 
-### TargetJdbc
+### targetJdbc
 
 Write to JDBC using [Spark JDBC](https://spark.apache.org/docs/latest/sql-data-targets-jdbc.html)
 
-### TargetHttp
+### targetHttp
 
 Start a HTTP keep-alive connection for each partition of the RDD and send a request for each row.
+
+### targetBigQuery
+
+Read from BigQuery using [Google BigQuery Connector](https://github.com/GoogleCloudPlatform/spark-bigquery-connector)
 
 ## Examples
 

@@ -19,7 +19,7 @@ Read from Hbase using [HBase Connector](https://github.com/hortonworks-spark/shc
 
 Read from Cassandra using [Spark Cassandra Connector](https://github.com/datastax/spark-cassandra-connector)
 
-### SourceJdbc
+### sourceJdbc
 
 Read from JDBC using [Spark JDBC](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html)
 

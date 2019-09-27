@@ -4,8 +4,8 @@ spark-warehouse
 metastore_db
 .gradle
 .vertx
-.ensime
-.ensime_cache
+.metals
+.bloop
 
 # mac
 .DS_Store

@@ -3,6 +3,7 @@ package com.github.music.of.the.ainur.almaren.core
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.types.{DataType, StructType}
 import scala.language.implicitConversions
+import com.github.music.of.the.ainur.almaren.State
 
 abstract class Deserializer() extends State {
   override def state(df: DataFrame): DataFrame = deserializer(df)

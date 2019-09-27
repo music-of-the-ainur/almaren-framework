@@ -1,4 +1,4 @@
-package com.github.music.of.the.ainur.almaren.core
+package com.github.music.of.the.ainur.almaren
 
 sealed abstract class Tree
 case class NodeItem(node: State) extends Tree

@@ -1,6 +1,7 @@
 package com.github.music.of.the.ainur.almaren.core
 
 import org.apache.spark.sql.DataFrame
+import com.github.music.of.the.ainur.almaren.State
 import com.github.music.of.the.ainur.almaren.util.Constants
 
 abstract class Core extends State {

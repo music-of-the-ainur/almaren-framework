@@ -15,3 +15,15 @@ class SourceSql(sql: String) extends Source {
     sqlDf
   }
 }
+
+class SourceJdbc(url: String, driver: String, query: String, params:Map[String,String]) extends Source {
+  override def source(df: DataFrame): DataFrame = {
+    logger.info(s"sql:{$url}, driver:{$driver}, params:{$params}")
+    df.sparkSession.read.format("jdbc")
+      .option("url", url)
+      .option("driver", driver)
+      .option("query", query)
+      .options(params)
+    df
+  }
+}

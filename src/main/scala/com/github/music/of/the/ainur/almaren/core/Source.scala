@@ -3,7 +3,7 @@ package com.github.music.of.the.ainur.almaren.core
 import org.apache.spark.sql.DataFrame
 import com.github.music.of.the.ainur.almaren.State
 
-abstract class Source() extends State {
+private[almaren] abstract class Source() extends State {
   override def state(df: DataFrame): DataFrame = source(df)
   def source(df: DataFrame): DataFrame
 }

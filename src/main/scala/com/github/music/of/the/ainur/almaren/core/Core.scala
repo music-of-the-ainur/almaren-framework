@@ -4,7 +4,7 @@ import org.apache.spark.sql.DataFrame
 import com.github.music.of.the.ainur.almaren.State
 import com.github.music.of.the.ainur.almaren.util.Constants
 
-abstract class Core extends State {
+private[almaren] abstract class Core extends State {
   override def state(df: DataFrame): DataFrame = core(df)
   def core(df: DataFrame): DataFrame
 }

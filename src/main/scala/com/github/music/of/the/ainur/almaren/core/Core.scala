@@ -2,7 +2,6 @@ package com.github.music.of.the.ainur.almaren.core
 
 import org.apache.spark.sql.DataFrame
 import com.github.music.of.the.ainur.almaren.util.Constants
-import org.apache.spark.sql.types.{StructType, StructField, StringType}
 
 abstract class Core extends State {
   override def state(df: DataFrame): DataFrame = core(df)

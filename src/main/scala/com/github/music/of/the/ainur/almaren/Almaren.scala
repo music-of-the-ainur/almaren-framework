@@ -6,11 +6,14 @@ import org.apache.spark.sql.SparkSession
 
 object Almaren extends LazyLogging {
 
+  def apply(appName: String) = { sparkConf.setAppName(appName);Almaren}
+
   val sparkConf = new SparkConf
   lazy val spark = SparkSession.builder().config(sparkConf)
+  val builder:List[Tree] = List[Tree]()
 
 }
 
-class Almaren {
-
+class Almaren() {
+ 
 }

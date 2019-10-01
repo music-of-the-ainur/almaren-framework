@@ -5,6 +5,4 @@ import org.apache.spark.sql.DataFrame
 
 private[almaren] trait Builder extends LazyLogging with Serializable {
 
-  def component[Node](node: Node): Node
-
 }

@@ -10,7 +10,6 @@ object Almaren extends LazyLogging {
 
   val sparkConf = new SparkConf
   lazy val spark = SparkSession.builder().config(sparkConf)
-  val builder:List[Tree] = List[Tree]()
 
 }
 

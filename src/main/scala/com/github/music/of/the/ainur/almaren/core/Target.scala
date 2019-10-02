@@ -5,7 +5,7 @@ import com.github.music.of.the.ainur.almaren.util.Constants
 import com.github.music.of.the.ainur.almaren.State
 
 private[almaren] abstract class Target extends State {
-  override def executorb(df: DataFrame): DataFrame = target(df)
+  override def executor(df: DataFrame): DataFrame = target(df)
   def target(df: DataFrame): DataFrame
 }
 

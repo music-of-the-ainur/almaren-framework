@@ -11,8 +11,7 @@ private[almaren] trait Executor {
     }  
   }
 
-  private def parentExec(tree: List[Tree],df: DataFrame): DataFrame = {
-    val tmpDf = df
-    tree.foldLeft(df)((d,t) => catalyst(t,tmpDf))
-  }
+  private def parentExec(tree: List[Tree],df: DataFrame): DataFrame = 
+    tree.foldLeft(df)((d,t) => catalyst(t,df))
+  
 }

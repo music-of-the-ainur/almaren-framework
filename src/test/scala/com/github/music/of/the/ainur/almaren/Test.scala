@@ -7,9 +7,22 @@ class Test {
   val almaren = Almaren("App Test")
 
 
-  val node = Node(
-    new SourceSql("select * from foo"),
-    Node(new JsonDeserializer("foo","bar"),
+/*
+  val node = Tree(
+    new SourceSql("select * from foo"),List(
+    Node(new JsonDeserializer("foo","bar")
       Node(new SQLState("select 1")),Node(new SQLState("select 2"))
-    ))
+    )))
+
+ */
+
+
+  val tree = Tree(
+    new SourceSql("select * from foo"),
+    List(Tree(new JsonDeserializer("foo","bar"),
+      List(Tree(new SQLState("select 1")),Tree(new SQLState("select 2"))))
+    )
+  )
+
+
 }

@@ -5,6 +5,7 @@ scalaVersion := "2.12.8"
 val sparkVersion = "2.4.4"
 
 libraryDependencies ++= Seq(
+  "io.github.stanch" %% "zipper" % "0.5.2",
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
   "org.apache.spark" %% "spark-streaming" % sparkVersion % "provided",
   "org.apache.spark" %% "spark-core" % sparkVersion % "provided",

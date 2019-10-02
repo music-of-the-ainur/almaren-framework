@@ -3,6 +3,7 @@ package com.github.music.of.the.ainur.almaren
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.spark.sql.DataFrame
 import com.github.music.of.the.ainur.almaren.core._
+import zipper._
 
 private[almaren] trait Builder extends LazyLogging with Serializable {
 
@@ -12,12 +13,18 @@ private[almaren] trait Builder extends LazyLogging with Serializable {
     new SourceSql(sql)
   }
 
-  private[almaren] def build(state: State): Option[Tree] = {
+  private[almaren] def build(state: State): Tree = {
     tree match {
-      case Some(t) => t // Complex build logic will be here
-      case None => tree = Some(Tree(state)) 
+      case Some(t) => addTree(t,state) // Complex build logic will be here
+      case None => Tree(state)
     }
-    tree
+  }
+
+  private def addTree(tree: Tree, state: State): Tree = {
+      Zipper(tree)
+        .tryAdvanceRightDepthFirst.orStay
+        .tryAdvanceLeftDepthFirst.orStay
+        .insertLeft(Tree(state)).commit
   }
 
 }

@@ -22,7 +22,8 @@ class Test extends FunSuite with BeforeAndAfter {
         Tree(new SQLState("select year from __TABLE__")),
         Tree(new SQLState("select title from __TABLE__")),
         Tree(new SQLState("select genres from __TABLE__"), 
-          List(Tree(new SQLState("select genres,count(*) from (select explode_outer(genres) as genres from __TABLE__) G where genres is not null group by genres order by count(*) desc"))))
+          List(Tree(new SQLState("select genres,count(*) from (select explode_outer(genres) as genres from __TABLE__) G where genres is not null group by genres order by count(*) desc")))),
+        Tree(new SQLState("select cast from __TABLE__")),
       )
     ))
   )

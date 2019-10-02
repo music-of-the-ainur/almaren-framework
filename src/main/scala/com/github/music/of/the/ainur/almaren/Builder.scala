@@ -7,13 +7,11 @@ import zipper._
 
 private[almaren] trait Builder extends LazyLogging with Serializable {
 
-  var tree:Option[Tree] = None
-
   def sourceSql(sql: String):State = {
     new SourceSql(sql)
   }
 
-  private[almaren] def build(state: State): Tree = {
+  private[almaren] def build(tree: Option[Tree] = None)(state: State): Tree = {
     tree match {
       case Some(t) => addTree(t,state) // Complex build logic will be here
       case None => Tree(state)

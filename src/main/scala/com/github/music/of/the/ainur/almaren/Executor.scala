@@ -6,12 +6,12 @@ private[almaren] trait Executor {
   // execute's PreOrder BT
   def catalyst(tree: Tree,df: DataFrame = Almaren.spark.getOrCreate().emptyDataFrame): DataFrame = {
     tree match {
-      case Tree(s, list) if list.nonEmpty => exec(list,s.executor(df))
+      case Tree(s, list) if list.nonEmpty => parentExec(list,s.executor(df))
       case Tree(s, list) => s.executor(df)
     }  
   }
 
-  private def exec(tree: List[Tree],df: DataFrame): DataFrame = {
+  private def parentExec(tree: List[Tree],df: DataFrame): DataFrame = {
     val tmpDf = df
     tree.foldLeft(df)((d,t) => catalyst(t,tmpDf))
   }

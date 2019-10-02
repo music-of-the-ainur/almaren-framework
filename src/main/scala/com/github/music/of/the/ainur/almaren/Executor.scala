@@ -4,9 +4,15 @@ import org.apache.spark.sql.DataFrame
 
 private[almaren] trait Executor {
   // execute's PreOrder BT
-  def catalyst(tree: Tree,df: DataFrame = Almaren.spark.getOrCreate().emptyDataFrame): DataFrame =
+  def catalyst(tree: Tree,df: DataFrame = Almaren.spark.getOrCreate().emptyDataFrame): DataFrame = {
     tree match {
-      case Tree(s, list) if list.nonEmpty => list.foldLeft(s.executor(df))((d, t) => catalyst(t,d))
-      case Tree(s, list) => s.executor(df)
+      case Tree(s, list) if list.nonEmpty => exec(list,s.executor(df))
+      case Tree(s, list) => s.executor(df);
     }  
+  }
+
+  private def exec(tree: List[Tree],df: DataFrame): DataFrame = {
+    val tmpDf = df
+    tree.foldLeft(df)((d,t) => catalyst(t,tmpDf))
+  }
 }

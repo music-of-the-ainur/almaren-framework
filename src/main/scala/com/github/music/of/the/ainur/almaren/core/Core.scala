@@ -5,7 +5,7 @@ import com.github.music.of.the.ainur.almaren.State
 import com.github.music.of.the.ainur.almaren.util.Constants
 
 private[almaren] abstract class Core extends State {
-  override def state(df: DataFrame): DataFrame = core(df)
+  override def executor(df: DataFrame): DataFrame = core(df)
   def core(df: DataFrame): DataFrame
 }
 

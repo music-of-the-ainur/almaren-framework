@@ -6,7 +6,7 @@ import scala.language.implicitConversions
 import com.github.music.of.the.ainur.almaren.State
 
 abstract class Deserializer() extends State {
-  override def state(df: DataFrame): DataFrame = deserializer(df)
+  override def executor(df: DataFrame): DataFrame = deserializer(df)
   def deserializer(df: DataFrame): DataFrame
   implicit def string2Schema(schema: String): DataType =
     StructType.fromDDL(schema)

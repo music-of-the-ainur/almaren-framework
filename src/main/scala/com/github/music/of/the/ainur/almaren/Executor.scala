@@ -7,7 +7,7 @@ private[almaren] trait Executor {
   def catalyst(tree: Tree,df: DataFrame = Almaren.spark.getOrCreate().emptyDataFrame): DataFrame = {
     tree match {
       case Tree(s, list) if list.nonEmpty => exec(list,s.executor(df))
-      case Tree(s, list) => s.executor(df);
+      case Tree(s, list) => s.executor(df)
     }  
   }
 

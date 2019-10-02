@@ -1,7 +1,6 @@
 package com.github.music.of.the.ainur.almaren
 
 import com.github.music.of.the.ainur.almaren.core._
-import org.apache.spark.sql.types.StructType
 
 class Test {
   val almaren = Almaren("App Test")
@@ -15,14 +14,18 @@ class Test {
     )))
 
  */
-
-
   val tree = Tree(
     new SourceSql("select * from foo"),
     List(Tree(new JsonDeserializer("foo","bar"),
-      List(Tree(new SQLState("select 1")),Tree(new SQLState("select 2"))))
-    )
-  )
+      List(
+        Tree(new SQLState("select 1")),
+        Tree(new SQLState("select 2")),
+      ))
+    ))
+
+  println {
+    almaren.catalyst(tree)
+  }
 
 
 }

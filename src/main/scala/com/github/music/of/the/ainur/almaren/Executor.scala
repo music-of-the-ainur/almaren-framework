@@ -9,9 +9,7 @@ private[almaren] trait Executor {
       case Tree(s, list) if list.nonEmpty => parentExec(list,s.executor(df))
       case Tree(s, list) => s.executor(df)
     }
-  
 
   private def parentExec(tree: List[Tree],df: DataFrame): DataFrame = 
-    tree.foldLeft(df)((d,t) => catalyst(t,df))
-  
+    tree.foldLeft(df)((d,t) => catalyst(t,df))  
 }

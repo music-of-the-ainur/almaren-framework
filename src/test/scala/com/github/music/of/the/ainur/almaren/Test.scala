@@ -28,7 +28,5 @@ class Test extends FunSuite with BeforeAndAfter {
     ))
   )
 
-  println {
     almaren.catalyst(tree).show(false)
-  }
 }

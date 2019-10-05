@@ -13,29 +13,30 @@ class Test extends FunSuite with BeforeAndAfter {
   import spark.implicits._
 
   val res = spark.read.json(Seq(json_str).toDS)
-  res.show
+ 
+ res.show
   res.printSchema()
   res.createTempView("movies")
 
   val tree = Tree(
-    new SourceSql("select * from movies"),
+    new SourceSql("select monotonically_increasing_id() as id,* from movies"),
     List(Tree(new Cache(true,None),
       List(
         Tree(new SQLState("select year from __TABLE__"),
-          List(Tree(new TargetSql("CREATE TABLE year SELECT distinct year FROM __TABLE__")))),
-        Tree(new SQLState("select title from __TABLE__"),
-          List(Tree(new TargetSql("CREATE TABLE title SELECT * FROM __TABLE__")))),
-        Tree(new SQLState("select genres from __TABLE__"), 
-          List(Tree(new SQLState("select genres,count(*) as total from (select explode_outer(genres) as genres from __TABLE__) G where genres is not null group by genres order by count(*) desc"),
-            List(Tree(new TargetSql("CREATE TABLE genres SELECT * FROM __TABLE__")))))),
-        Tree(new SQLState("select cast from __TABLE__ where year >= 1980"),
-          List(Tree(new TargetSql("CREATE TABLE cast SELECT cast,count(*) as total FROM (SELECT explode_outer(cast) as cast FROM __TABLE__) C where cast is not null and cast != 'and' group by cast order by count(*) desc")))
+          List(Tree(new TargetSql("CREATE TABLE IF NOT EXISTS year SELECT distinct year FROM __TABLE__")))),
+        Tree(new SQLState("select id, title from __TABLE__"),
+          List(Tree(new TargetSql("CREATE TABLE IF NOT EXISTS title SELECT * FROM __TABLE__")))),
+        Tree(new SQLState("select genres from __TABLE__"),
+          List(Tree(new SQLState("select genres,count(*) as total from (select explode_outer(genres) as genres from __TABLE__) G where genres is not null group by genres"),
+            List(Tree(new TargetSql("CREATE TABLE IF NOT EXISTS genres SELECT * FROM __TABLE__")))))),
+        Tree(new SQLState("select cast from __TABLE__ where year >= 1990"),
+          List(Tree(new TargetSql("CREATE TABLE IF NOT EXISTS cast SELECT cast,count(*) as total FROM (SELECT explode_outer(cast) as cast FROM __TABLE__) C where cast is not null and cast != 'and' group by cast")))
         ),
       )
     ))
   )
 
-    almaren.catalyst(tree)
+  almaren.catalyst(tree) 
 
   spark.sql("select * from year").show(false)
   spark.sql("select * from title").show(false)

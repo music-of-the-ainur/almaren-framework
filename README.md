@@ -183,7 +183,7 @@ almaren.sql(""" SELECT * FROM person JOIN policy ON policy.person_id = person.id
 ```scala
 val almaren = Almaren("appName")
 val sourceData = almaren.sourceJdbc("oracle.jdbc.driver.OracleDriver","jdbc:oracle:thin:@localhost:1521:xe","SELECT * FROM schema.table WHERE st_date >= (sysdate-1) AND st_date < sysdate")
-    .sql("SELECT to_json(*) from __TABLE__")
+    .sql("SELECT to_json(named_struct('id', id,))) as __BODY__ from __TABLE__")
     .coalesce(30)
     .targetHttp("https://host.com:9093/api/foo","post",Map("Authorization" -> "Basic QWxhZGRpbjpPcGVuU2VzYW1l"))
     

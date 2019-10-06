@@ -115,10 +115,8 @@ val df:DataFrame = almaren.sourceSql("SELECT * FROM db.schema.table")
 
 ```scala
 val almaren = Almaren("appName")
-val sourceData = almaren.sourceSql("SELECT * FROM db.schema.table")
-    .deserializer("XML","xml_str").cache.fork
         
-sourceData.dsl("uuid$id:StringType
+val target1 = almaren.dsl("uuid$id:StringType
     |code$area_code:LongType
     |names@name
     |    name.firstName$first_name:StringType
@@ -128,7 +126,7 @@ sourceData.dsl("uuid$id:StringType
 .sql("SELECT *,unix_timestamp() as timestamp from __TABLE__")
 .targetCassandra("test1","kv1")
     
-sourceData.dsl("uuid$id:StringType
+val target2 = almaren.dsl("uuid$id:StringType
     |code$area_code:LongType
     |phones@phone
     |    phone.number$phone_number:StringType
@@ -136,7 +134,9 @@ sourceData.dsl("uuid$id:StringType
 .sql("SELECT *,unix_timestamp() as timestamp from __TABLE__")
 .targetCassandra("test2","kv2")
 
-sourceData.batch
+almaren.sourceSql("SELECT * FROM db.schema.table")
+    .deserializer("XML","xml_str").cache.fork(target1,target2)
+    .batch
 ```
 
 ### Example 3
@@ -173,7 +173,7 @@ almaren.sql(""" SELECT * FROM person JOIN policy ON policy.person_id = person.id
     .sql("SELECT *,unix_timestamp() as timestamp FROM __TABLE__")
     .coalesce(100)
     .targetSql("INSERT INTO TABLE area.premimum_users SELECT * FROM __TABLE__")
-    .batch
+    .batch(sourcePolicy,sourceHbase)
 ```
 
 ### Example 4

@@ -4,6 +4,8 @@ import com.github.music.of.the.ainur.almaren.component.Tree
 import com.github.music.of.the.ainur.almaren.component.state.core._
 import org.scalatest._
 
+import com.github.music.of.the.ainur.almaren.component.builder.Core.Implicit
+
 class Test extends FunSuite with BeforeAndAfter {
   val almaren = Almaren("App Test")
   val spark = almaren.spark.master("local[*]").enableHiveSupport.getOrCreate()
@@ -37,14 +39,17 @@ class Test extends FunSuite with BeforeAndAfter {
     ))
   )
 
-  val foo: Tree = almaren.sourceSql("select * from foo")
+  val foo: Tree = almaren.sourceSql("select * from movies").sql("select * from __TABLE__")
 
-  almaren.catalyst(tree)
+  almaren.catalyst(foo).show(false)
 
+/*
   spark.sql("select * from year").show(false)
   spark.sql("select * from title").show(false)
   spark.sql("select * from genres order by total desc").show(false)
   spark.sql("select * from cast order by total desc").show(false)
-  
+ */
+ 
   spark.stop()
+
 }

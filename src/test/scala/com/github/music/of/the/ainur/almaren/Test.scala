@@ -1,6 +1,7 @@
 package com.github.music.of.the.ainur.almaren
 
-import com.github.music.of.the.ainur.almaren.core._
+import com.github.music.of.the.ainur.almaren.component.Tree
+import com.github.music.of.the.ainur.almaren.component.state.core._
 import org.scalatest._
 
 class Test extends FunSuite with BeforeAndAfter {
@@ -14,7 +15,7 @@ class Test extends FunSuite with BeforeAndAfter {
 
   val res = spark.read.json(Seq(json_str).toDS)
  
- res.show
+  res.show
   res.printSchema()
   res.createTempView("movies")
 
@@ -22,21 +23,23 @@ class Test extends FunSuite with BeforeAndAfter {
     new SourceSql("select monotonically_increasing_id() as id,* from movies"),
     List(Tree(new Cache(true,None),
       List(
-        Tree(new SQLState("select year from __TABLE__"),
+        Tree(new Sql("select year from __TABLE__"),
           List(Tree(new TargetSql("CREATE TABLE IF NOT EXISTS year SELECT distinct year FROM __TABLE__")))),
-        Tree(new SQLState("select id, title from __TABLE__"),
+        Tree(new Sql("select id, title from __TABLE__"),
           List(Tree(new TargetSql("CREATE TABLE IF NOT EXISTS title SELECT * FROM __TABLE__")))),
-        Tree(new SQLState("select genres from __TABLE__"),
-          List(Tree(new SQLState("select genres,count(*) as total from (select explode_outer(genres) as genres from __TABLE__) G where genres is not null group by genres"),
+        Tree(new Sql("select genres from __TABLE__"),
+          List(Tree(new Sql("select genres,count(*) as total from (select explode_outer(genres) as genres from __TABLE__) G where genres is not null group by genres"),
             List(Tree(new TargetSql("CREATE TABLE IF NOT EXISTS genres SELECT * FROM __TABLE__")))))),
-        Tree(new SQLState("select cast from __TABLE__ where year >= 1990"),
+        Tree(new Sql("select cast from __TABLE__ where year >= 1990"),
           List(Tree(new TargetSql("CREATE TABLE IF NOT EXISTS cast SELECT cast,count(*) as total FROM (SELECT explode_outer(cast) as cast FROM __TABLE__) C where cast is not null and cast != 'and' group by cast")))
         ),
       )
     ))
   )
 
-  almaren.catalyst(tree) 
+  val foo: Tree = almaren.sourceSql("select * from foo")
+
+  almaren.catalyst(tree)
 
   spark.sql("select * from year").show(false)
   spark.sql("select * from title").show(false)

@@ -1,15 +1,15 @@
-package com.github.music.of.the.ainur.almaren.core
+package com.github.music.of.the.ainur.almaren.component.state.core
 
 import org.apache.spark.sql.DataFrame
-import com.github.music.of.the.ainur.almaren.State
+import com.github.music.of.the.ainur.almaren.component.State
 import com.github.music.of.the.ainur.almaren.util.Constants
 
-private[almaren] abstract class Core extends State {
+private[ainur] abstract class Main extends State {
   override def executor(df: DataFrame): DataFrame = core(df)
   def core(df: DataFrame): DataFrame
 }
 
-class SQLState(sql: String) extends Core {
+class Sql(sql: String) extends Main {
   override def core(df: DataFrame): DataFrame = sql(df)
   def sql(df: DataFrame): DataFrame = {
     logger.info(s"sql:{$sql}")
@@ -18,7 +18,7 @@ class SQLState(sql: String) extends Core {
   }
 }
 
-class Coalesce(size:Int) extends Core {
+class Coalesce(size:Int) extends Main {
   override def core(df: DataFrame): DataFrame = coalesce(df)
   def coalesce(df: DataFrame): DataFrame = {
     logger.info(s"{$size}")
@@ -26,7 +26,7 @@ class Coalesce(size:Int) extends Core {
   }
 }
 
-class Repartition(size:Int) extends Core {
+class Repartition(size:Int) extends Main {
   override def core(df: DataFrame): DataFrame = repartition(df)
   def repartition(df: DataFrame): DataFrame = {
     logger.info(s"{$size}")
@@ -34,7 +34,7 @@ class Repartition(size:Int) extends Core {
   }
 }
 
-class Pipe(command:String) extends Core {
+class Pipe(command:String) extends Main {
   override def core(df: DataFrame): DataFrame = pipe(df)
   def pipe(df: DataFrame): DataFrame = {
     import df.sparkSession.implicits._
@@ -43,7 +43,7 @@ class Pipe(command:String) extends Core {
   }
 }
 
-class Alias(alias:String) extends Core {
+class Alias(alias:String) extends Main {
   override def core(df: DataFrame): DataFrame = alias(df)
   def alias(df: DataFrame): DataFrame = {
     logger.info(s"{$alias}")
@@ -52,7 +52,7 @@ class Alias(alias:String) extends Core {
   }
 }
 
-class Cache(opType:Boolean,tableName:Option[String]) extends Core {
+class Cache(opType:Boolean,tableName:Option[String] = None) extends Main {
   override def core(df: DataFrame): DataFrame = cache(df)
   def cache(df: DataFrame): DataFrame = {
     logger.info(s"opType:{$opType}, tableName{$tableName}")

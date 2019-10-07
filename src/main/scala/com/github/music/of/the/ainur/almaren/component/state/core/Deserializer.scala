@@ -1,9 +1,9 @@
-package com.github.music.of.the.ainur.almaren.core
+package com.github.music.of.the.ainur.almaren.component.state.core
 
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.types.{DataType, StructType}
 import scala.language.implicitConversions
-import com.github.music.of.the.ainur.almaren.State
+import com.github.music.of.the.ainur.almaren.component.State
 
 abstract class Deserializer() extends State {
   override def executor(df: DataFrame): DataFrame = deserializer(df)

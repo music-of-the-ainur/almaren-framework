@@ -1,8 +1,10 @@
-package com.github.music.of.the.ainur.almaren
+package com.github.music.of.the.ainur.almaren.component
 
 import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.SparkSession
+import com.github.music.of.the.ainur.almaren.Almaren
 
-private[almaren] trait Executor {
+private[ainur] trait Executor {
   // execute's PreOrder BT
   def catalyst(tree: Tree,df: DataFrame = Almaren.spark.getOrCreate().emptyDataFrame): DataFrame = 
     tree match {

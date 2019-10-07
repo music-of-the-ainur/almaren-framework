@@ -52,7 +52,7 @@ class Alias(alias:String) extends Main {
   }
 }
 
-class Cache(opType:Boolean,tableName:Option[String] = None) extends Main {
+class Cache(opType:Boolean = true,tableName:Option[String] = None) extends Main {
   override def core(df: DataFrame): DataFrame = cache(df)
   def cache(df: DataFrame): DataFrame = {
     logger.info(s"opType:{$opType}, tableName{$tableName}")

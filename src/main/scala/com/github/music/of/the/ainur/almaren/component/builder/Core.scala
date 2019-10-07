@@ -8,6 +8,9 @@ trait Core {
 
   implicit def state2ExistingTree(state: State): Tree =
     Builder.addLeft(state,tree)
+
+  def fork(treeNodes: Tree*): Tree = 
+    treeNodes.foldLeft(tree)((t,td) => Builder.addRight(t,td))
 }
 
 object Core {

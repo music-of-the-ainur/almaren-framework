@@ -6,9 +6,15 @@ import zipper._
 
 private[almaren] object Builder extends LazyLogging with Serializable {
 
-  def addLeft(state: State,tree: Tree): Tree = 
-     Zipper(tree)
-          .tryAdvanceRightDepthFirst.orStay
-          .tryAdvanceLeftDepthFirst.orStay
-          .insertLeft(Tree(state)).commit
+  def addLeft(state: State,tree: Tree): Tree =
+    Zipper(tree)
+      .tryAdvanceRightDepthFirst.orStay
+      .tryAdvanceLeftDepthFirst.orStay
+      .insertDownLeft(List(Tree(state))).commit
+
+  def addRight(tree: Tree,insertTree: Tree): Tree = 
+    Zipper(tree)
+      .tryAdvanceRightDepthFirst.orStay
+      .tryAdvanceLeftDepthFirst.orStay
+      .insertRight(insertTree).commit
 }

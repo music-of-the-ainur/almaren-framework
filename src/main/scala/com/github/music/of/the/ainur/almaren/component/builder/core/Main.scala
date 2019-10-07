@@ -13,4 +13,6 @@ private[ainur] trait Main extends Core {
   def alias(alias:String): Tree =
     new Alias(alias)
 
+  def cache(opType:Boolean = true,tableName:Option[String] = None): Tree = 
+    new Cache(opType, tableName)
 }

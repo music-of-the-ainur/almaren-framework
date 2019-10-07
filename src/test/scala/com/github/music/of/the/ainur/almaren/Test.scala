@@ -39,7 +39,14 @@ class Test extends FunSuite with BeforeAndAfter {
     ))
   )
 
-  val foo: Tree = almaren.sourceSql("select monotonically_increasing_id() as id,* from movies").sql("select * from __TABLE__").cache().alias("m2").fork(
+/*
+  val foo = almaren.sourceSql("select monotonically_increasing_id() as id,* from movies").sql("select * from __TABLE__").cache().alias("m2").fork(
+    almaren.sourceSql("select year from m2").sql("select max(year) from __TABLE__"),
+    almaren.sourceSql("select genres from m2").sql("select genres,count(*) as total from (select explode_outer(genres) as genres from __TABLE__) G where genres is not null group by genres")
+  )
+ */
+
+  val foo = almaren.sourceSql("select monotonically_increasing_id() as id,* from movies").sql("select * from __TABLE__").cache().alias("m2").fork(
     almaren.sourceSql("select year from m2").sql("select max(year) from __TABLE__"),
     almaren.sourceSql("select genres from m2").sql("select genres,count(*) as total from (select explode_outer(genres) as genres from __TABLE__) G where genres is not null group by genres")
   )

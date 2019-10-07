@@ -12,5 +12,4 @@ object Almaren extends LazyLogging with Executor with Source {
   lazy val spark = SparkSession.builder().config(sparkConf)
 }
 
-trait Almaren {
-}
+trait Almaren

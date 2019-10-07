@@ -10,7 +10,7 @@ trait Core {
     Builder.addLeft(state,tree)
 
   def fork(treeNodes: Tree*): Tree = 
-    treeNodes.foldLeft(tree)((t,td) => Builder.addRight(t,td))
+    Builder.addRight(tree,treeNodes.toList)
 }
 
 object Core {

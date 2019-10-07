@@ -5,7 +5,6 @@ import com.github.music.of.the.ainur.almaren.component.state.core._
 import com.github.music.of.the.ainur.almaren.component.builder.Core
 
 private[ainur] trait Main extends Core {
-  val tree: Tree
 
   def sql(sql: String): Tree =
     new Sql(sql)

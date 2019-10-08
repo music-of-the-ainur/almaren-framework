@@ -12,10 +12,7 @@ private[almaren] object Builder extends LazyLogging with Serializable {
 
   private def depthLeft(zipper: Zipper[Tree]): Zipper[Tree] =
     zipper.tryMoveDownLeft match {
-      case Zipper.MoveResult.Success(s, _) => s.tryMoveRight match {
-        case Zipper.MoveResult.Success(s, _) => s.rewindLeft
-        case Zipper.MoveResult.Failure(f) => depthLeft(s)
-      }
+      case Zipper.MoveResult.Success(s, _) => depthLeft(s)
       case Zipper.MoveResult.Failure(f) => f
    }
 

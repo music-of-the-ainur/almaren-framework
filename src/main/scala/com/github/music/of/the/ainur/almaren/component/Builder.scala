@@ -12,10 +12,15 @@ private[almaren] object Builder extends LazyLogging with Serializable {
 
   private def depthLeft(zipper: Zipper[Tree]): Zipper[Tree] =
     zipper.tryMoveDownLeft match {
-      case Zipper.MoveResult.Success(s, _) => depthLeft(s)
+      case Zipper.MoveResult.Success(s, _) => s.tryMoveRight match {
+        case Zipper.MoveResult.Success(s, _) => s.rewindLeft
+        case Zipper.MoveResult.Failure(f) => depthLeft(s)
+      }
       case Zipper.MoveResult.Failure(f) => f
    }
 
-  def addRight(tree: Tree, insertTree: List[Tree]): Tree =
-    Zipper(tree).advanceLeftDepthFirst.moveDownLeft.insertDownRight(insertTree).commit
+  def addRight(tree: Tree, insertTree: List[Tree]): Tree = {
+    val left = Zipper(tree).advanceLeftDepthFirst.advanceRightDepthFirst.moveDownLeft.insertDownRight(insertTree)
+    left.commit
+  }
 }

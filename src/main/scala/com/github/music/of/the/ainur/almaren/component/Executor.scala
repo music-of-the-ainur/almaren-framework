@@ -6,9 +6,6 @@ import com.github.music.of.the.ainur.almaren.Almaren
 
 private[ainur] trait Executor {
   // execute's PreOrder BT
-
-  lazy val df: DataFrame = Almaren.spark.getOrCreate().emptyDataFrame
-
   def catalyst(listTree: List[Tree]): DataFrame =
     listTree.foldLeft(Almaren.spark.getOrCreate().emptyDataFrame)((d,t) => catalyst(t,d))
 

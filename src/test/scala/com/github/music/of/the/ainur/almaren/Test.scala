@@ -40,6 +40,7 @@ class Test extends FunSuite with BeforeAndAfter {
   )
 
 
+
   val foo = almaren.builder.sourceSql("select monotonically_increasing_id() as id,* from movies").sql("select * from __TABLE__").cache().fork(
     almaren.builder
       .sql("select year from __TABLE__").sql("CREATE TABLE IF NOT EXISTS year SELECT distinct year FROM __TABLE__"),
@@ -53,8 +54,10 @@ class Test extends FunSuite with BeforeAndAfter {
       .sql("select cast from __TABLE__ where year >= 1990")
       .targetSql("CREATE TABLE IF NOT EXISTS cast SELECT cast,count(*) as total FROM (SELECT explode_outer(cast) as cast FROM __TABLE__) C where cast is not null and cast != 'and' group by cast")
   )
+ 
 
 
+  println(foo.get.zipper.commit)
   almaren.catalyst(foo).show(false)
 
 
@@ -62,7 +65,7 @@ class Test extends FunSuite with BeforeAndAfter {
   spark.sql("select * from title").show(false)
   spark.sql("select * from genres order by total desc").show(false)
   spark.sql("select * from cast order by total desc").show(false)
- 
+
   spark.stop()
 
 }

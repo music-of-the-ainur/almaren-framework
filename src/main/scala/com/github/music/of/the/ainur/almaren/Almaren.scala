@@ -5,13 +5,13 @@ import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 import com.github.music.of.the.ainur.almaren.component.builder.core.Source
 import com.github.music.of.the.ainur.almaren.component.Executor
-import com.github.music.of.the.ainur.almaren.component.Tree
+import com.github.music.of.the.ainur.almaren.component.Container
 
 object Almaren extends LazyLogging with Executor {
   def apply(appName: String) = { sparkConf.setAppName(appName);Almaren}
   val sparkConf = new SparkConf
   lazy val spark = SparkSession.builder().config(sparkConf)
-  val builder: Option[Tree] = None
+  val builder: Option[Container] = None
 }
 
 trait Almaren

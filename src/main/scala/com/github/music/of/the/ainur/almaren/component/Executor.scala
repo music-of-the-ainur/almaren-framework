@@ -6,13 +6,18 @@ import com.github.music.of.the.ainur.almaren.Almaren
 
 private[ainur] trait Executor {
   // execute's PreOrder BT
-  def catalyst(tree: Tree,df: DataFrame = Almaren.spark.getOrCreate().emptyDataFrame, count:Int = 0): DataFrame = {
-    println(s"[+]$count")
+
+  lazy val df: DataFrame = Almaren.spark.getOrCreate().emptyDataFrame
+
+  def catalyst(listTree: List[Tree]): DataFrame =
+    listTree.foldLeft(Almaren.spark.getOrCreate().emptyDataFrame)((d,t) => catalyst(t,d))
+
+  def catalyst(tree: Tree,df: DataFrame = Almaren.spark.getOrCreate().emptyDataFrame): DataFrame = {
     tree match {
-      case Tree(s, list) if list.nonEmpty => parentExec(list,s.executor(df),count + 1)
+      case Tree(s, list) if list.nonEmpty => parentExec(list,s.executor(df))
       case Tree(s, list) => s.executor(df)
     }
   }
-  private def parentExec(tree: List[Tree],df: DataFrame, count:Int): DataFrame = 
-    tree.foldLeft(df)((d,t) => catalyst(t,df,count))  
+  private def parentExec(tree: List[Tree],df: DataFrame): DataFrame = 
+    tree.foldLeft(df)((d,t) => catalyst(t,df))  
 }

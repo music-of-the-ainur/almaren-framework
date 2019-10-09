@@ -17,7 +17,11 @@ private[almaren] object Builder extends LazyLogging with Serializable {
    }
 
   def addRight(tree: Tree, insertTree: List[Tree]): Tree = {
-    val left = Zipper(tree).advanceLeftDepthFirst.advanceRightDepthFirst.moveDownLeft.insertDownRight(insertTree)
-    left.commit
+    Zipper(tree)
+      .advanceLeftDepthFirst
+      .advanceRightDepthFirst
+      .moveDownLeft
+      .insertDownRight(insertTree)
+      .commit
   }
 }

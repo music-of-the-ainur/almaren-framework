@@ -51,6 +51,8 @@ class Test extends FunSuite with BeforeAndAfter {
     almaren.sourceSql("select genres from m2").sql("select genres,count(*) as total from (select explode_outer(genres) as genres from __TABLE__) G where genres is not null group by genres")
   )
 
+  println(foo)
+
   almaren.catalyst(foo).show(false)
 
 /*

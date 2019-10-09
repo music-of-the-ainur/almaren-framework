@@ -39,28 +39,29 @@ class Test extends FunSuite with BeforeAndAfter {
     ))
   )
 
-/*
-  val foo = almaren.sourceSql("select monotonically_increasing_id() as id,* from movies").sql("select * from __TABLE__").cache().alias("m2").fork(
-    almaren.sourceSql("select year from m2").sql("select max(year) from __TABLE__"),
-    almaren.sourceSql("select genres from m2").sql("select genres,count(*) as total from (select explode_outer(genres) as genres from __TABLE__) G where genres is not null group by genres")
-  )
- */
 
-  val foo = almaren.sourceSql("select monotonically_increasing_id() as id,* from movies").sql("select * from __TABLE__").cache().alias("m2").fork(
-    almaren.sourceSql("select year from m2").sql("select max(year) from __TABLE__"),
-    almaren.sourceSql("select genres from m2").sql("select genres,count(*) as total from (select explode_outer(genres) as genres from __TABLE__) G where genres is not null group by genres")
+  val foo = almaren.builder.sourceSql("select monotonically_increasing_id() as id,* from movies").sql("select * from __TABLE__").cache().fork(
+    almaren.builder
+      .sql("select year from __TABLE__").sql("CREATE TABLE IF NOT EXISTS year SELECT distinct year FROM __TABLE__"),
+    almaren.builder
+      .sql("select id, title from __TABLE__").sql("CREATE TABLE IF NOT EXISTS title SELECT * FROM __TABLE__"),
+    almaren.builder
+      .sql("select genres from __TABLE__")
+      .sql("select genres,count(*) as total from (select explode_outer(genres) as genres from __TABLE__) G where genres is not null group by genres")
+      .targetSql("CREATE TABLE IF NOT EXISTS genres SELECT * FROM __TABLE__"),
+    almaren.builder
+      .sql("select cast from __TABLE__ where year >= 1990")
+      .targetSql("CREATE TABLE IF NOT EXISTS cast SELECT cast,count(*) as total FROM (SELECT explode_outer(cast) as cast FROM __TABLE__) C where cast is not null and cast != 'and' group by cast")
   )
 
-  println(foo)
 
   almaren.catalyst(foo).show(false)
 
-/*
+
   spark.sql("select * from year").show(false)
   spark.sql("select * from title").show(false)
   spark.sql("select * from genres order by total desc").show(false)
   spark.sql("select * from cast order by total desc").show(false)
- */
  
   spark.stop()
 

@@ -95,7 +95,7 @@ Read from BigQuery using [Google BigQuery Connector](https://github.com/GoogleCl
 
 ```scala
 val almaren = Almaren("appName")
-val df:DataFrame = almaren.sourceSql("SELECT * FROM db.schema.table")
+val df:DataFrame = almaren.builder.sourceSql("SELECT * FROM db.schema.table")
     .deserializer("JSON","json_str")
     .dsl("uuid$id:StringType
         |code$area_code:LongType
@@ -116,7 +116,7 @@ val df:DataFrame = almaren.sourceSql("SELECT * FROM db.schema.table")
 ```scala
 val almaren = Almaren("appName")
         
-val target1 = almaren.dsl("uuid$id:StringType
+val target1 = almaren.builder.dsl("uuid$id:StringType
     |code$area_code:LongType
     |names@name
     |    name.firstName$first_name:StringType
@@ -126,7 +126,7 @@ val target1 = almaren.dsl("uuid$id:StringType
 .sql("SELECT *,unix_timestamp() as timestamp from __TABLE__")
 .targetCassandra("test1","kv1")
     
-val target2 = almaren.dsl("uuid$id:StringType
+val target2 = almaren.builder.dsl("uuid$id:StringType
     |code$area_code:LongType
     |phones@phone
     |    phone.number$phone_number:StringType
@@ -134,7 +134,7 @@ val target2 = almaren.dsl("uuid$id:StringType
 .sql("SELECT *,unix_timestamp() as timestamp from __TABLE__")
 .targetCassandra("test2","kv2")
 
-almaren.sourceSql("SELECT * FROM db.schema.table")
+almaren.builder.sourceSql("SELECT * FROM db.schema.table")
     .deserializer("XML","xml_str").cache.fork(target1,target2)
     .batch
 ```
@@ -146,7 +146,7 @@ almaren.sourceSql("SELECT * FROM db.schema.table")
 ```scala
 val almaren = Almaren("appName")
 
-val sourcePolicy = almaren.sourceHbase("""{
+val sourcePolicy = almaren.builder.sourceHbase("""{
     |"table":{"namespace":"default", "name":"policy"},
     |"rowkey":"id",
     |"columns":{
@@ -158,7 +158,7 @@ val sourcePolicy = almaren.sourceHbase("""{
     |}
 |}""").sql(""" SELECT * FROM __TABLE__ WHERE status = "ACTIVE" """).alias("policy")
 
-val sourcePerson = almaren.sourceHbase("""{
+val sourcePerson = almaren.builder.sourceHbase("""{
     |"table":{"namespace":"default", "name":"person"},
     |"rowkey":"id",
     |"columns":{
@@ -169,7 +169,7 @@ val sourcePerson = almaren.sourceHbase("""{
     |}
 |}""").sql(""" SELECT * FROM __TABLE__ WHERE type = "PREMIUM" """).alias("person")
 
-almaren.sql(""" SELECT * FROM person JOIN policy ON policy.person_id = person.id """)
+almaren.builder.sql(""" SELECT * FROM person JOIN policy ON policy.person_id = person.id """)
     .sql("SELECT *,unix_timestamp() as timestamp FROM __TABLE__")
     .coalesce(100)
     .targetSql("INSERT INTO TABLE area.premimum_users SELECT * FROM __TABLE__")
@@ -182,7 +182,7 @@ almaren.sql(""" SELECT * FROM person JOIN policy ON policy.person_id = person.id
 
 ```scala
 val almaren = Almaren("appName")
-val sourceData = almaren.sourceJdbc("oracle.jdbc.driver.OracleDriver","jdbc:oracle:thin:@localhost:1521:xe","SELECT * FROM schema.table WHERE st_date >= (sysdate-1) AND st_date < sysdate")
+val sourceData = almaren.builder.sourceJdbc("oracle.jdbc.driver.OracleDriver","jdbc:oracle:thin:@localhost:1521:xe","SELECT * FROM schema.table WHERE st_date >= (sysdate-1) AND st_date < sysdate")
     .sql("SELECT to_json(named_struct('id', id,))) as __BODY__ from __TABLE__")
     .coalesce(30)
     .targetHttp("https://host.com:9093/api/foo","post",Map("Authorization" -> "Basic QWxhZGRpbjpPcGVuU2VzYW1l"))

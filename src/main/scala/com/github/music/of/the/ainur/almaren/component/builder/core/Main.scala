@@ -13,4 +13,13 @@ private[almaren] trait Main extends Core {
 
   def cache(opType:Boolean = true,tableName:Option[String] = None): Option[Container] = 
     new Cache(opType, tableName)
+
+  def coalesce(size:Int): Option[Container] =
+    new Coalesce(size:Int)
+
+  def repartition(size:Int): Option[Container] =
+    new Repartition(size:Int)
+
+  def pipe(command:String): Option[Container] =
+    new Pipe(command:String)
 }

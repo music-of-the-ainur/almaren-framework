@@ -6,7 +6,7 @@ import zipper._
 
 private[almaren] object Builder extends LazyLogging with Serializable {
   def addLeft(state: State, zipper: Zipper[Tree]): Zipper[Tree] =
-    zipper.tryAdvanceRightDepthFirst.orStay.tryMoveDownLeft.orStay.insertDownLeft(List(Tree(state)))
+    zipper.tryAdvanceRightDepthFirst.orStay.insertDownLeft(List(Tree(state)))
 
   def addRight(zipper: Zipper[Tree], insertTree: List[Tree]): Zipper[Tree] =
     zipper.insertDownRight(insertTree)

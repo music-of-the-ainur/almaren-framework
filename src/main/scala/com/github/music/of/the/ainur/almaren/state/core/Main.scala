@@ -1,8 +1,8 @@
-package com.github.music.of.the.ainur.almaren.component.state.core
+package com.github.music.of.the.ainur.almaren.state.core
 
-import org.apache.spark.sql.DataFrame
-import com.github.music.of.the.ainur.almaren.component.State
+import com.github.music.of.the.ainur.almaren.State
 import com.github.music.of.the.ainur.almaren.util.Constants
+import org.apache.spark.sql.DataFrame
 
 private[almaren] abstract class Main extends State {
   override def executor(df: DataFrame): DataFrame = core(df)

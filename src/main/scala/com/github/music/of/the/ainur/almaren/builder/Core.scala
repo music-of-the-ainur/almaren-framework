@@ -1,11 +1,10 @@
-package com.github.music.of.the.ainur.almaren.component.builder
+package com.github.music.of.the.ainur.almaren.builder
 
-import com.github.music.of.the.ainur.almaren.component.{Builder, State, Tree, Container}
-import com.github.music.of.the.ainur.almaren.component.builder.core.{Source, Main, Target}
-import scala.language.implicitConversions
-import com.github.music.of.the.ainur.almaren.component.Implicit._
+import com.github.music.of.the.ainur.almaren.builder.core.{Main, Source, Target}
+import com.github.music.of.the.ainur.almaren.{Builder, Container, NullFork, State, Tree}
 import zipper.Zipper
-import com.github.music.of.the.ainur.almaren.component.NullFork
+
+import scala.language.implicitConversions
 
 trait Core {
   val container: Option[Container]

@@ -1,7 +1,6 @@
-package com.github.music.of.the.ainur.almaren.component
+package com.github.music.of.the.ainur.almaren
 
 import com.typesafe.scalalogging.LazyLogging
-import org.apache.spark.sql.DataFrame
 import zipper._
 
 private[almaren] object Builder extends LazyLogging with Serializable {

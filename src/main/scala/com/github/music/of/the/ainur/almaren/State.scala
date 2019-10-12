@@ -1,4 +1,4 @@
-package com.github.music.of.the.ainur.almaren.component
+package com.github.music.of.the.ainur.almaren
 
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.spark.sql.DataFrame

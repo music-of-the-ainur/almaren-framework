@@ -1,8 +1,8 @@
-package com.github.music.of.the.ainur.almaren.component
+package com.github.music.of.the.ainur
 
 import zipper.Zipper
 
-package object Implicit {
+package object almaren {
   import scala.language.implicitConversions
 
   implicit def container2optionn(container: Container): Option[Container] = 

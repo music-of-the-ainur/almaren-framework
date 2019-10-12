@@ -1,8 +1,8 @@
-package com.github.music.of.the.ainur.almaren.component.builder.core
+package com.github.music.of.the.ainur.almaren.builder.core
 
-import com.github.music.of.the.ainur.almaren.component.Container
-import com.github.music.of.the.ainur.almaren.component.state.core.{SourceJdbc, SourceSql}
-import com.github.music.of.the.ainur.almaren.component.builder.Core
+import com.github.music.of.the.ainur.almaren.Container
+import com.github.music.of.the.ainur.almaren.builder.Core
+import com.github.music.of.the.ainur.almaren.state.core.{SourceJdbc, SourceSql}
 
 private[almaren] trait Source extends Core {
   def sourceSql(sql: String): Option[Container] =

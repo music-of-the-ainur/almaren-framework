@@ -1,4 +1,4 @@
-package com.github.music.of.the.ainur.almaren.component
+package com.github.music.of.the.ainur.almaren
 
 sealed trait AlmarenException {
   self: Throwable =>

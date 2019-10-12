@@ -1,8 +1,6 @@
-package com.github.music.of.the.ainur.almaren.component
+package com.github.music.of.the.ainur.almaren
 
 import org.apache.spark.sql.DataFrame
-import org.apache.spark.sql.SparkSession
-import com.github.music.of.the.ainur.almaren.Almaren
 
 private[almaren] trait Executor {
   // execute's PreOrder BT

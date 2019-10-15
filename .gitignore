@@ -1,3 +1,8 @@
+# metals
+.metals/
+.bloop/
+project/metals.sbt
+
 # spark
 spark-warehouse
 

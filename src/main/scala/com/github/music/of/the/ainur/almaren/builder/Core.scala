@@ -1,6 +1,6 @@
 package com.github.music.of.the.ainur.almaren.builder
 
-import com.github.music.of.the.ainur.almaren.builder.core.{Main, Source, Target}
+import com.github.music.of.the.ainur.almaren.builder.core.{Main, Source, Target, Deserializer}
 import com.github.music.of.the.ainur.almaren.{Builder, Container, NullFork, State, Tree}
 import zipper.Zipper
 
@@ -24,5 +24,5 @@ trait Core {
 }
 
 object Core {
-  implicit class Implicit(val container: Option[Container]) extends Source with Main with Target
+  implicit class Implicit(val container: Option[Container]) extends Source with Main with Target with Deserializer
 }

@@ -189,3 +189,7 @@ val sourceData = almaren.builder.sourceJdbc("oracle.jdbc.driver.OracleDriver","j
     
 sourceData.batch
 ```
+
+## Author
+
+Daniel Mantovani [daniel.mantovani@modakanalytics.com](mailto:daniel.mantovani@modakanalytics.com)

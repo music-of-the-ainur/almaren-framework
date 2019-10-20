@@ -22,4 +22,7 @@ private[almaren] trait Main extends Core {
 
   def pipe(command:String): Option[Container] =
     new Pipe(command:String)
+
+  def dsl(dsl:String): Option[Container] =
+    new Dsl(dsl:String)
 }

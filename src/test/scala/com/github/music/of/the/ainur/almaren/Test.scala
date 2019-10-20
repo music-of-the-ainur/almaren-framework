@@ -73,7 +73,7 @@ class Test extends FunSuite with BeforeAndAfter {
   val movies = almaren.builder
     .sourceSql("select monotonically_increasing_id() as id,* from movies where year >= 2000")
     .dsl("""
-        |id$id:LongType
+		|id$id:LongType
 		|title$title:StringType
 		|year$year:LongType
 		|cast@cast

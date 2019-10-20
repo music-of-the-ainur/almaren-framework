@@ -18,7 +18,7 @@ class Dsl(dslLang:String) extends Main {
 
   override def core(df: DataFrame): DataFrame = dsl(df)
   def dsl(df: DataFrame): DataFrame = {
-    logger.info(s"dsl:{$dsl}")
+    logger.info(s"dsl:{$dslLang}")
     quenyaDsl.execute(dsl,df)
   }
 }

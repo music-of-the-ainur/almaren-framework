@@ -9,7 +9,7 @@ import scala.collection.immutable._
 
 class Test extends FunSuite with BeforeAndAfter {
   val almaren = Almaren("App Test")
-  val spark = almaren.spark.master("local[*]").enableHiveSupport.getOrCreate()
+  val spark = almaren.spark.master("local[*]").getOrCreate()
   System.setSecurityManager(null)
 
 
@@ -17,11 +17,9 @@ class Test extends FunSuite with BeforeAndAfter {
   import spark.implicits._
 
   val res = spark.read.json(Seq(json_str).toDS)
- 
-  res.show
-  res.printSchema()
   res.createTempView("movies")
 
+/*
   val tree = Tree(
     new SourceSql("select monotonically_increasing_id() as id,* from movies"),
     List(Tree(new Cache(true,None),
@@ -62,7 +60,6 @@ class Test extends FunSuite with BeforeAndAfter {
 
   println(foo.get.zipper.commit)
 
-
   almaren.catalyst(foo).show(false)
 
 
@@ -71,7 +68,24 @@ class Test extends FunSuite with BeforeAndAfter {
   spark.sql("select * from genres order by total desc").show(false)
   spark.sql("select * from cast order by total desc").show(false)
 
- 
+ */
+
+  val movies = almaren.builder
+    .sourceSql("select monotonically_increasing_id() as id,* from movies where year >= 2000")
+    .dsl("""
+        |id$id:LongType
+		|title$title:StringType
+		|year$year:LongType
+		|cast@cast
+		|	cast$cast:StringType
+ 		|genres@genre
+		|	genre$genre:StringType""".stripMargin)
+  .sql("""SELECT sha2(concat_ws("",array(title,year,cast,genre)),256) as unique_hash,* FROM __TABLE__ WHERE cast <> "(voice)" and cast <> "(Narrator)" order by title""")
+
+  val df = almaren.catalyst(movies)
+  df.show(false)
+  df.printSchema()
+  df.describe()
 
   spark.stop()
 

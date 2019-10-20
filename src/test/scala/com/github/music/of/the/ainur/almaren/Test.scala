@@ -9,7 +9,7 @@ import scala.collection.immutable._
 
 class Test extends FunSuite with BeforeAndAfter {
   val almaren = Almaren("App Test")
-  val spark = almaren.spark.master("local[*]").getOrCreate()
+  val spark = almaren.spark.master("local[*]").config("spark.sql.shuffle.partitions", "1").getOrCreate()
   System.setSecurityManager(null)
 
 
@@ -83,9 +83,13 @@ class Test extends FunSuite with BeforeAndAfter {
   .sql("""SELECT sha2(concat_ws("",array(title,year,cast,genre)),256) as unique_hash,* FROM __TABLE__ WHERE cast <> "(voice)" and cast <> "(Narrator)" order by title""")
 
   val df = almaren.catalyst(movies)
-  df.show(false)
-  df.printSchema()
-  df.describe()
+  df.createTempView("flat_movies")
+
+  import com.modakanalytics.Profiler
+
+  val profiler = Profiler.profile("flat_movies")
+  profiler.printSchema
+  profiler.show(false)
 
   spark.stop()
 

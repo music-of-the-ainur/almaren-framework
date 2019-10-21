@@ -26,6 +26,7 @@ class TargetJdbc(url: String, driver: String, dbtable: String, params:Map[String
       .option("driver", driver)
       .option("dbtable", dbtable)
       .options(params)
+      .save()
     df
   }
 }

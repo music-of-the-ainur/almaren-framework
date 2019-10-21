@@ -18,13 +18,13 @@ class TargetSql(sql: String) extends Target {
   }
 }
 
-class TargetJdbc(url: String, driver: String, query: String, params:Map[String,String]) extends Target {
+class TargetJdbc(url: String, driver: String, dbtable: String, params:Map[String,String]) extends Target {
   override def target(df: DataFrame): DataFrame = {
-    logger.info(s"sql:{$url}, driver:{$driver}, params:{$params}")
+    logger.info(s"url:{$url}, driver:{$driver}, dbtable:{$dbtable}, params:{$params}")
     df.write.format("jdbc")
       .option("url", url)
       .option("driver", driver)
-      .option("query", query)
+      .option("dbtable", dbtable)
       .options(params)
     df
   }

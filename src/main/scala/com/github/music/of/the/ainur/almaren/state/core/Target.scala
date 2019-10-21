@@ -3,6 +3,7 @@ package com.github.music.of.the.ainur.almaren.state.core
 import com.github.music.of.the.ainur.almaren.State
 import com.github.music.of.the.ainur.almaren.util.Constants
 import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.SaveMode
 
 private[almaren] abstract class Target extends State {
   override def executor(df: DataFrame): DataFrame = target(df)
@@ -18,7 +19,7 @@ class TargetSql(sql: String) extends Target {
   }
 }
 
-class TargetJdbc(url: String, driver: String, dbtable: String, params:Map[String,String]) extends Target {
+class TargetJdbc(url: String, driver: String, dbtable: String, saveMode:SaveMode, params:Map[String,String]) extends Target {
   override def target(df: DataFrame): DataFrame = {
     logger.info(s"url:{$url}, driver:{$driver}, dbtable:{$dbtable}, params:{$params}")
     df.write.format("jdbc")
@@ -26,6 +27,7 @@ class TargetJdbc(url: String, driver: String, dbtable: String, params:Map[String
       .option("driver", driver)
       .option("dbtable", dbtable)
       .options(params)
+      .mode(saveMode)
       .save()
     df
   }

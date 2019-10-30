@@ -96,7 +96,7 @@ sql("SELECT * FROM __TABLE__")
 DSL(Domain Specific Language) simplifies the task to flatten, select, alias and properly set the datatype. It's very powerful to parser complex data structures.
 
 ```scala
-.dsl("""title$title:StringType
+dsl("""title$title:StringType
 	|year$year:LongType
 	|cast[0]$actor:StringType
 	|cast[1]$support_actor:StringType

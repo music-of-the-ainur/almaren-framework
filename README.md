@@ -12,7 +12,7 @@ The Almaren Framework provides a simplified consistent minimalistic layer over A
 Read native Spark/Hive tables using Spark SQL.
 
 ```scala
-sourceSql("select monotonically_increasing_id() as id,* from movies")
+sourceSql("select monotonically_increasing_id() as id,* from database.tabname")
 ```
 ### sourceHbase
 

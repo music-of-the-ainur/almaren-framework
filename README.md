@@ -17,7 +17,8 @@ val spark = almaren.spark
     
 val movies = almaren.builder
     .sourceSql("select monotonically_increasing_id() as id,* from movies")
-    .dsl("""title$title:StringType
+    .dsl("""id$id:LongType
+        |title$title:StringType
         |year$year:LongType
         |cast[0]$actor:StringType
         |cast[1]$support_actor:StringType

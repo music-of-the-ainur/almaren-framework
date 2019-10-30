@@ -40,6 +40,18 @@ Read native Spark/Hive tables using Spark SQL.
 ```scala
 sourceSql("select monotonically_increasing_id() as id,* from database.tabname")
 ```
+If you want to query Hive just enable Hive:
+
+```scala
+almaren.spark.enableHiveSupport()
+```
+
+You also need to add the following dependency to your build:
+
+```sbt
+libraryDependencies += "org.apache.spark" %% "spark-hive" % sparkVersion % "provided"
+```
+
 ### sourceHbase
 
 Read from Hbase using [HBase Connector](https://github.com/hortonworks-spark/shc)

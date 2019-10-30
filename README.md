@@ -40,7 +40,7 @@ Read native Spark/Hive tables using Spark SQL.
 ```scala
 sourceSql("select monotonically_increasing_id() as id,* from database.tabname")
 ```
-If you want to query Hive just enable Hive:
+In order to query Hive, you need to enable it:
 
 ```scala
 almaren.spark.enableHiveSupport()

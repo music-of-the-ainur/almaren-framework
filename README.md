@@ -14,7 +14,6 @@ val almaren = Almaren("App Name")
 val spark = almaren.spark
     .master("local[*]")
     .config("spark.sql.shuffle.partitions", "1")
-    .getOrCreate()
     
 val movies = almaren.builder
     .sourceSql("select monotonically_increasing_id() as id,* from movies")

@@ -27,7 +27,7 @@ Read from Cassandra using [Spark Cassandra Connector](https://github.com/datasta
 Read from JDBC using [Spark JDBC](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html)
 
 ```scala
-sourceJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","select * from movies where year = 1990")
+sourceJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","select * from database.tabname")
 ```
 
 ### sourceBigQuery

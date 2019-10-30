@@ -28,7 +28,7 @@ val movies = almaren.builder
     .sql("""SELECT * FROM __TABLE__ WHERE actor NOT IN ("the","the life of")""")
     .targetJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","movies",SaveMode.Overwrite)
     
-val df:DataFrame = almaren.catalyst(movies)
+val df:DataFrame = almaren.batch(movies)
 ```
 
 ## Components

@@ -88,13 +88,15 @@ deserializer("JSON","column_name","`cast` ARRAY<STRING>,`genres` ARRAY<STRING>,`
 
 [Spark SQL](https://docs.databricks.com/spark/latest/spark-sql/index.html) syntax. You can query preview component through the special table `__TABLE__`.
 
+```scala
+sql("SELECT * FROM __TABLE__")
+```
 ### DSL
 
 DSL(Domain Specific Language) simplifies the task to flatten, select, alias and properly set the datatype. It's very powerful to parser complex data structures.
 
 ```scala
-.dsl("""
-	|title$title:StringType
+.dsl("""title$title:StringType
 	|year$year:LongType
 	|cast[0]$actor:StringType
 	|cast[1]$support_actor:StringType

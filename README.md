@@ -5,6 +5,32 @@
 
 The Almaren Framework provides a simplified consistent minimalistic layer over Apache Spark. While still allowing you to take advantage of native Apache Spark features. You can still combine it with standard Spark code.
 
+```scala
+import com.github.music.of.the.ainur.almaren.Almaren
+import org.apache.spark.sql.DataFrame
+
+val almaren = Almaren("App Name")
+
+val spark = almaren.spark
+    .master("local[*]")
+    .config("spark.sql.shuffle.partitions", "1")
+    .getOrCreate()
+    
+val movies = almaren.builder
+    .sourceSql("select monotonically_increasing_id() as id,* from movies")
+    .dsl("""title$title:StringType
+        |year$year:LongType
+        |cast[0]$actor:StringType
+        |cast[1]$support_actor:StringType
+        |genres[0]$genre:StringType
+        |director@director
+        |	director.name$credit_name:StringType""".stripMargin)
+    .sql("""SELECT * FROM __TABLE__ WHERE actor NOT IN ("the","the life of")""")
+    .targetJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","movies",SaveMode.Overwrite)
+    
+val df:DataFrame = almaren.catalyst(movies)
+```
+
 ## Components
 
 ### sourceSql

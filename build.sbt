@@ -1,7 +1,12 @@
-name := "almaren-framework"
-organization := "com.github.music.of.the.ainur.almaren"
+ThisBuild / name := "almaren-framework"
+ThisBuild / organization := "com.github.music.of.the.ainur.almaren"
 
-scalaVersion := "2.12.8"
+lazy val scala212 = "2.12.8"
+lazy val scala211 = "2.11.12"
+
+crossScalaVersions := Seq(scala211, scala212)
+ThisBuild / scalaVersion := scala212
+
 val sparkVersion = "2.4.4"
 
 libraryDependencies ++= Seq(
@@ -13,10 +18,10 @@ libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-streaming-kafka-0-10" % sparkVersion % "provided" excludeAll(ExclusionRule(organization = "net.jpountz.lz4")),
   "org.apache.spark" %% "spark-avro" % sparkVersion,
   "com.databricks" %% "spark-xml" % "0.6.0",
-  "com.modakanalytics.quenya" %% "quenya-dsl" % "1.0.0-2.4-alpha.4",
+  "com.modakanalytics.quenya" %% "quenya-dsl" % "1.1.0-2.4-alpha.10",
 
   "org.scalatest" %% "scalatest" % "3.0.5" % "test",
-  "com.modakanalytics" %% "spark-profiler" % "1.0.0-2.4-alpha.6" % "test"
+  "org.postgresql" % "postgresql" % "42.2.8" % "test"
 )
 
 enablePlugins(GitVersioning)

@@ -7,7 +7,7 @@ private[almaren] trait Executor extends Catalyst with Batch with Streaming
 
 private trait Catalyst {
   // execute's PreOrder BT
-   def catalyst(tree: Tree,df: DataFrame): DataFrame = {
+  def catalyst(tree: Tree,df: DataFrame): DataFrame = {
      tree match {
        case Tree(s, list) if list.nonEmpty => parentExec(list,s.executor(df))
        case Tree(s, list) => s.executor(df)
@@ -24,5 +24,8 @@ private trait Batch {
 }
 
 private trait Streaming {
-  this:Streaming => 
+  this:Streaming =>
+  def streaming(params:Map[String,String]): Unit = {
+    Almaren.spark.getOrCreate().readStream.format("kafka").options(params)
+  }
 }

@@ -9,6 +9,6 @@ private[almaren] trait Target extends Core {
   def targetSql(sql: String): Option[Container] = 
     new TargetSql(sql: String)
 
-  def targetJdbc(url: String, driver: String, query: String, saveMode:SaveMode = SaveMode.ErrorIfExists, params:Map[String,String] = Map[String,String]()): Option[Container] = 
-    new TargetJdbc(url,driver,query,saveMode,params)
+  def targetJdbc(url: String, driver: String, dtable: String, saveMode:SaveMode = SaveMode.ErrorIfExists, params:Map[String,String] = Map[String,String]()): Option[Container] = 
+    new TargetJdbc(url,driver,dtable,saveMode,params)
 }

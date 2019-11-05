@@ -18,7 +18,7 @@ libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-streaming-kafka-0-10" % sparkVersion % "provided" excludeAll(ExclusionRule(organization = "net.jpountz.lz4")),
   "org.apache.spark" %% "spark-avro" % sparkVersion,
   "com.databricks" %% "spark-xml" % "0.6.0",
-  "com.modakanalytics.quenya" %% "quenya-dsl" % "1.1.0-2.4-alpha.10",
+  "com.modakanalytics.quenya" %% "quenya-dsl" % "2.0.0-2.4-alpha.10",
 
   "org.scalatest" %% "scalatest" % "3.0.5" % "test",
   "org.postgresql" % "postgresql" % "42.2.8" % "test"

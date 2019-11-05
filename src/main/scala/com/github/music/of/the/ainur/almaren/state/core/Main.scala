@@ -13,7 +13,7 @@ private[almaren] abstract class Main extends State {
 class Dsl(dslLang:String) extends Main {
 
   import com.modakanalytics.quenya.QuenyaDSL
-  val quenyaDsl = QuenyaDSL()
+  val quenyaDsl = QuenyaDSL
   val dsl = quenyaDsl.compile(dslLang)
 
   override def core(df: DataFrame): DataFrame = dsl(df)

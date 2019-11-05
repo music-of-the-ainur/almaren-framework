@@ -25,20 +25,18 @@ class Test extends FunSuite with BeforeAndAfter {
 
   res.printSchema()
   res.show(false)
-  println(res.schema.toDDL)
 
 
   val movies = almaren.builder
     .sourceSql("select monotonically_increasing_id() as id,* from movies")
     .dsl("""
-		|title$title:StringType
+		|title$tiTleg:StringType
 		|year$year:LongType
 		|cast[0]$actor:StringType
 		|cast[1]$support_actor:StringType
  		|genres[0]$genre:StringType""".stripMargin)
     .sql("""SELECT *, ceil(cast(year as int) / 10) * 10 as decade FROM __TABLE__ where actor NOT IN ("the","the life of") """)
     .targetJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","movies",SaveMode.Overwrite)
-
 
   val df = almaren.batch(movies)
   df.show(false)

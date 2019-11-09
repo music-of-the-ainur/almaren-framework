@@ -3,13 +3,43 @@
 [![Build Status](https://travis-ci.org/music-of-the-ainur/almaren-framework.svg?branch=master)](https://travis-ci.org/music-of-the-ainur/almaren-framework)
 [![Slack](https://img.shields.io/badge/chat-Slack-blue)](https://musicoftheainur.slack.com/messages/CN959DA2F)
 
-The Almaren Framework provides an interface layered over Apache Spark. It does all the hard work using an elegant and minimalistic syntax while still allowing you to take advantage of native Apache Spark features. You can still combine it with standard Spark code.
+The Almaren Framework provides a simplified consistent minimalistic layer over Apache Spark. While still allowing you to take advantage of native Apache Spark features. You can still combine it with standard Spark code.
+
+```scala
+import com.github.music.of.the.ainur.almaren.Almaren
+import org.apache.spark.sql.DataFrame
+
+val almaren = Almaren("App Name")
+
+val spark = almaren.spark
+    .master("local[*]")
+    .config("spark.sql.shuffle.partitions", "1")
+    
+val movies = almaren.builder
+    .sourceSql("select monotonically_increasing_id() as id,* from movies")
+    .dsl("""id$id:LongType
+        |title$title:StringType
+        |year$year:LongType
+        |cast[0]$actor:StringType
+        |cast[1]$support_actor:StringType
+        |genres[0]$genre:StringType
+        |director@director
+        |	director.name$credit_name:StringType""".stripMargin)
+    .sql("""SELECT * FROM __TABLE__ WHERE actor NOT IN ("the","the life of")""")
+    .targetJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","movies",SaveMode.Overwrite)
+    
+val df:DataFrame = almaren.batch(movies)
+```
 
 ## Components
 
 ### sourceSql
 
 Read native Spark/Hive tables using Spark SQL.
+
+```scala
+sourceSql("select monotonically_increasing_id() as id,* from database.tabname")
+```
 
 ### sourceHbase
 
@@ -23,6 +53,10 @@ Read from Cassandra using [Spark Cassandra Connector](https://github.com/datasta
 
 Read from JDBC using [Spark JDBC](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html)
 
+```scala
+sourceJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","select * from database.tabname")
+```
+
 ### sourceBigQuery
 
 Read from BigQuery using [Google BigQuery Connector](https://github.com/GoogleCloudPlatform/spark-bigquery-connector)
@@ -31,33 +65,70 @@ Read from BigQuery using [Google BigQuery Connector](https://github.com/GoogleCl
 
 Cache/Uncache both DataFrame or Table
 
+```scala
+cache(true)
+```
+
 ### Coalesce
 
 Decrease the number of partitions in the RDD to numPartitions. Useful for running operations more efficiently after filtering down a large dataset.
+
+```scala
+coalesce(10)
+```
 
 ### Repartition
 
 Reshuffle the data in the RDD randomly to create either more or fewer partitions and balance it across them. This always shuffles all data over the network.
 
+```scala
+repartition(100)
+```
+
 ### Pipe
 
 Pipe each partition of the RDD through a shell command, e.g. a Perl or bash script. RDD elements are written to the process's stdin and lines output to its stdout are returned as an RDD of strings.
+
+```scala
+pipe("""perl -npE 's/(?:\d+)\s+([^\w]+)/:$1/mg'""")
+```
 
 ### Alias
 
 Creates a temporary view using the previews component, `createOrReplaceTempView`.
 
+```scala
+alias("my_table")
+
+```
+
 ### Deserializer
 
-Deserialize data structures like XML, JSON, Avro etc to Spark DataFrame.
+Deserialize the following types XML, JSON and Avro to Spark DataFrame.
+
+```scala
+deserializer("JSON","column_name","`cast` ARRAY<STRING>,`genres` ARRAY<STRING>,`title` STRING,`year` BIGINT")
+
+```
 
 ### SQL
 
 [Spark SQL](https://docs.databricks.com/spark/latest/spark-sql/index.html) syntax. You can query preview component through the special table `__TABLE__`.
 
+```scala
+sql("SELECT * FROM __TABLE__")
+```
 ### DSL
 
 DSL(Domain Specific Language) simplifies the task to flatten, select, alias and properly set the datatype. It's very powerful to parser complex data structures.
+
+```scala
+dsl("""title$title:StringType
+	|year$year:LongType
+	|cast[0]$actor:StringType
+	|cast[1]$support_actor:StringType
+	|genres[0]$genre:StringType""".stripMargin)
+```
 
 ### HTTP
 
@@ -66,6 +137,10 @@ Start a HTTP keep-alive connection for each partition of the RDD and send a requ
 ### targetSql
 
 Write native Spark/Hive tables using [Spark SQL](https://docs.databricks.com/spark/latest/spark-sql/language-manual/insert.html).
+
+```scala
+targetSql("INSERT OVERWRITE TABLE database.table SELECT * FROM __TABLE__")
+```
 
 ### targetHbase
 
@@ -78,6 +153,10 @@ Write to Cassandra using [Spark Cassandra Connector](https://github.com/datastax
 ### targetJdbc
 
 Write to JDBC using [Spark JDBC](https://spark.apache.org/docs/latest/sql-data-targets-jdbc.html)
+
+```scala
+targetJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","movies",SaveMode.Overwrite)
+```
 
 ### targetHttp
 
@@ -189,3 +268,10 @@ val sourceData = almaren.builder.sourceJdbc("oracle.jdbc.driver.OracleDriver","j
     
 sourceData.batch
 ```
+
+## Author
+
+Daniel Mantovani [daniel.mantovani@modakanalytics.com](mailto:daniel.mantovani@modakanalytics.com)
+
+## Sponsor
+[![Modak Analytics](/docs/img/modak_analytics.png)](http://www.modakanalytics.com)

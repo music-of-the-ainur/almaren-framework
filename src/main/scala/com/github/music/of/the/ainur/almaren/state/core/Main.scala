@@ -9,6 +9,20 @@ private[almaren] abstract class Main extends State {
   def core(df: DataFrame): DataFrame
 }
 
+
+class Dsl(dslLang:String) extends Main {
+
+  import com.modakanalytics.quenya.QuenyaDSL
+  val quenyaDsl = QuenyaDSL
+  val dsl = quenyaDsl.compile(dslLang)
+
+  override def core(df: DataFrame): DataFrame = dsl(df)
+  def dsl(df: DataFrame): DataFrame = {
+    logger.info(s"dsl:{$dslLang}")
+    quenyaDsl.execute(dsl,df)
+  }
+}
+
 class Sql(sql: String) extends Main {
   override def core(df: DataFrame): DataFrame = sql(df)
   def sql(df: DataFrame): DataFrame = {

@@ -12,7 +12,7 @@ private[almaren] abstract class Main extends State {
 
 class Dsl(dslLang:String) extends Main {
 
-  import com.modakanalytics.quenya.QuenyaDSL
+  import com.github.music.of.the.ainur.quenya.QuenyaDSL
   val quenyaDsl = QuenyaDSL
   val dsl = quenyaDsl.compile(dslLang)
 

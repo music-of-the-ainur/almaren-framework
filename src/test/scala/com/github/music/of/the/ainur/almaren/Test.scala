@@ -23,25 +23,30 @@ class Test extends FunSuite with BeforeAndAfter {
   val res = spark.read.json(Seq(json_str).toDS)
   res.createTempView("movies")
 
-  res.printSchema()
-  res.show(false)
-
 
   val movies = almaren.builder
     .sourceSql("select monotonically_increasing_id() as id,* from movies")
-    .dsl("""
-		|title$tiTleg:StringType
+    .sql("select * from __table__")
+    .fork(
+      almaren.builder.sql("""select id,title from __TABLE__""").alias("title"),
+      almaren.builder.sql("""select id,year from __TABLE__""").alias("year")
+    ).dsl("""
+		|title$title:StringType
 		|year$year:LongType
 		|cast[0]$actor:StringType
 		|cast[1]$support_actor:StringType
  		|genres[0]$genre:StringType""".stripMargin)
-    .sql("""SELECT *, ceil(cast(year as int) / 10) * 10 as decade FROM __TABLE__ where actor NOT IN ("the","the life of") """)
+    .sql("""SELECT * FROM __TABLE__""")
     .targetJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","movies",SaveMode.Overwrite)
+    .alias("foo")
+
 
   val df = almaren.batch(movies)
   df.show(false)
 
-  spark.stop()
+  spark.sql("select * from year").show(false)
 
-
+  after {
+    spark.stop()
+  }
 }

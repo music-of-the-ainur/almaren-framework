@@ -8,7 +8,7 @@ object Almaren extends LazyLogging with Executor {
   def apply(appName: String) = { sparkConf.setAppName(appName);this}
   val sparkConf = new SparkConf
   lazy val spark = SparkSession.builder().config(sparkConf)
-  val builder: Option[Container] = None
+  val builder: Option[List[Container]] = None
 }
 
 trait Almaren

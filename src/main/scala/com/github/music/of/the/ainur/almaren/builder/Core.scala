@@ -7,22 +7,28 @@ import zipper.Zipper
 import scala.language.implicitConversions
 
 trait Core {
-  val container: Option[Container]
+  val container: Option[List[Container]]
 
-  implicit def state2ExistingTree(state: State): Option[Container] =
+  private def newContainer(state:State): Zipper[Tree] = 
+    Zipper(Tree(state))
+
+  implicit def state2ExistingTree(state: State): Option[List[Container]] =
     container match {
-      case Some(c) => Builder.addLeft(state,c.zipper)
-      case None => Container(Zipper(Tree(state)))
+      case Some(c) => 
+        c.init :+ Container(Some(Builder.addLeft(state,c.last.zipper.getOrElse(newContainer(state)))))
+      case None => newContainer(state)
     }
 
-
-  def fork(containers: Option[Container]*): Option[Container] = 
+  def fork(containers: Option[List[Container]]*): Option[List[Container]] = 
     container match {
-      case Some(c) => Builder.addRight(c.zipper,containers.flatten.map(_.zipper.commit).toList)
+      case Some(c) => 
+        c.init :+
+        Container(Some(Builder.addRight(c.last.zipper.getOrElse(throw NullFork())
+          ,containers.flatten.map(_.last.zipper.getOrElse(throw NullFork()).commit).toList))) :+ Container(None)
       case None => throw NullFork()
     }
 }
 
 object Core {
-  implicit class Implicit(val container: Option[Container]) extends Source with Main with Target with Deserializer
+  implicit class Implicit(val container: Option[List[Container]]) extends Source with Main with Target with Deserializer
 }

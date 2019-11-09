@@ -1,7 +1,6 @@
 package com.github.music.of.the.ainur.almaren
 
 import org.apache.spark.sql.DataFrame
-import pprint._
 
 private[almaren] trait Executor extends Catalyst with Batch with Streaming
 
@@ -10,11 +9,7 @@ private trait Catalyst {
 
   def catalyst(container: Option[List[Container]],df:DataFrame): DataFrame = 
     container.getOrElse(throw NullCatalyst()).foldLeft(df)((d,c) => c.zipper match {
-      case Some(zipper) => {
-        val z = zipper.commit
-//        pprint.pprintln(z)
-        catalyst(z,d)
-      }
+      case Some(zipper) => catalyst(zipper.commit,d)
       case None => d
     })
 

@@ -44,7 +44,7 @@ class Test extends FunSuite with BeforeAndAfter {
   val df = almaren.batch(movies)
   df.show(false)
 
-  spark.sql("select * from year").show(false)
+  spark.sql("select * from title").show(false)
 
   after {
     spark.stop()

@@ -1,5 +1,5 @@
 ThisBuild / name := "almaren-framework"
-ThisBuild / organization := "com.github.music.of.the.ainur.almaren"
+ThisBuild / organization := "com.github.music-of-the-ainur"
 
 lazy val scala212 = "2.12.8"
 lazy val scala211 = "2.11.12"

@@ -1,7 +1,7 @@
 ThisBuild / name := "almaren-framework"
 ThisBuild / organization := "com.github.music-of-the-ainur"
 
-lazy val scala212 = "2.12.8"
+lazy val scala212 = "2.12.10"
 lazy val scala211 = "2.11.12"
 
 crossScalaVersions := Seq(scala211, scala212)

@@ -33,7 +33,7 @@ val df:DataFrame = almaren.batch(movies)
 To add Almaren Framework dependency to your sbt build:
 
 ```
-libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % "0.0.1-2-3"
+libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % "0.0.1-2-2"
 ```
 
 ## Components

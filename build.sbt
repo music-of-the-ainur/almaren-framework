@@ -6,7 +6,7 @@ lazy val scala211 = "2.11.12"
 crossScalaVersions := Seq(scala211)
 ThisBuild / scalaVersion := scala211
 
-val sparkVersion = "2.3.4"
+val sparkVersion = "2.2.3"
 
 libraryDependencies ++= Seq(
   "io.github.stanch" %% "zipper" % "0.5.2",
@@ -16,7 +16,7 @@ libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-sql" % sparkVersion % "provided",
   "org.apache.spark" %% "spark-streaming-kafka-0-10" % sparkVersion % "provided" excludeAll(ExclusionRule(organization = "net.jpountz.lz4")),
   "com.databricks" %% "spark-xml" % "0.6.0",
-  "com.github.music-of-the-ainur" %% "quenya-dsl" % "1.0.2-2.4",
+  "com.github.music-of-the-ainur" %% "quenya-dsl" % "1.0.2-2.2",
 
   "org.scalatest" %% "scalatest" % "3.0.5" % "test",
   "org.postgresql" % "postgresql" % "42.2.8" % "test"

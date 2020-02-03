@@ -23,6 +23,7 @@ class Test extends FunSuite with BeforeAndAfter {
   createSampleData
   
   // TODO improve it
+  // TODO Add jdbc test
   val movies = almaren.builder
     .sourceSql("select monotonically_increasing_id() as id,* from movies")
     .sql("select * from __table__")

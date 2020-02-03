@@ -33,7 +33,7 @@ val df:DataFrame = almaren.batch(movies)
 To add Almaren Framework dependency to your sbt build:
 
 ```
-libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % "0.0.1-2-4"
+libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % "0.0.1-2-3"
 ```
 
 ## Components
@@ -109,7 +109,7 @@ alias("my_table")
 
 ### Deserializer
 
-Deserialize the following types XML, JSON and Avro to Spark DataFrame.
+Deserialize the following types XML and JSON to Spark DataFrame.
 
 ```scala
 deserializer("JSON","column_name","`cast` ARRAY<STRING>,`genres` ARRAY<STRING>,`title` STRING,`year` BIGINT")

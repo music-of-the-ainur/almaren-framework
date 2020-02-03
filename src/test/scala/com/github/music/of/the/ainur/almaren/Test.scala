@@ -1,14 +1,11 @@
 package com.github.music.of.the.ainur.almaren
 
 import com.github.music.of.the.ainur.almaren.builder.Core.Implicit
-import com.github.music.of.the.ainur.almaren.state.core.{Cache, SourceSql, Sql, TargetSql}
-import org.apache.spark.sql.SaveMode
+import org.apache.spark.sql.{Column, DataFrame}
+import org.apache.spark.sql.functions._
 import org.scalatest._
-import org.apache.spark.sql.DataFrame
 
 import scala.collection.immutable._
-import org.apache.spark.sql.Column
-import org.apache.spark.sql.functions._
 
 class Test extends FunSuite with BeforeAndAfter {
   val almaren = Almaren("App Test")

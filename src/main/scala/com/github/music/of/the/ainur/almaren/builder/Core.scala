@@ -1,6 +1,6 @@
 package com.github.music.of.the.ainur.almaren.builder
 
-import com.github.music.of.the.ainur.almaren.builder.core.{Main, Source, Target, Deserializer}
+import com.github.music.of.the.ainur.almaren.builder.core.{Deserializer, Main, Source, Target}
 import com.github.music.of.the.ainur.almaren.{Builder, Container, NullFork, State, Tree}
 import zipper.Zipper
 

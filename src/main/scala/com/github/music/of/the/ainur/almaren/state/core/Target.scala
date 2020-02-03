@@ -2,8 +2,7 @@ package com.github.music.of.the.ainur.almaren.state.core
 
 import com.github.music.of.the.ainur.almaren.State
 import com.github.music.of.the.ainur.almaren.util.Constants
-import org.apache.spark.sql.DataFrame
-import org.apache.spark.sql.SaveMode
+import org.apache.spark.sql.{DataFrame, SaveMode}
 
 private[almaren] abstract class Target extends State {
   override def executor(df: DataFrame): DataFrame = target(df)

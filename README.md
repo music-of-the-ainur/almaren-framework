@@ -278,7 +278,7 @@ sourceData.batch
 
 ## Author
 
-Daniel Mantovani [daniel.mantovani@modakanalytics.com](mailto:daniel.mantovani@modak.com)
+Daniel Mantovani [daniel.mantovani@modak.com](mailto:daniel.mantovani@modak.com)
 
 ## Sponsor
 [![Modak Analytics](/docs/img/modak_analytics.png)](http://www.modakanalytics.com)

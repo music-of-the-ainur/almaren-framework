@@ -6,6 +6,7 @@ import org.apache.spark.sql.functions._
 import org.scalatest._
 
 import scala.collection.immutable._
+import org.apache.spark.sql.AnalysisException
 
 class Test extends FunSuite with BeforeAndAfter {
   val almaren = Almaren("App Test")
@@ -63,17 +64,25 @@ class Test extends FunSuite with BeforeAndAfter {
 
   // Doesn't support nested type and we don't need it :)
   def testCompare(df1:DataFrame,df2:DataFrame,name:String): Unit = {
-    val diff = df1.as("df1").join(df2.as("df2"),joinExpression(df1),"leftanti").count()
+    val diff = compare(df1,df2)
     test(s"Compare Test:$name should be zero") {
       assert(diff == 0)
     }
+    test(s"Compare Test:$name, should not be able to join") {
+      assertThrows[AnalysisException]{
+        compare(df2,spark.emptyDataFrame)
+      }
+    }
   }
 
-  private def joinExpression(df1:DataFrame): Column = {
-    val columns = df1.schema.fields.map(field => col(s"df1.${field.name}") <=> col(s"df2.${field.name}") )
-    columns.tail.foldLeft(columns.head)((col1,col2) => col1.and(col2))
-  }
+  private def compare(df1:DataFrame,df2:DataFrame): Long = 
+    df1.as("df1").join(df2.as("df2"),joinExpression(df1),"leftanti").count()
 
+  private def joinExpression(df1:DataFrame): Column = 
+    df1.schema.fields
+      .map(field => col(s"df1.${field.name}") <=> col(s"df2.${field.name}") )
+      .reduce((col1,col2) => col1.and(col2))
+  
   def readTest(file: String):DataFrame = 
     spark.read.parquet(s"src/test/resources/sample_output/$file.parquet")
 

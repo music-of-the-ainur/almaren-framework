@@ -5,7 +5,7 @@ import com.github.music.of.the.ainur.almaren.state.core._
 import com.github.music.of.the.ainur.almaren.{Container, InvalidDecoder, SchemaRequired, State}
 
 private[almaren] trait Deserializer extends Core {
-  def deserializer(decoder:String,columnName:String,schemaInfo:Option[String] = None): Option[List[Container]] = {
+  def deserializer(decoder:String,columnName:String,schemaInfo:Option[String] = None): List[Container] = {
 
     def json(): State =
       new JsonDeserializer(columnName,schemaInfo.getOrElse(throw SchemaRequired(decoder)))

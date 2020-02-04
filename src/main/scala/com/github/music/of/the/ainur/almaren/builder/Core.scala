@@ -7,36 +7,28 @@ import zipper.Zipper
 import scala.language.implicitConversions
 
 trait Core {
-  val container: Option[List[Container]]
+  val container: List[Container]
 
   private def newContainer(state:State): Zipper[Tree] =
     Zipper(Tree(state))
   
+  implicit def state2ExistingTree(state: State): List[Container] = 
+    if(!container.isEmpty)
+      container.last.zipper match {
+        case Some(z) => container.init :+ Container(Some(Builder.addLeft(state,z)))
+        case None => container.init :+ Container(Some(newContainer(state)))
+      }
+      else
+        newContainer(state)
 
-  implicit def state2ExistingTree(state: State): Option[List[Container]] = {
-    container match {
-      case Some(c) => 
-        {
-          c.last.zipper match {
-            case Some(z) => c.init :+ Container(Some(Builder.addLeft(state,z)))
-            case None => c.init :+ Container(Some(newContainer(state)))
-          }
-        }
-      case None => newContainer(state)
-    }
-  }
+  def fork(containers: List[Container]*): List[Container] = {
+    container.init :+ Container(Some(
+      Builder.addRight(container.last.zipper.getOrElse(throw NullFork())
+        ,containers.flatten.map(_.last.zipper.getOrElse(throw NullFork()).commit).toList))) :+ Container(None)
 
-  def fork(containers: Option[List[Container]]*): Option[List[Container]] = {
-    container match {
-      case Some(c) =>
-        c.init :+ Container(Some(
-          Builder.addRight(c.last.zipper.getOrElse(throw NullFork())
-            ,containers.flatten.map(_.last.zipper.getOrElse(throw NullFork()).commit).toList))) :+ Container(None)
-      case None => throw NullFork()
-    }
   }
 }
 
 object Core {
-  implicit class Implicit(val container: Option[List[Container]]) extends Source with Main with Target with Deserializer
+  implicit class Implicit(val container: List[Container]) extends Source with Main with Target with Deserializer
 }

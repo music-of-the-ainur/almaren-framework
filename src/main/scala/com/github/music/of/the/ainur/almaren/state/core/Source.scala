@@ -8,7 +8,7 @@ private[ainur] abstract class Source() extends State {
   def source(df: DataFrame): DataFrame
 }
 
-class SourceSql(sql: String) extends Source {
+case class SourceSql(sql: String) extends Source {
   override def source(df: DataFrame): DataFrame = {
     logger.info(s"sql:{$sql}")
     val sqlDf = df.sparkSession.sql(sql)
@@ -16,7 +16,7 @@ class SourceSql(sql: String) extends Source {
   }
 }
 
-class SourceJdbc(url: String, driver: String, query: String, params:Map[String,String] = Map[String,String]()) extends Source {
+case class SourceJdbc(url: String, driver: String, query: String, params:Map[String,String] = Map[String,String]()) extends Source {
   override def source(df: DataFrame): DataFrame = {
     logger.info(s"sql:{$url}, driver:{$driver}, params:{$params}")
     df.sparkSession.read.format("jdbc")

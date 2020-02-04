@@ -13,7 +13,7 @@ abstract class Deserializer() extends State {
     StructType.fromDDL(schema)
 }
 
-class AvroDeserializer(columnName: String,schema: String) extends Deserializer {
+case class AvroDeserializer(columnName: String,schema: String) extends Deserializer {
   import org.apache.spark.sql.avro._
   import org.apache.spark.sql.functions._
   override def deserializer(df: DataFrame): DataFrame = {
@@ -23,7 +23,7 @@ class AvroDeserializer(columnName: String,schema: String) extends Deserializer {
   }
 }
 
-class JsonDeserializer(columnName: String,schema: String) extends Deserializer {
+case class JsonDeserializer(columnName: String,schema: String) extends Deserializer {
   import org.apache.spark.sql.functions._
   override def deserializer(df: DataFrame): DataFrame = {
     logger.info(s"columnName:{$columnName}, schema:{$schema}")
@@ -32,7 +32,7 @@ class JsonDeserializer(columnName: String,schema: String) extends Deserializer {
   }
 }
 
-class XMLDeserializer(columnName: String) extends Deserializer {
+case class XMLDeserializer(columnName: String) extends Deserializer {
   import com.databricks.spark.xml.XmlReader
   override def deserializer(df: DataFrame): DataFrame = {
     logger.info(s"columnName:{$columnName}")

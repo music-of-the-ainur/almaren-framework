@@ -8,11 +8,11 @@ private[almaren] trait Deserializer extends Core {
   def deserializer(decoder:String,columnName:String,schemaInfo:Option[String] = None): List[Container] = {
 
     def json(): State =
-      new JsonDeserializer(columnName,schemaInfo.getOrElse(throw SchemaRequired(decoder)))
+      JsonDeserializer(columnName,schemaInfo.getOrElse(throw SchemaRequired(decoder)))
     def xml(): State =
-      new XMLDeserializer(columnName)
+      XMLDeserializer(columnName)
     def avro(): State =
-      new AvroDeserializer(columnName,schemaInfo.getOrElse(throw SchemaRequired(decoder)))
+      AvroDeserializer(columnName,schemaInfo.getOrElse(throw SchemaRequired(decoder)))
 
 
     decoder.toUpperCase match {

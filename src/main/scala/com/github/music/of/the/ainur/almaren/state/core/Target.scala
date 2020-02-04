@@ -9,7 +9,7 @@ private[almaren] abstract class Target extends State {
   def target(df: DataFrame): DataFrame
 }
 
-class TargetSql(sql: String) extends Target {
+case class TargetSql(sql: String) extends Target {
   override def target(df: DataFrame): DataFrame = {
     logger.info(s"sql:{$sql}")
     df.createOrReplaceTempView(Constants.TempTableName)
@@ -18,7 +18,7 @@ class TargetSql(sql: String) extends Target {
   }
 }
 
-class TargetJdbc(url: String, driver: String, dbtable: String, saveMode:SaveMode, params:Map[String,String]) extends Target {
+case class TargetJdbc(url: String, driver: String, dbtable: String, saveMode:SaveMode, params:Map[String,String]) extends Target {
   override def target(df: DataFrame): DataFrame = {
     logger.info(s"url:{$url}, driver:{$driver}, dbtable:{$dbtable}, params:{$params}")
     df.write.format("jdbc")

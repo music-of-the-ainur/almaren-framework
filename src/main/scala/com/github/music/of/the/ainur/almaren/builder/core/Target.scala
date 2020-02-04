@@ -7,7 +7,7 @@ import org.apache.spark.sql.SaveMode
 
 private[almaren] trait Target extends Core {
   def targetSql(sql: String): List[Container] = 
-    TargetSql(sql: String)
+    TargetSql(sql)
 
   def targetJdbc(url: String, driver: String, dtable: String, saveMode:SaveMode = SaveMode.ErrorIfExists, params:Map[String,String] = Map[String,String]()): List[Container] = 
     TargetJdbc(url,driver,dtable,saveMode,params)

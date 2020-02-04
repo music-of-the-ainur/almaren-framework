@@ -15,14 +15,14 @@ private[almaren] trait Main extends Core {
     Cache(opType, tableName)
 
   def coalesce(size:Int): List[Container] =
-    Coalesce(size:Int)
+    Coalesce(size)
 
   def repartition(size:Int): List[Container] =
-    Repartition(size:Int)
+    Repartition(size)
 
   def pipe(command:String): List[Container] =
-    Pipe(command:String)
+    Pipe(command)
 
   def dsl(dsl:String): List[Container] =
-    Dsl(dsl:String)
+    Dsl(dsl)
 }

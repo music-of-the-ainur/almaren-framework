@@ -13,7 +13,9 @@ libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % 
 The Almaren Framework provides a simplified consistent minimalistic layer over Apache Spark. While still allowing you to take advantage of native Apache Spark features. You can still combine it with standard Spark code.
 
 ```scala
+import com.github.music.of.the.ainur.almaren.builder.Core.Implicit
 import com.github.music.of.the.ainur.almaren.Almaren
+
 import org.apache.spark.sql.DataFrame
 
 val almaren = Almaren("App Name")

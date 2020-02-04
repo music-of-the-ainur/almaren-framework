@@ -47,6 +47,9 @@ ThisBuild / developers := List(
 ThisBuild / description := "The Almaren Framework provides a simplified consistent minimalistic layer over Apache Spark. While still allowing you to take advantage of native Apache Spark features. You can still combine it with standard Spark code"
 ThisBuild / licenses := List("Apache 2" -> new URL("http://www.apache.org/licenses/LICENSE-2.0.txt"))
 ThisBuild / homepage := Some(url("https://github.com/music-of-the-ainur/almaren-framework"))
+ThisBuild / organizationName := "Music of Ainur"
+ThisBuild / organizationHomepage := Some(url("https://github.com/music-of-the-ainur"))
+
 
 // Remove all additional repository other than Maven Central from POM
 ThisBuild / pomIncludeRepository := { _ => false }

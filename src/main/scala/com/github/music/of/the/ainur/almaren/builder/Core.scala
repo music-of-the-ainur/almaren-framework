@@ -5,6 +5,8 @@ import com.github.music.of.the.ainur.almaren.{Builder, Container, NullFork, Stat
 import zipper.Zipper
 
 import scala.language.implicitConversions
+import org.apache.spark.sql.DataFrame
+import com.github.music.of.the.ainur.almaren.Executor
 
 trait Core {
   val container: List[Container]
@@ -30,5 +32,8 @@ trait Core {
 }
 
 object Core {
-  implicit class Implicit(val container: List[Container]) extends Source with Main with Target with Deserializer
+  implicit class Implicit(val container: List[Container]) extends Source with Main with Target with Deserializer with Executor {
+    def batch: DataFrame = 
+      batch(container)
+  }
 }

@@ -35,8 +35,9 @@ class Test extends FunSuite with BeforeAndAfter {
 		|cast[1]$support_actor:StringType
  		|genres[0]$genre:StringType""".stripMargin)
     .sql("""SELECT * FROM __TABLE__""")
+    .batch
 
-  test(readTest("foo_table"),almaren.batch(movies),"foo")
+  test(readTest("foo_table"),movies,"foo")
   test(readTest("title_table"),spark.sql("select * from title"),"title")
   test(readTest("year_table"),spark.sql("select * from year"),"year")
 

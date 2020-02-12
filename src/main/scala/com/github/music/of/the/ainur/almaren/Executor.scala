@@ -7,7 +7,7 @@ private[almaren] trait Executor extends Catalyst with Batch with Streaming
 private trait Catalyst {
   // execute's PreOrder BT
 
-  def catalyst(container: List[Container],df:DataFrame): DataFrame = 
+  def catalyst(container: List[Container],df:DataFrame = Almaren.spark.getOrCreate().emptyDataFrame): DataFrame = 
     container.foldLeft(df)((d,c) => c.zipper match {
       case Some(zipper) => catalyst(zipper.commit,d)
       case None => d
@@ -31,8 +31,8 @@ private trait Catalyst {
 
 private trait Batch {
   this:Catalyst =>
-  def batch(container: List[Container],df: DataFrame = Almaren.spark.getOrCreate().emptyDataFrame): DataFrame =
-    catalyst(container,df)
+  def batch(container: List[Container]): DataFrame =
+    catalyst(container)
 }
 
 private trait Streaming {

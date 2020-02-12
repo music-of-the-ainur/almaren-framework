@@ -24,7 +24,7 @@ val spark = almaren.spark
     .master("local[*]")
     .config("spark.sql.shuffle.partitions", "1")
     
-val movies = almaren.builder
+val df:DataFrame = almaren.builder
     .sourceSql("select monotonically_increasing_id() as id,* from movies")
     .dsl("""id$id:LongType
         |title$title:StringType
@@ -36,8 +36,7 @@ val movies = almaren.builder
         |	director.name$credit_name:StringType""".stripMargin)
     .sql("""SELECT * FROM __TABLE__ WHERE actor NOT IN ("the","the life of")""")
     .targetJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","movies",SaveMode.Overwrite)
-    
-val df:DataFrame = almaren.batch(movies)
+    .batch
 ```
 
 ## Components

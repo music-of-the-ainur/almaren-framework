@@ -36,8 +36,22 @@ private trait Batch {
 }
 
 private trait Streaming {
-  this:Streaming =>
-  def streaming(params:Map[String,String]): Unit = {
-    Almaren.spark.getOrCreate().readStream.format("kafka").options(params)
+this:Catalyst => 
+  def streaming(container: List[Container],params:Map[String,String] = Map()): Unit = {
+    val spark = Almaren.spark.getOrCreate()
+
+    import spark.implicits._
+
+    val streamingDF = spark
+      .readStream
+      .format("kafka")
+      .options(params)
+      .load()
+
+    val streaming = streamingDF.writeStream.foreachBatch { (batchDF: DataFrame, batchId: Long) =>
+      val df = catalyst(container,batchDF)
+    }.start()
+
+    streaming.awaitTermination()
   }
 }

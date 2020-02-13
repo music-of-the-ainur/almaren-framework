@@ -8,7 +8,7 @@ private[almaren] trait Deserializer extends Core {
   def deserializer(decoder:String,columnName:String,schemaInfo:Option[String] = None): List[Container] = {
 
     def json(): State =
-      JsonDeserializer(columnName,schemaInfo.getOrElse(throw SchemaRequired(decoder)))
+      JsonDeserializer(columnName,schemaInfo)
     def xml(): State =
       XMLDeserializer(columnName)
     def avro(): State =

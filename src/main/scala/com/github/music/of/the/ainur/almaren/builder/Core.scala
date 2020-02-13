@@ -35,5 +35,6 @@ object Core {
   implicit class Implicit(val container: List[Container]) extends Source with Main with Target with Deserializer with Executor {
     def batch: DataFrame = 
       batch(container)
+
   }
 }

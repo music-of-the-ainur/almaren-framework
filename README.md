@@ -12,6 +12,7 @@ libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % 
 
 The Almaren Framework provides a simplified consistent minimalistic layer over Apache Spark. While still allowing you to take advantage of native Apache Spark features. You can still combine it with standard Spark code.
 
+### Batch Example
 ```scala
 import com.github.music.of.the.ainur.almaren.builder.Core.Implicit
 import com.github.music.of.the.ainur.almaren.Almaren
@@ -37,6 +38,34 @@ val df:DataFrame = almaren.builder
     .sql("""SELECT * FROM __TABLE__ WHERE actor NOT IN ("the","the life of")""")
     .targetJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","movies",SaveMode.Overwrite)
     .batch
+```
+
+
+### Streaming Example
+
+```scala
+val streaming = almaren.builder
+    .sourceSql("select CAST(value AS STRING) as json_column FROM __STREAMING__")
+    .deserializer("json","json_column")
+    .dsl("""user.id$user_id:LongType
+  		|user.name$user_name:StringType
+    	|user.time_zone$time_zone:StringType
+    	|user.friends_count$friends_count:LongType
+    	|user.followers_count$followers_count:LongType
+        |source$source:StringType
+    	|place.country$country:StringType
+     	|timestamp_ms$timestamp_ms:LongType
+		|text$message:StringType
+		|entities@entitie
+  		|	entitie.hashtags@hashtag
+		|		hashtag.text$hashtag:StringType""".stripMargin)
+  .sql("SELECT DISTINCT * FROM __TABLE__")
+  .sql("""SELECT sha2(concat_ws("",array(*)),256) as unique_hash,*,current_timestamp from __TABLE__""")
+  .targetJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","twitter_streaming",SaveMode.Append)
+
+
+almaren.streaming(streaming,Map("kafka.bootstrap.servers" -> "localhost:9092","subscribe" -> "twitter", "startingOffsets" -> "earliest"))
+
 ```
 
 ## Components

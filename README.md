@@ -201,7 +201,7 @@ targetJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","movies
 
 ### targetKafka
 
-Write to Kafka using [Structured Streaming](https://spark.apache.org/docs/2.2.0/structured-streaming-kafka-integration.html). You must have a column named ***value***, the content of this column will be send to Kafka. You can specify the /topic/ either with a column called ***topic*** or in the option as in the example below.
+Write to Kafka using [Structured Streaming](https://spark.apache.org/docs/2.2.0/structured-streaming-kafka-integration.html). You must have a column named ***value***, the content of this column will be sent to Kafka. You can specify the /topic/ either with a column called ***topic*** or in the option as in the example below.
 Check the [documentation](https://spark.apache.org/docs/2.2.0/structured-streaming-kafka-integration.html#kafka-specific-configurations) for the full list of parameters
 
 ```scala

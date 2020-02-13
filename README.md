@@ -44,6 +44,11 @@ val df:DataFrame = almaren.builder
 ### Streaming Example
 
 ```scala
+import com.github.music.of.the.ainur.almaren.builder.Core.Implicit
+import com.github.music.of.the.ainur.almaren.Almaren
+
+val almaren = Almaren("Straming App")
+
 val streaming = almaren.builder
     .sourceSql("select CAST(value AS STRING) as json_column FROM __STREAMING__")
     .deserializer("json","json_column")
@@ -62,7 +67,6 @@ val streaming = almaren.builder
   .sql("SELECT DISTINCT * FROM __TABLE__")
   .sql("""SELECT sha2(concat_ws("",array(*)),256) as unique_hash,*,current_timestamp from __TABLE__""")
   .targetJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","twitter_streaming",SaveMode.Append)
-
 
 almaren.streaming(streaming,Map("kafka.bootstrap.servers" -> "localhost:9092","subscribe" -> "twitter", "startingOffsets" -> "earliest"))
 

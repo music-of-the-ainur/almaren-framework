@@ -31,3 +31,15 @@ case class TargetJdbc(url: String, driver: String, dbtable: String, saveMode:Sav
     df
   }
 }
+
+case class TargetKafka(servers: String, options:Map[String,String]) extends Target {
+  override def target(df: DataFrame): DataFrame = {
+    logger.info(s"options: $options")
+    df.write
+      .format("kafka")
+      .option("kafka.bootstrap.servers", servers)
+      .options(options)
+      .save()
+    df
+  }
+}

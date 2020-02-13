@@ -199,6 +199,16 @@ Write to JDBC using [Spark JDBC](https://spark.apache.org/docs/latest/sql-data-t
 targetJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","movies",SaveMode.Overwrite)
 ```
 
+### targetKafka
+
+Write to Kafka using [Structured Streaming](https://spark.apache.org/docs/2.2.0/structured-streaming-kafka-integration.html). You must have a column named ***value***, the content of this column will be send to Kafka. You can specify the /topic/ either with a column called ***topic*** or in the option as in the example below.
+Check the [documentation](https://spark.apache.org/docs/2.2.0/structured-streaming-kafka-integration.html#kafka-specific-configurations) for the full list of parameters
+
+```scala
+sql("SELECT to_json(struct(*)) as value FROM __TABLE__").targetKafka("localhost:9092",Map("topic" -> "testing"))
+
+```
+
 ### targetHttp
 
 Start a HTTP keep-alive connection for each partition of the RDD and send a request for each row.

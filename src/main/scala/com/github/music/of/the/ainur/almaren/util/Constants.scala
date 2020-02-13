@@ -5,5 +5,5 @@ object Constants {
   val TempStreamTableName = "__STREAMING__"
   val FrameworkName = "Almaren Framework"
 
-  val sampleDeserializer = 0.1
+  val sampleDeserializer = 1
 }

@@ -1,6 +1,7 @@
 package com.github.music.of.the.ainur.almaren
 
 import org.apache.spark.sql.DataFrame
+import com.github.music.of.the.ainur.almaren.util.Constants
 
 private[almaren] trait Executor extends Catalyst with Batch with Streaming
 
@@ -49,6 +50,7 @@ this:Catalyst =>
       .load()
 
     val streaming = streamingDF.writeStream.foreachBatch { (batchDF: DataFrame, batchId: Long) =>
+      batchDF.createOrReplaceTempView(Constants.TempStreamTableName)
       val df = catalyst(container,batchDF)
     }.start()
 

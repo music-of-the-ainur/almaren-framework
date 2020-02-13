@@ -48,17 +48,17 @@ val streaming = almaren.builder
     .sourceSql("select CAST(value AS STRING) as json_column FROM __STREAMING__")
     .deserializer("json","json_column")
     .dsl("""user.id$user_id:LongType
-  		|user.name$user_name:StringType
-    	|user.time_zone$time_zone:StringType
-    	|user.friends_count$friends_count:LongType
-    	|user.followers_count$followers_count:LongType
-        |source$source:StringType
-    	|place.country$country:StringType
-     	|timestamp_ms$timestamp_ms:LongType
-		|text$message:StringType
-		|entities@entitie
-  		|	entitie.hashtags@hashtag
-		|		hashtag.text$hashtag:StringType""".stripMargin)
+    |user.name$user_name:StringType
+    |user.time_zone$time_zone:StringType
+    |user.friends_count$friends_count:LongType
+    |user.followers_count$followers_count:LongType
+    |source$source:StringType
+    |place.country$country:StringType
+    |timestamp_ms$timestamp_ms:LongType
+    |text$message:StringType
+    |entities@entitie
+    |	entitie.hashtags@hashtag
+    |		hashtag.text$hashtag:StringType""".stripMargin)
   .sql("SELECT DISTINCT * FROM __TABLE__")
   .sql("""SELECT sha2(concat_ws("",array(*)),256) as unique_hash,*,current_timestamp from __TABLE__""")
   .targetJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","twitter_streaming",SaveMode.Append)

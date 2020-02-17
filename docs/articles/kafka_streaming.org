@@ -83,3 +83,9 @@ When you create a /streaming/ in *Almaren Framework* it will create a magic tabl
 both Kafka's /key/ and /value/ as as byte arrays, in order to deserialize to string just use [[https://spark.apache.org/docs/latest/api/sql/#cast][CAST]] function.
 
 For full list of options, check the [[https://spark.apache.org/docs/latest/structured-streaming-kafka-integration.html][Documentation]].
+
+The PostgreSQL data:
+[[images/pg.png]]
+
+The Solr Data:
+[[images/solr.png]]

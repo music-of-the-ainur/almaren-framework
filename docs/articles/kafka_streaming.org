@@ -1,4 +1,4 @@
-** Kafka Streaming
+** Streaming Data From Kafka Using Almaren Framework
 
 **** Read Twitter JSON From Kafka
 **** Parser specific elements

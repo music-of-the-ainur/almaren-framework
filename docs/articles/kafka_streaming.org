@@ -2,16 +2,16 @@
 
 *** Read Twitter JSON From Kafka
 *** Parser specific elements
-  1 user.id
-  2 user.name
-  3 user.time_zone
-  4 user.friends_count
-  5 user.followers_count
-  6 source
-  7 place.country
-  8 timestamp_ms
-  9 text
-  10 entities.hashtags.text
+  1. user.id
+  2. user.name
+  3. user.time_zone
+  4. user.friends_count
+  5. user.followers_count
+  6. source
+  7. place.country
+  8. timestamp_ms
+  9. text
+  10. entities.hashtags.text
 *** Remove Duplicate
 *** Add Unique Key
 *** Add Current Timestamp

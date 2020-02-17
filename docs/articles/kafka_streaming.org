@@ -40,6 +40,12 @@ Follow sample data from Twitter, each JSON has over 1000 attributes:
 
 *** Implementation Using Almaren Framework
 
+In order to test it, you can start spark-shell with the following parameters:
+#+begin_src org
+spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.11:0.2.2-2-4,org.postgresql:postgresql:42.2.8,com.github.music-of-the-ainur:solr-almaren_2.11:0.0.2-2-4,org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.4"
+#+end_src
+
+The implementation:
 #+begin_src scala :eval no
 import com.github.music.of.the.ainur.almaren.builder.Core.Implicit
 import com.github.music.of.the.ainur.almaren.Almaren
@@ -67,8 +73,13 @@ val streaming = almaren.builder
     .sql("""SELECT sha2(concat_ws("",array(*)),256) as id,*,current_timestamp from __TABLE__""")
     .cache(true)
     .targetJdbc(s"jdbc:postgresql://localhost/almaren","org.postgresql.Driver","twitter_streaming",SaveMode.Append)
-    .targetSolr("gettingstarted","localhost:9983",SaveMode.Append,Map("batch_size" -> "1000"))
+    .targetSolr("gettingstarted","localhost:9983",Map("batch_size" -> "1000"),SaveMode.Append)
 
  
 almaren.streaming(streaming,Map("kafka.bootstrap.servers" -> "localhost:9092","subscribe" -> "twitter", "startingOffsets" -> "earliest"))
 #+end_src
+
+When you create a /streaming/ in *Almaren Framework* it will create a magic table called /__STREAMING__/, with will deserialize
+both Kafka's /key/ and /value/ as as byte arrays, in order to deserialize to string just use [[https://spark.apache.org/docs/latest/api/sql/#cast][CAST]] function.
+
+For full list of options, check the [[https://spark.apache.org/docs/latest/structured-streaming-kafka-integration.html][Documentation]].

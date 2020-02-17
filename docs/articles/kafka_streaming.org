@@ -1,7 +1,7 @@
 ** Kafka Streaming
 
-* Read Twitter JSON From Kafka
-* Parser specific elements
+*** Read Twitter JSON From Kafka
+*** Parser specific elements
   1 user.id
   2 user.name
   3 user.time_zone
@@ -12,11 +12,11 @@
   8 timestamp_ms
   9 text
   10 entities.hashtags.text
-* Remove Duplicate
-* Add Unique Key
-* Add Current Timestamp
-* Store data to PostgreSQL
-* Index data to Solr
+*** Remove Duplicate
+*** Add Unique Key
+*** Add Current Timestamp
+*** Store data to PostgreSQL
+*** Index data to Solr
 
 
 Follow sample data from Twitter, each JSON has over 1000 attributes:

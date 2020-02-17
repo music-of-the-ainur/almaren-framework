@@ -51,7 +51,7 @@ import com.github.music.of.the.ainur.almaren.builder.Core.Implicit
 import com.github.music.of.the.ainur.almaren.Almaren
 import com.github.music.of.the.ainur.almaren.solr.Solr.SolrImplicit
 
-import org.apache.spark.sql.{DataFrame, SaveMode}
+import org.apache.spark.sql.SaveMode
 
 val almaren = Almaren("App Test Twitter")
 

@@ -21,7 +21,7 @@ components like [[https://github.com/music-of-the-ainur/quenya-dsl][Quenya-DSL]]
   8. timestamp_ms
   9. text
   10. entities.hashtags.text
-- Remove Duplicatea
+- Remove Duplicates
 - Add Unique Key
 - Add Current Timestamp
 - Store data to PostgreSQL

@@ -1,6 +1,8 @@
 # Almaren Framework
 
 [![Build Status](https://travis-ci.org/music-of-the-ainur/almaren-framework.svg?branch=master)](https://travis-ci.org/music-of-the-ainur/almaren-framework)
+[![Gitter Community](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/music-of-the-ainur/community)
+
 
 To add Almaren Framework dependency to your sbt build:
 

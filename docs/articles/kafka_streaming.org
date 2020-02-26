@@ -93,3 +93,6 @@ The Solr Data:
 
 *** Author
 Daniel Mantovani [[daniel.mantovani@modak.com][daniel.mantovani@modak.com]]
+
+*** Sponsor
+[[http://modak.com][file:/docs/images/modak_analytics.png]]

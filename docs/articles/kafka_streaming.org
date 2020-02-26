@@ -3,7 +3,7 @@
 *** Introduction
 
 Near real-time data processing has become essential in any enterprise organization. With *Almaren Framework*
-is easy to create streamings with minimalist transformation, you still have /Spark-SQL/ and other powerful 
+is easy to create streaming with minimalist transformation, you still have /Spark-SQL/ and other powerful 
 components like [[https://github.com/music-of-the-ainur/quenya-dsl][Quenya-DSL]] with allow you to easily parse semi-structured documents like XML, JSON, Avro etc.
 
 
@@ -89,3 +89,7 @@ The PostgreSQL data:
 
 The Solr Data:
 [[images/solr.png]]
+
+
+*** Author
+Daniel Mantovani [[daniel.mantovani@modak.com][daniel.mantovani@modak.com]]

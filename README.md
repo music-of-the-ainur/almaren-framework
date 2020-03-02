@@ -7,7 +7,7 @@
 To add Almaren Framework dependency to your sbt build:
 
 ```
-libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % "0.0.1-2-2"
+libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % "0.2.3-2-2"
 ```
 
 ## Introduction

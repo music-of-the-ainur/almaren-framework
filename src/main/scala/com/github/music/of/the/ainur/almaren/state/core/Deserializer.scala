@@ -16,16 +16,6 @@ abstract class Deserializer() extends State {
   
 }
 
-case class AvroDeserializer(columnName: String,schema: String) extends Deserializer {
-  import org.apache.spark.sql.avro._
-  import org.apache.spark.sql.functions._
-  override def deserializer(df: DataFrame): DataFrame = {
-    logger.info(s"columnName:{$columnName}, schema:{$schema}")
-    df.withColumn(columnName,from_avro(col(columnName),schema))
-      .select("*",columnName.concat(".*")).drop(columnName)
-  }
-}
-
 case class JsonDeserializer(columnName: String,schema: Option[String]) extends Deserializer {
   import org.apache.spark.sql.functions._
   override def deserializer(df: DataFrame): DataFrame = {
@@ -33,12 +23,17 @@ case class JsonDeserializer(columnName: String,schema: Option[String]) extends D
     logger.info(s"columnName:{$columnName}, schema:{$schema}")
     df.withColumn(columnName,
       from_json(col(columnName),
-        schema.getOrElse(getSchemaDDL(df.selectExpr(columnName).as[(String)]))))
+        schema.getOrElse(schemaGen(df.selectExpr(columnName).as[(String)]))))
       .select("*",columnName.concat(".*"))
       .drop(columnName)
   }
-  private def getSchemaDDL(df: Dataset[String]): String =
-    Almaren.spark.getOrCreate().read.json(df.sample(Constants.sampleDeserializer)).schema.toDDL
+
+  private def inferSchema(schema: String): StructType = 
+    DataType.fromJson(schema).asInstanceOf[StructType]
+
+  private def schemaGen(ds: Dataset[String]): String =
+    Almaren.spark.getOrCreate().read.json(ds.sample(true, Constants.sampleDeserializer)).schema.json
+
 }
 
 case class XMLDeserializer(columnName: String) extends Deserializer {

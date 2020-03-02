@@ -37,6 +37,7 @@ private trait Batch {
 
 private trait Streaming {
 this:Catalyst => 
+/*
   def streaming(tree: Option[Tree],params:Map[String,String] = Map()): Unit = {
     val spark = Almaren.spark.getOrCreate()
 
@@ -55,4 +56,5 @@ this:Catalyst =>
 
     streaming.awaitTermination()
   }
+ */
 }

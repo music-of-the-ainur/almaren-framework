@@ -2,10 +2,10 @@ package com.github.music.of.the.ainur.almaren.builder.core
 
 import com.github.music.of.the.ainur.almaren.builder.Core
 import com.github.music.of.the.ainur.almaren.state.core._
-import com.github.music.of.the.ainur.almaren.{Container, InvalidDecoder, SchemaRequired, State}
+import com.github.music.of.the.ainur.almaren.{Tree, InvalidDecoder, SchemaRequired, State}
 
 private[almaren] trait Deserializer extends Core {
-  def deserializer(decoder:String,columnName:String,schemaInfo:Option[String] = None): List[Container] = {
+  def deserializer(decoder:String,columnName:String,schemaInfo:Option[String] = None): Option[Tree] = {
 
     def json(): State =
       JsonDeserializer(columnName,schemaInfo)

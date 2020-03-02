@@ -8,11 +8,10 @@ private[almaren] trait Executor extends Catalyst with Batch with Streaming
 private trait Catalyst {
   // execute's PreOrder BT
 
-  def catalyst(container: List[Container],df:DataFrame = Almaren.spark.getOrCreate().emptyDataFrame): DataFrame = 
-    container.foldLeft(df)((d,c) => c.zipper match {
-      case Some(zipper) => catalyst(zipper.commit,d)
-      case None => d
-    })
+  def catalyst(tree: Option[Tree],df:DataFrame = Almaren.spark.getOrCreate().emptyDataFrame): DataFrame = {
+    val t = tree.getOrElse(throw NullCatalyst)
+    t.c.foldLeft(t.state.executor(df))((d,container) => catalyst(container,d))
+  }
 
   def catalyst(tree: Tree,df: DataFrame): DataFrame = {
     val nodeDf = tree.state.executor(df)
@@ -32,13 +31,13 @@ private trait Catalyst {
 
 private trait Batch {
   this:Catalyst =>
-  def batch(container: List[Container]): DataFrame =
-    catalyst(container)
+  def batch(tree: Option[Tree]): DataFrame =
+    catalyst(tree)
 }
 
 private trait Streaming {
 this:Catalyst => 
-  def streaming(container: List[Container],params:Map[String,String] = Map()): Unit = {
+  def streaming(tree: Option[Tree],params:Map[String,String] = Map()): Unit = {
     val spark = Almaren.spark.getOrCreate()
 
     import spark.implicits._
@@ -51,7 +50,7 @@ this:Catalyst =>
 
     val streaming = streamingDF.writeStream.foreachBatch { (batchDF: DataFrame, batchId: Long) =>
       batchDF.createOrReplaceTempView(Constants.TempStreamTableName)
-      val df = catalyst(container,batchDF)
+      val df = catalyst(tree,batchDF)
     }.start()
 
     streaming.awaitTermination()

@@ -9,12 +9,11 @@ ThisBuild / scalaVersion := scala211
 val sparkVersion = "2.2.3"
 
 libraryDependencies ++= Seq(
-  "io.github.stanch" %% "zipper" % "0.5.2",
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
   "org.apache.spark" %% "spark-streaming" % sparkVersion % "provided",
   "org.apache.spark" %% "spark-core" % sparkVersion % "provided",
   "org.apache.spark" %% "spark-sql" % sparkVersion % "provided",
-  "org.apache.spark" %% "spark-streaming-kafka-0-10" % sparkVersion % "provided" excludeAll(ExclusionRule(organization = "net.jpountz.lz4")),
+  "org.apache.spark" %% "spark-avro" % sparkVersion,
   "com.databricks" %% "spark-xml" % "0.6.0",
   "com.github.music-of-the-ainur" %% "quenya-dsl" % "1.0.2-2.2",
 
@@ -45,6 +44,9 @@ ThisBuild / developers := List(
 ThisBuild / description := "The Almaren Framework provides a simplified consistent minimalistic layer over Apache Spark. While still allowing you to take advantage of native Apache Spark features. You can still combine it with standard Spark code"
 ThisBuild / licenses := List("Apache 2" -> new URL("http://www.apache.org/licenses/LICENSE-2.0.txt"))
 ThisBuild / homepage := Some(url("https://github.com/music-of-the-ainur/almaren-framework"))
+ThisBuild / organizationName := "Music of Ainur"
+ThisBuild / organizationHomepage := Some(url("https://github.com/music-of-the-ainur"))
+
 
 // Remove all additional repository other than Maven Central from POM
 ThisBuild / pomIncludeRepository := { _ => false }

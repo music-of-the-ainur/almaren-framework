@@ -4,7 +4,7 @@ sealed trait AlmarenException {
   self: Throwable =>
 }
 
-case class NullCatalyst() 
+object NullCatalyst
     extends Exception(s"Can't execute catalyst with an empty Container") with AlmarenException
 
 case class NullFork() 

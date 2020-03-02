@@ -10,7 +10,7 @@ private[almaren] abstract class Main extends State {
 }
 
 
-class Dsl(dslLang:String) extends Main {
+case class Dsl(dslLang:String) extends Main {
 
   import com.github.music.of.the.ainur.quenya.QuenyaDSL
   val quenyaDsl = QuenyaDSL
@@ -23,7 +23,7 @@ class Dsl(dslLang:String) extends Main {
   }
 }
 
-class Sql(sql: String) extends Main {
+case class Sql(sql: String) extends Main {
   override def core(df: DataFrame): DataFrame = sql(df)
   def sql(df: DataFrame): DataFrame = {
     logger.info(s"sql:{$sql}")
@@ -32,7 +32,7 @@ class Sql(sql: String) extends Main {
   }
 }
 
-class Coalesce(size:Int) extends Main {
+case class Coalesce(size:Int) extends Main {
   override def core(df: DataFrame): DataFrame = coalesce(df)
   def coalesce(df: DataFrame): DataFrame = {
     logger.info(s"{$size}")
@@ -40,7 +40,7 @@ class Coalesce(size:Int) extends Main {
   }
 }
 
-class Repartition(size:Int) extends Main {
+case class Repartition(size:Int) extends Main {
   override def core(df: DataFrame): DataFrame = repartition(df)
   def repartition(df: DataFrame): DataFrame = {
     logger.info(s"{$size}")
@@ -48,7 +48,7 @@ class Repartition(size:Int) extends Main {
   }
 }
 
-class Pipe(command:String) extends Main {
+case class Pipe(command:String) extends Main {
   override def core(df: DataFrame): DataFrame = pipe(df)
   def pipe(df: DataFrame): DataFrame = {
     import df.sparkSession.implicits._
@@ -57,7 +57,7 @@ class Pipe(command:String) extends Main {
   }
 }
 
-class Alias(alias:String) extends Main {
+case class Alias(alias:String) extends Main {
   override def core(df: DataFrame): DataFrame = alias(df)
   def alias(df: DataFrame): DataFrame = {
     logger.info(s"{$alias}")
@@ -66,7 +66,7 @@ class Alias(alias:String) extends Main {
   }
 }
 
-class Cache(opType:Boolean = true,tableName:Option[String] = None) extends Main {
+case class Cache(opType:Boolean = true,tableName:Option[String] = None) extends Main {
   override def core(df: DataFrame): DataFrame = cache(df)
   def cache(df: DataFrame): DataFrame = {
     logger.info(s"opType:{$opType}, tableName{$tableName}")

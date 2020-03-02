@@ -1,13 +1,13 @@
 package com.github.music.of.the.ainur.almaren.builder.core
 
-import com.github.music.of.the.ainur.almaren.Container
+import com.github.music.of.the.ainur.almaren.Tree
 import com.github.music.of.the.ainur.almaren.builder.Core
 import com.github.music.of.the.ainur.almaren.state.core.{SourceJdbc, SourceSql}
 
 private[almaren] trait Source extends Core {
-  def sourceSql(sql: String): Option[List[Container]] =
-    new SourceSql(sql)
+  def sourceSql(sql: String): Option[Tree] =
+    SourceSql(sql)
 
-  def sourceJdbc(url: String, driver: String, query: String, params:Map[String,String] = Map[String,String]()): Option[List[Container]] =
-    new SourceJdbc(url, driver, query, params)
+  def sourceJdbc(url: String, driver: String, query: String, params:Map[String,String] = Map[String,String]()): Option[Tree] =
+    SourceJdbc(url, driver, query, params)
 }

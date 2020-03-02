@@ -1,19 +1,24 @@
 # Almaren Framework
 
 [![Build Status](https://travis-ci.org/music-of-the-ainur/almaren-framework.svg?branch=master)](https://travis-ci.org/music-of-the-ainur/almaren-framework)
+[![Gitter Community](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/music-of-the-ainur/community)
+
 
 To add Almaren Framework dependency to your sbt build:
 
 ```
-libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % "0.0.1-2-3"
+libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % "0.2.3-2-3"
 ```
 
 ## Introduction
 
 The Almaren Framework provides a simplified consistent minimalistic layer over Apache Spark. While still allowing you to take advantage of native Apache Spark features. You can still combine it with standard Spark code.
 
+### Batch Example
 ```scala
+import com.github.music.of.the.ainur.almaren.builder.Core.Implicit
 import com.github.music.of.the.ainur.almaren.Almaren
+
 import org.apache.spark.sql.DataFrame
 
 val almaren = Almaren("App Name")
@@ -22,7 +27,7 @@ val spark = almaren.spark
     .master("local[*]")
     .config("spark.sql.shuffle.partitions", "1")
     
-val movies = almaren.builder
+val df:DataFrame = almaren.builder
     .sourceSql("select monotonically_increasing_id() as id,* from movies")
     .dsl("""id$id:LongType
         |title$title:StringType
@@ -34,8 +39,39 @@ val movies = almaren.builder
         |	director.name$credit_name:StringType""".stripMargin)
     .sql("""SELECT * FROM __TABLE__ WHERE actor NOT IN ("the","the life of")""")
     .targetJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","movies",SaveMode.Overwrite)
-    
-val df:DataFrame = almaren.batch(movies)
+    .batch
+```
+
+
+### Streaming Example
+
+```scala
+import com.github.music.of.the.ainur.almaren.builder.Core.Implicit
+import com.github.music.of.the.ainur.almaren.Almaren
+
+val almaren = Almaren("Straming App")
+
+val streaming = almaren.builder
+    .sourceSql("select CAST(value AS STRING) as json_column FROM __STREAMING__")
+    .deserializer("json","json_column")
+    .dsl("""user.id$user_id:LongType
+        |user.name$user_name:StringType
+        |user.time_zone$time_zone:StringType
+        |user.friends_count$friends_count:LongType
+        |user.followers_count$followers_count:LongType
+        |source$source:StringType
+        |place.country$country:StringType
+        |timestamp_ms$timestamp_ms:LongType
+        |text$message:StringType
+        |entities@entitie
+        |	entitie.hashtags@hashtag
+        |		hashtag.text$hashtag:StringType""".stripMargin)
+  .sql("SELECT DISTINCT * FROM __TABLE__")
+  .sql("""SELECT sha2(concat_ws("",array(*)),256) as unique_hash,*,current_timestamp from __TABLE__""")
+  .targetJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","twitter_streaming",SaveMode.Append)
+
+almaren.streaming(streaming,Map("kafka.bootstrap.servers" -> "localhost:9092","subscribe" -> "twitter", "startingOffsets" -> "earliest"))
+
 ```
 
 ## Components
@@ -165,6 +201,16 @@ Write to JDBC using [Spark JDBC](https://spark.apache.org/docs/latest/sql-data-t
 targetJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","movies",SaveMode.Overwrite)
 ```
 
+### targetKafka
+
+Write to Kafka using [Structured Streaming](https://spark.apache.org/docs/2.2.0/structured-streaming-kafka-integration.html). You must have a column named **value**, the content of this column will be sent to Kafka. You can specify the *topic* either with a column named **topic** or in the option as in the example below.
+Check the [documentation](https://spark.apache.org/docs/2.2.0/structured-streaming-kafka-integration.html#kafka-specific-configurations) for the full list of parameters
+
+```scala
+sql("SELECT to_json(struct(*)) as value FROM __TABLE__").targetKafka("localhost:9092",Map("topic" -> "testing"))
+
+```
+
 ### targetHttp
 
 Start a HTTP keep-alive connection for each partition of the RDD and send a request for each row.
@@ -278,7 +324,7 @@ sourceData.batch
 
 ## Author
 
-Daniel Mantovani [daniel.mantovani@modakanalytics.com](mailto:daniel.mantovani@modakanalytics.com)
+Daniel Mantovani [daniel.mantovani@modak.com](mailto:daniel.mantovani@modak.com)
 
 ## Sponsor
-[![Modak Analytics](/docs/img/modak_analytics.png)](http://www.modakanalytics.com)
+[![Modak Analytics](/docs/images/modak_analytics.png)](http://www.modak.com)

@@ -2,15 +2,15 @@ package com.github.music.of.the.ainur.almaren.builder.core
 
 import com.github.music.of.the.ainur.almaren.builder.Core
 import com.github.music.of.the.ainur.almaren.state.core._
-import com.github.music.of.the.ainur.almaren.{Container, InvalidDecoder, SchemaRequired, State}
+import com.github.music.of.the.ainur.almaren.{Tree, InvalidDecoder, SchemaRequired, State}
 
 private[almaren] trait Deserializer extends Core {
-  def deserializer(decoder:String,columnName:String,schemaInfo:Option[String] = None): Option[List[Container]] = {
+  def deserializer(decoder:String,columnName:String,schemaInfo:Option[String] = None): Option[Tree] = {
 
     def json(): State =
-      new JsonDeserializer(columnName,schemaInfo.getOrElse(throw SchemaRequired(decoder)))
+      JsonDeserializer(columnName,schemaInfo)
     def xml(): State =
-      new XMLDeserializer(columnName)
+      XMLDeserializer(columnName)
 
     decoder.toUpperCase match {
       case "JSON" => json

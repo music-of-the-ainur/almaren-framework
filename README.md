@@ -10,6 +10,12 @@ To add Almaren Framework dependency to your sbt build:
 libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % "0.2.3-2-4"
 ```
 
+To run in spark-shell:
+
+```
+spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.11:0.2.3-2-4"
+```
+
 ## Introduction
 
 The Almaren Framework provides a simplified consistent minimalistic layer over Apache Spark. While still allowing you to take advantage of native Apache Spark features. You can still combine it with standard Spark code.

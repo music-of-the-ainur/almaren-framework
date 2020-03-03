@@ -6,7 +6,9 @@ Near real-time data processing has become essential to any enterprise organizati
 is easy to create streaming with minimalist transformation, you still have /Spark-SQL/ and other powerful 
 components like [[https://github.com/music-of-the-ainur/quenya-dsl][Quenya-DSL]] with allows you to easily parse semi-structured documents like XML, JSON, Avro etc.
 
-The Almaren Framework provides a simplified consistent minimalistic layer over Apache Spark. While still allowing you to take advantage of native Apache Spark features.
+*** About
+
+The [[https://github.com/music-of-the-ainur/almaren-framework][Almaren Framework]] provides a simplified consistent minimalistic layer over Apache Spark. While still allowing you to take advantage of native Apache Spark features.
 You can still combine it with standard Spark code.
 
 *** Use Case 

@@ -27,3 +27,12 @@ case class SourceJdbc(url: String, driver: String, query: String, params:Map[Str
     df
   }
 }
+
+case class SourceFile(format:String, path:String, params:Map[String,String] = Map[String,String]()) extends Source {
+  override def source(df: DataFrame): DataFrame = {
+    logger.info(s"format:{$format}, path:{$path}, params:{$params}")
+    df.sparkSession.read.format(format)
+      .options(params)
+      .load(path)
+  }
+}

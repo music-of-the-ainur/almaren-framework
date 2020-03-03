@@ -1,4 +1,4 @@
-** How to Streaming Data From Kafka Using Almaren Framework
+** How to Stream Data From Kafka Using Almaren Framework
 
 *** Introduction
 

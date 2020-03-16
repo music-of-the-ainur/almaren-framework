@@ -18,13 +18,13 @@ case class SourceSql(sql: String) extends Source {
 
 case class SourceJdbc(url: String, driver: String, query: String, params:Map[String,String] = Map[String,String]()) extends Source {
   override def source(df: DataFrame): DataFrame = {
-    logger.info(s"sql:{$url}, driver:{$driver}, params:{$params}")
+    logger.info(s"url:{$url}, driver:{$driver}, query:{$query}, params:{$params}")
     df.sparkSession.read.format("jdbc")
       .option("url", url)
       .option("driver", driver)
-      .option("query", query)
+      .option("dbtable", s"(${query}) AS MY_TABLE")
       .options(params)
-    df
+      .load()
   }
 }
 

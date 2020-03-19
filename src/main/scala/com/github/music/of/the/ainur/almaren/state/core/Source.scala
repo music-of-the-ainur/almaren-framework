@@ -22,7 +22,7 @@ case class SourceJdbc(url: String, driver: String, query: String, params:Map[Str
     df.sparkSession.read.format("jdbc")
       .option("url", url)
       .option("driver", driver)
-      .option("dbtable", s"(${query}) AS MY_TABLE")
+      .option("dbtable", s"(${query}) MY_TABLE")
       .options(params)
       .load()
   }

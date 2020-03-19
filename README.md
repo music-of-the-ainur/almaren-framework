@@ -7,7 +7,7 @@
 To add Almaren Framework dependency to your sbt build:
 
 ```
-libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % "0.2.4-2-4"
+libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % "0.2.5-2-4"
 ```
 
 To run in spark-shell:
@@ -103,7 +103,7 @@ Read from Cassandra using [Spark Cassandra Connector](https://github.com/datasta
 Read from JDBC using [Spark JDBC](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html)
 
 ```scala
-sourceJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","select * from database.tabname")
+sourceJdbc(jdbc:postgresql://localhost/almaren,org.postgresql.Driver,"select * from table_name",Map("user"->"foo","password"->"bar"))
 ```
 
 ### sourceBigQuery

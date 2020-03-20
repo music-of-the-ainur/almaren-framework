@@ -13,7 +13,7 @@ libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % 
 To run in spark-shell:
 
 ```
-spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.11:0.2.3-2-4"
+spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.11:0.2.5-2-4"
 ```
 
 ## Introduction

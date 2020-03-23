@@ -19,7 +19,7 @@ class Test extends FunSuite with BeforeAndAfter {
   import spark.implicits._
 
   createSampleData
-  
+
   // TODO improve it
   // TODO Add jdbc test
   val movies = almaren.builder
@@ -28,7 +28,8 @@ class Test extends FunSuite with BeforeAndAfter {
     .fork(
       almaren.builder.sql("""select id,title from __TABLE__""").alias("title"),
       almaren.builder.sql("""select id,year from __TABLE__""").alias("year")
-    ).dsl("""
+    ).dsl(
+    """
 		|title$title:StringType
 		|year$year:LongType
 		|cast[0]$actor:StringType
@@ -37,21 +38,21 @@ class Test extends FunSuite with BeforeAndAfter {
     .sql("""SELECT * FROM __TABLE__""")
     .batch
 
-  test(readTest("foo_table"),movies,"foo")
-  test(readTest("title_table"),spark.sql("select * from title"),"title")
-  test(readTest("year_table"),spark.sql("select * from year"),"year")
-
+  test(readTest("foo_table"), movies, "foo")
+  test(readTest("title_table"), spark.sql("select * from title"), "title")
+  test(readTest("year_table"), spark.sql("select * from year"), "year")
+  testSourceJdbc()
   after {
     spark.stop()
   }
 
 
-  def test(df1:DataFrame,df2:DataFrame,name:String): Unit = {
-    testCount(df1,df2,name)
-    testCompare(df1,df2,name)
+  def test(df1: DataFrame, df2: DataFrame, name: String): Unit = {
+    testCount(df1, df2, name)
+    testCompare(df1, df2, name)
   }
 
-  def testCount(df1:DataFrame,df2:DataFrame,name:String): Unit = {
+  def testCount(df1: DataFrame, df2: DataFrame, name: String): Unit = {
     val count1 = df1.count()
     val count2 = df2.count()
     val count3 = spark.emptyDataFrame.count()
@@ -64,30 +65,30 @@ class Test extends FunSuite with BeforeAndAfter {
   }
 
   // Doesn't support nested type and we don't need it :)
-  def testCompare(df1:DataFrame,df2:DataFrame,name:String): Unit = {
-    val diff = compare(df1,df2)
+  def testCompare(df1: DataFrame, df2: DataFrame, name: String): Unit = {
+    val diff = compare(df1, df2)
     test(s"Compare Test:$name should be zero") {
       assert(diff == 0)
     }
     test(s"Compare Test:$name, should not be able to join") {
-      assertThrows[AnalysisException]{
-        compare(df2,spark.emptyDataFrame)
+      assertThrows[AnalysisException] {
+        compare(df2, spark.emptyDataFrame)
       }
     }
   }
 
-  private def compare(df1:DataFrame,df2:DataFrame): Long = 
-    df1.as("df1").join(df2.as("df2"),joinExpression(df1),"leftanti").count()
+  private def compare(df1: DataFrame, df2: DataFrame): Long =
+    df1.as("df1").join(df2.as("df2"), joinExpression(df1), "leftanti").count()
 
-  private def joinExpression(df1:DataFrame): Column = 
+  private def joinExpression(df1: DataFrame): Column =
     df1.schema.fields
-      .map(field => col(s"df1.${field.name}") <=> col(s"df2.${field.name}") )
-      .reduce((col1,col2) => col1.and(col2))
-  
-  def readTest(file: String):DataFrame = 
+      .map(field => col(s"df1.${field.name}") <=> col(s"df2.${field.name}"))
+      .reduce((col1, col2) => col1.and(col2))
+
+  def readTest(file: String): DataFrame =
     spark.read.parquet(s"src/test/resources/sample_output/$file.parquet")
 
-  def writeTest(df:DataFrame,file: String):Unit = 
+  def writeTest(df: DataFrame, file: String): Unit =
     df.write.parquet(s"src/test/resources/sample_output/$file.parquet")
 
   def createSampleData: Unit = {
@@ -96,4 +97,16 @@ class Test extends FunSuite with BeforeAndAfter {
     res.createTempView("movies")
   }
 
+  def testSourceJdbc(): Unit = {
+    val jdbc_df: DataFrame = almaren.builder
+      .sourceJdbc("jdbc:postgresql://localhost:5432/almaren?user=postgres", "org.postgresql.Driver", "select * from column_profile")
+      .batch
+
+    val profiler_count: Long = jdbc_df.count()
+    test("test for source jdbc if data is present or not ") {
+      assert(profiler_count > 0)
+    }
+
+
+  }
 }

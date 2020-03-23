@@ -26,4 +26,4 @@ services:
 before_script:
   - psql -c 'create database almaren;' -U postgres
   - psql -U postgres -f src/test/resources/sample_data/column_profile.ddl
-  - psql -U postgres -d profile -f src/test/resources/sample_data/data.sql
+  - psql -U postgres -d almaren -f src/test/resources/sample_data/data.sql

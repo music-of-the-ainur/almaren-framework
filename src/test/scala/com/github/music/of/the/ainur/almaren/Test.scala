@@ -45,7 +45,7 @@ class Test extends FunSuite with BeforeAndAfter {
 
   val moviesDf = spark.table(testTable)
 
-  test(testSourceTargetJdbc(moviesDf), moviesDf, "SourceJdbcTest")
+  test(testSourceTargetJdbc(moviesDf), moviesDf, "SourceTargetJdbcTest")
   repartitionAndColaeseTest(moviesDf)
   aliasTest(moviesDf)
   

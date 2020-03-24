@@ -106,11 +106,11 @@ class Test extends FunSuite with BeforeAndAfter {
 
     val target_jdbc_df: DataFrame = almaren.builder
       .sourceSql("select * from movies_test")
-      .targetJdbc("jdbc:postgresql://localhost/almeren?user=postgres", "org.postgresql.Driver", "movies_test", SaveMode.Overwrite)
+      .targetJdbc("jdbc:postgresql://localhost/almaren?user=postgres", "org.postgresql.Driver", "movies_test", SaveMode.Overwrite)
       .batch
 
     val source_jdbc_df = almaren.builder
-      .sourceJdbc("jdbc:postgresql://localhost/almeren?user=postgres", "org.postgresql.Driver", "select * from movies_test")
+      .sourceJdbc("jdbc:postgresql://localhost/almaren?user=postgres", "org.postgresql.Driver", "select * from movies_test")
       .batch
 
 

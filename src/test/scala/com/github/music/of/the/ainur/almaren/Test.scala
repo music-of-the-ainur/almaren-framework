@@ -1,12 +1,11 @@
 package com.github.music.of.the.ainur.almaren
 
 import com.github.music.of.the.ainur.almaren.builder.Core.Implicit
-import org.apache.spark.sql.{Column, DataFrame}
 import org.apache.spark.sql.functions._
+import org.apache.spark.sql.{AnalysisException, Column, DataFrame, SaveMode}
 import org.scalatest._
 
 import scala.collection.immutable._
-import org.apache.spark.sql.AnalysisException
 
 class Test extends FunSuite with BeforeAndAfter {
   val almaren = Almaren("App Test")
@@ -38,10 +37,14 @@ class Test extends FunSuite with BeforeAndAfter {
     .sql("""SELECT * FROM __TABLE__""")
     .batch
 
+  val movies_df=movies.limit(10)
+
   test(readTest("foo_table"), movies, "foo")
   test(readTest("title_table"), spark.sql("select * from title"), "title")
   test(readTest("year_table"), spark.sql("select * from year"), "year")
-  testSourceJdbc()
+  test(testSourceJdbc(movies_df), movies_df, "SourceJdbcTest")
+  repartitionAndColaeseTest(movies)
+  aliasTest(movies_df)
   after {
     spark.stop()
   }
@@ -97,16 +100,57 @@ class Test extends FunSuite with BeforeAndAfter {
     res.createTempView("movies")
   }
 
-  def testSourceJdbc(): Unit = {
-    val jdbc_df: DataFrame = almaren.builder
-      .sourceJdbc("jdbc:postgresql://localhost:5432/almaren?user=postgres", "org.postgresql.Driver", "select * from column_profile")
+
+  def testSourceJdbc(df: DataFrame): DataFrame = {
+    df.createTempView("movies_test")
+
+    val target_jdbc_df: DataFrame = almaren.builder
+      .sourceSql("select * from movies_test")
+      .targetJdbc("jdbc:postgresql://localhost/postgres?user=postgres&password=postgres", "org.postgresql.Driver", "movies_test", SaveMode.Overwrite)
       .batch
 
-    val profiler_count: Long = jdbc_df.count()
-    test("test for source jdbc if data is present or not ") {
-      assert(profiler_count > 0)
+    val source_jdbc_df = almaren.builder
+      .sourceJdbc("jdbc:postgresql://localhost/postgres?user=postgres&password=postgres", "org.postgresql.Driver", "select * from movies_test")
+      .batch
+
+
+    source_jdbc_df
+  }
+
+  def repartitionAndColaeseTest(dataFrame: DataFrame) {
+    val df=dataFrame.limit(200)
+    df.createTempView("test")
+
+    val repartition_df = almaren.builder.sourceSql("select * from test")
+      .repartition(10).batch
+
+    repartition_df.createTempView("test_new")
+    val coalase_df=almaren.builder.sourceSql("select * from test_new")
+      .coalesce(5).batch
+
+    val repartition_size=repartition_df.rdd.partitions.size
+    val coalese_size=coalase_df.rdd.partitions.size
+
+    test("Test for Repartition Size") {
+      assert(repartition_size == 10)
+    }
+    test("Test for coalesce size"){
+      assert(coalese_size == 5)
     }
 
+  }
+  def aliasTest(df:DataFrame): Unit ={
 
+    df.createTempView("Alias_table")
+
+    val table_df= almaren.builder.sourceSql("select * from Alias_table").alias("alias_test").batch
+
+  val alias_table_df=spark.read.table("alias_test")
+    val alias_table_count=alias_table_df.count()
+
+    test("alias test")
+    {
+      assert(alias_table_count>0)
+    }
   }
 }

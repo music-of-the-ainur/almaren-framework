@@ -15,14 +15,16 @@ class Test extends FunSuite with BeforeAndAfter {
     .config("spark.sql.shuffle.partitions", "1")
     .getOrCreate()
 
+
+  val testTable = "movies"
+
   import spark.implicits._
 
-  createSampleData
+  createSampleData(testTable)
 
   // TODO improve it
-  // TODO Add jdbc test
   val movies = almaren.builder
-    .sourceSql("select monotonically_increasing_id() as id,* from movies")
+    .sourceSql(s"select monotonically_increasing_id() as id,* from $testTable")
     .sql("select * from __table__")
     .fork(
       almaren.builder.sql("""select id,title from __TABLE__""").alias("title"),
@@ -37,14 +39,16 @@ class Test extends FunSuite with BeforeAndAfter {
     .sql("""SELECT * FROM __TABLE__""")
     .batch
 
-  val movies_df=movies.limit(10)
-
   test(readTest("foo_table"), movies, "foo")
   test(readTest("title_table"), spark.sql("select * from title"), "title")
   test(readTest("year_table"), spark.sql("select * from year"), "year")
-  test(testSourceJdbc(movies_df), movies_df, "SourceJdbcTest")
-  repartitionAndColaeseTest(movies)
-  aliasTest(movies_df)
+
+  val moviesDf = spark.table(testTable)
+
+  test(testSourceTargetJdbc(moviesDf), moviesDf, "SourceJdbcTest")
+  repartitionAndColaeseTest(moviesDf)
+  aliasTest(moviesDf)
+  
   after {
     spark.stop()
   }
@@ -94,27 +98,22 @@ class Test extends FunSuite with BeforeAndAfter {
   def writeTest(df: DataFrame, file: String): Unit =
     df.write.parquet(s"src/test/resources/sample_output/$file.parquet")
 
-  def createSampleData: Unit = {
+  def createSampleData(tableName: String): Unit = {
     val json_str = scala.io.Source.fromURL(getClass.getResource("/sample_data/movies.json")).mkString
     val res = spark.read.json(Seq(json_str).toDS)
-    res.createTempView("movies")
+    res.createTempView(tableName)
   }
 
 
-  def testSourceJdbc(df: DataFrame): DataFrame = {
-    df.createTempView("movies_test")
-
-    val target_jdbc_df: DataFrame = almaren.builder
-      .sourceSql("select * from movies_test")
-      .targetJdbc("jdbc:postgresql://localhost/almaren?user=postgres", "org.postgresql.Driver", "movies_test", SaveMode.Overwrite)
+  def testSourceTargetJdbc(df: DataFrame): DataFrame = {
+    almaren.builder
+      .sourceSql(s"select * from $testTable")
+      .targetJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "movies_test", SaveMode.Overwrite)
       .batch
 
-    val source_jdbc_df = almaren.builder
-      .sourceJdbc("jdbc:postgresql://localhost/almaren?user=postgres", "org.postgresql.Driver", "select * from movies_test")
+    almaren.builder
+      .sourceJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "select * from movies_test")
       .batch
-
-
-    source_jdbc_df
   }
 
   def repartitionAndColaeseTest(dataFrame: DataFrame) {
@@ -131,26 +130,23 @@ class Test extends FunSuite with BeforeAndAfter {
     val repartition_size=repartition_df.rdd.partitions.size
     val coalese_size=coalase_df.rdd.partitions.size
 
-    test("Test for Repartition Size") {
+    test("repartition") {
       assert(repartition_size == 10)
     }
-    test("Test for coalesce size"){
+    test("coalesce"){
       assert(coalese_size == 5)
     }
 
   }
   def aliasTest(df:DataFrame): Unit ={
+    almaren.builder.sourceSql(s"select * from $testTable").alias("alias_test").batch
 
-    df.createTempView("Alias_table")
+    val aliasTableDf=spark.read.table("alias_test")
+    val aliasTableCount=aliasTableDf.count()
 
-    val table_df= almaren.builder.sourceSql("select * from Alias_table").alias("alias_test").batch
-
-  val alias_table_df=spark.read.table("alias_test")
-    val alias_table_count=alias_table_df.count()
-
-    test("alias test")
+    test("alias")
     {
-      assert(alias_table_count>0)
+      assert(aliasTableCount>0)
     }
   }
 }

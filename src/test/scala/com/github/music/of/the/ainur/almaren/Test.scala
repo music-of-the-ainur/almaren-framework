@@ -117,10 +117,7 @@ class Test extends FunSuite with BeforeAndAfter {
   }
 
   def repartitionAndColaeseTest(dataFrame: DataFrame) {
-    val df=dataFrame.limit(200)
-    df.createTempView("test")
-
-    val repartition_df = almaren.builder.sourceSql("select * from test")
+    val repartition_df = almaren.builder.sourceSql(s"select * from $testTable")
       .repartition(10).batch
 
     repartition_df.createTempView("test_new")

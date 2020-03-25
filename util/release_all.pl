@@ -30,6 +30,7 @@ sub merge_major {
            my $sh = <<SHELL
                git checkout spark-$version
                git merge spark-$last_version
+               git push
 SHELL
 ;
                say qx{$sh} or die $!;

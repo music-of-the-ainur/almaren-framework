@@ -31,7 +31,7 @@ sub merge_major {
            my $sh = <<SHELL
                git checkout spark-$version
                git merge spark-$last_version
-               git tag -v$release-$version
+               git tag v$release-$version
                git push
                git push --tags
 SHELL

@@ -7,8 +7,7 @@ use feature 'say';
 my @majors = grep {/\w+/} map {/spark\-(\d\.\d\.\d)/;$1 || ""} qx/git branch -l/;
 
 merge_major(@majors);
-
-exit 0;
+publish_all(@majors);
 
 sub publish_all {
     foreach my $version (@majors) {

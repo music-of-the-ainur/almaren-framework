@@ -6,24 +6,29 @@ use feature 'say';
 
 my $release = "0.2.6";
 
-my @majors = grep {/\w+/} map {/spark\-(\d\.\d\.\d)/;$1 || ""} qx/git branch -l/;
+{
+    my @majors = grep {/\w+/} map {/spark\-(\d\.\d\.\d)/;$1 || ""} qx/git branch -l/;
 
-merge_major(@majors);
-publish_all(@majors);
+    merge_major(@majors);
+    publish_all(@majors);
+}
 
 sub publish_all {
-    foreach my $version (@majors) {
+    say "[+] Publish";
+    my @versions = @_;
+    foreach my $version (@versions) {
         my $sh = <<SHELL
             git checkout spark-$version
             git tag v$release-$version
-            git push --tags
             sbt +test +publishSigned
 SHELL
             ;
-        say qx{$sh} || die @!;
+        _exec_shell($sh)
     }
 }
+
 sub merge_major {
+    say "[+] Merge";
     my @versions = @_;
 
     my @minors = keys %{{map{/(\d.\d)/;$1 => 1} @versions}};
@@ -36,7 +41,13 @@ sub merge_major {
                 git push
 SHELL
 ;
-            say qx{$sh} or die @!;
+            _exec_shell($sh);
         }
     }
+}
+
+sub _exec_shell {
+    my $sh = shift;
+    say qx{$sh};
+    die $! if $!;
 }

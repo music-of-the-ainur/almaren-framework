@@ -26,17 +26,17 @@ sub merge_major {
 
     my @minors = keys %{{map{/(\d.\d)/;$1 => 1} @versions}};
     foreach my $minor (@minors) {
-       my ($last_version) =  (sort {$b cmp $a} grep {/\Q$minor/} @versions);
-       foreach my $version (grep {!/$last_version/} @versions) {
-           my $sh = <<SHELL
-               git checkout spark-$version
-               git merge spark-$last_version
-               git tag v$release-$version
-               git push
-               git push --tags
+        my ($last_version) =  (sort {$b cmp $a} grep {/\Q$minor/} @versions);
+        foreach my $version (grep {!/$last_version/} @versions) {
+            my $sh = <<SHELL
+                git checkout spark-$version
+                git merge spark-$last_version
+                git tag v$release-$version
+                git push
+                git push --tags
 SHELL
 ;
-               say qx{$sh} or die @!;
-       }
+            say qx{$sh} or die @!;
+        }
     }
 }

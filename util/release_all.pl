@@ -16,6 +16,7 @@ sub publish_all {
         my $sh = <<SHELL
             git checkout spark-$version
             git tag v$release-$version
+            git push --tags
             sbt +test +publishSigned
 SHELL
             ;
@@ -33,7 +34,6 @@ sub merge_major {
                 git checkout spark-$version
                 git merge spark-$last_version
                 git push
-                git push --tags
 SHELL
 ;
             say qx{$sh} or die @!;

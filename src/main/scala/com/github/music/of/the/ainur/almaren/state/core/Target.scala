@@ -43,3 +43,20 @@ case class TargetKafka(servers: String, options:Map[String,String]) extends Targ
     df
   }
 }
+
+case class TargetFile(
+  format:String, 
+  path:String, 
+  params:Map[String,String],
+  saveMode:SaveMode) extends Target 
+{
+  override def target(df: DataFrame): DataFrame = {
+    logger.info(s"format:{$format}, path:{$path}, params:{$params}")
+    df.write
+      .format(format)
+      .options(params)
+      .save()
+    df
+  }
+}
+

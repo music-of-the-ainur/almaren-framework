@@ -79,6 +79,7 @@ case class Cache(opType:Boolean = true,tableName:Option[String] = None) extends 
   private def cacheDf(df:DataFrame): Unit = opType match {
     case true => df.persist()
     case false => df.unpersist()
+
   }
   private def cacheTable(df:DataFrame,tableName: String): Unit =
     opType match {

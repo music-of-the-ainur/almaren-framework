@@ -16,7 +16,7 @@ sub publish_all {
         my $sh = <<SHELL
             git checkout spark-$version
             git tag v$release-$version
-            sbt +publishSigned
+            sbt +test +publishSigned
 SHELL
             ;
         say qx{$sh} || die @!;

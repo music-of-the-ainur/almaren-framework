@@ -1,4 +1,4 @@
-** Streaming Data From Kafka Using Almaren Framework
+** How to Stream Data From Kafka Using Almaren Framework
 
 *** Introduction
 
@@ -6,7 +6,9 @@ Near real-time data processing has become essential to any enterprise organizati
 is easy to create streaming with minimalist transformation, you still have /Spark-SQL/ and other powerful 
 components like [[https://github.com/music-of-the-ainur/quenya-dsl][Quenya-DSL]] with allows you to easily parse semi-structured documents like XML, JSON, Avro etc.
 
-The Almaren Framework provides a simplified consistent minimalistic layer over Apache Spark. While still allowing you to take advantage of native Apache Spark features.
+*** About
+
+The [[https://github.com/music-of-the-ainur/almaren-framework][Almaren Framework]] provides a simplified consistent minimalistic layer over Apache Spark. While still allowing you to take advantage of native Apache Spark features.
 You can still combine it with standard Spark code.
 
 *** Use Case 
@@ -44,7 +46,7 @@ Follow sample data from Twitter, each JSON has over 1000 attributes:
 
 In order to test it, you can start spark-shell with the following parameters:
 #+begin_src org
-spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.11:0.2.2-2-4,org.postgresql:postgresql:42.2.8,com.github.music-of-the-ainur:solr-almaren_2.11:0.0.1-2-4,org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.4"
+spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.11:0.2.3-2-4,com.github.music-of-the-ainur:solr-almaren_2.11:0.2.4-2-4" --repositories https://repo.boundlessgeo.com/main/
 #+end_src
 
 The implementation:
@@ -52,8 +54,6 @@ The implementation:
 import com.github.music.of.the.ainur.almaren.builder.Core.Implicit
 import com.github.music.of.the.ainur.almaren.Almaren
 import com.github.music.of.the.ainur.almaren.solr.Solr.SolrImplicit
-
-import org.apache.spark.sql.SaveMode
 
 val almaren = Almaren("App Test Twitter")
 
@@ -75,7 +75,7 @@ val twitter = almaren.builder
     .sql("""SELECT sha2(concat_ws("",array(*)),256) as id,*,current_timestamp from __TABLE__""")
     .cache(true)
     .targetJdbc(s"jdbc:postgresql://localhost/almaren","org.postgresql.Driver","twitter_streaming",SaveMode.Append)
-    .targetSolr("gettingstarted","localhost:9983",SaveMode.Append,Map("batch_size" -> "1000"))
+    .targetSolr("gettingstarted","localhost:9983",Map("batch_size" -> "1000"))
 
  
 almaren.streaming(twitter,Map("kafka.bootstrap.servers" -> "localhost:9092","subscribe" -> "twitter", "startingOffsets" -> "earliest"))

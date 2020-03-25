@@ -17,7 +17,7 @@ sub publish_all {
             sbt +publishSigned
 SHELL
             ;
-        say qx{$sh} || die $!;
+        say qx{$sh} || die @!;
     }
 }
 sub merge_major {
@@ -33,7 +33,7 @@ sub merge_major {
                git push
 SHELL
 ;
-               say qx{$sh} or die $!;
+               say qx{$sh} or die @!;
        }
     }
 }

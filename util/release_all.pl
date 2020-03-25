@@ -15,6 +15,7 @@ sub publish_all {
     foreach my $version (@majors) {
         my $sh = <<SHELL
             git checkout spark-$version
+            git tag v$release-$version
             sbt +publishSigned
 SHELL
             ;
@@ -31,7 +32,6 @@ sub merge_major {
             my $sh = <<SHELL
                 git checkout spark-$version
                 git merge spark-$last_version
-                git tag v$release-$version
                 git push
                 git push --tags
 SHELL

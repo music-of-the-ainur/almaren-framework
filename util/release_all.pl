@@ -4,6 +4,8 @@ use strict;
 use warnings;
 use feature 'say';
 
+my $release = "2.4.5";
+
 my @majors = grep {/\w+/} map {/spark\-(\d\.\d\.\d)/;$1 || ""} qx/git branch -l/;
 
 merge_major(@majors);
@@ -29,7 +31,9 @@ sub merge_major {
            my $sh = <<SHELL
                git checkout spark-$version
                git merge spark-$last_version
+               git tag v$release-$version
                git push
+               git push --tags
 SHELL
 ;
                say qx{$sh} or die @!;

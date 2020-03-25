@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use feature 'say';
 
-my $release = "0.2.5";
+my $release = "0.2.6";
 
 my @majors = grep {/\w+/} map {/spark\-(\d\.\d\.\d)/;$1 || ""} qx/git branch -l/;
 

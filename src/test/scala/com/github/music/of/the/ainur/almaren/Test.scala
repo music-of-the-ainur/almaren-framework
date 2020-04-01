@@ -37,14 +37,21 @@ class Test extends FunSuite with BeforeAndAfter {
     .sql("""SELECT * FROM __TABLE__""")
     .batch
 
+
+
+
   val movies_df=movies.limit(10)
 
   test(readTest("foo_table"), movies, "foo")
   test(readTest("title_table"), spark.sql("select * from title"), "title")
   test(readTest("year_table"), spark.sql("select * from year"), "year")
-  test(testSourceJdbc(movies_df), movies_df, "SourceJdbcTest")
+  //test(testSourceJdbc(movies_df), movies_df, "SourceJdbcTest")
   repartitionAndColaeseTest(movies)
   aliasTest(movies_df)
+  cacheTest(movies_df)
+  testingPipe(movies_df)
+
+
   after {
     spark.stop()
   }
@@ -153,4 +160,41 @@ class Test extends FunSuite with BeforeAndAfter {
       assert(alias_table_count>0)
     }
   }
+
+
+def cacheTest(df:DataFrame): Unit ={
+
+  df.createTempView("cache_test")
+
+  val testCacheDf:DataFrame = almaren.builder.sourceSql("select * from cache_test").cache(true).batch
+  val bool_cache=testCacheDf.storageLevel.useMemory
+  test("Testing cache")
+  {
+    assert(bool_cache)
+  }
+
+  val testUnCacheDf=almaren.builder.sourceSql("select * from cache_test").cache(false).batch
+  val bool_uncache=testUnCacheDf.storageLevel.useMemory
+  test("testing uncache")
+  {
+    assert(!bool_uncache)
+  }
+
 }
+
+  def testingPipe(df:DataFrame): Unit ={
+    df.createTempView("pipe_view")
+    val pipeRDD=almaren.builder.sql("select * from pipe_view").pipe("src/test/resources/echo.sh").batch
+    val pipeRddCount=pipeRDD.count()
+    
+    test("testing pipe")
+    {
+      assert(pipeRddCount>0)
+    }
+  }
+
+}
+
+
+
+

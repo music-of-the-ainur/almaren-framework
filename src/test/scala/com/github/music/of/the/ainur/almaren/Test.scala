@@ -184,12 +184,11 @@ def cacheTest(df:DataFrame): Unit ={
 
   def testingPipe(df:DataFrame): Unit ={
     df.createTempView("pipe_view")
-    val pipeRDD=almaren.builder.sql("select * from pipe_view").pipe("src/test/resources/echo.sh").batch
-    val pipeRddCount=pipeRDD.count()
-
+    val pipeDf=almaren.builder.sql("select * from pipe_view").pipe("echo 'Testing Echo Command ' ").batch
+    val pipeDfCount=pipeDf.count()
     test("Testing Pipe")
     {
-      assert(pipeRddCount>0)
+      assert(pipeDfCount>0)
     }
   }
 

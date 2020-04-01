@@ -45,7 +45,7 @@ class Test extends FunSuite with BeforeAndAfter {
   test(readTest("foo_table"), movies, "foo")
   test(readTest("title_table"), spark.sql("select * from title"), "title")
   test(readTest("year_table"), spark.sql("select * from year"), "year")
-  //test(testSourceJdbc(movies_df), movies_df, "SourceJdbcTest")
+  test(testSourceJdbc(movies_df), movies_df, "SourceJdbcTest")
   repartitionAndColaeseTest(movies)
   aliasTest(movies_df)
   cacheTest(movies_df)
@@ -168,14 +168,14 @@ def cacheTest(df:DataFrame): Unit ={
 
   val testCacheDf:DataFrame = almaren.builder.sourceSql("select * from cache_test").cache(true).batch
   val bool_cache=testCacheDf.storageLevel.useMemory
-  test("Testing cache")
+  test("Testing Cache")
   {
     assert(bool_cache)
   }
 
   val testUnCacheDf=almaren.builder.sourceSql("select * from cache_test").cache(false).batch
   val bool_uncache=testUnCacheDf.storageLevel.useMemory
-  test("testing uncache")
+  test("Testing Uncache")
   {
     assert(!bool_uncache)
   }
@@ -186,8 +186,8 @@ def cacheTest(df:DataFrame): Unit ={
     df.createTempView("pipe_view")
     val pipeRDD=almaren.builder.sql("select * from pipe_view").pipe("src/test/resources/echo.sh").batch
     val pipeRddCount=pipeRDD.count()
-    
-    test("testing pipe")
+
+    test("Testing Pipe")
     {
       assert(pipeRddCount>0)
     }

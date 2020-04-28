@@ -16,15 +16,24 @@ case class SourceSql(sql: String) extends Source {
   }
 }
 
-case class SourceJdbc(url: String, driver: String, query: String, params:Map[String,String] = Map[String,String]()) extends Source {
+case class SourceJdbc(url: String, driver: String, query: String,user :Option[String],password : Option[String],params:Map[String,String] = Map[String,String]()) extends Source {
   override def source(df: DataFrame): DataFrame = {
-    logger.info(s"url:{$url}, driver:{$driver}, query:{$query}, params:{$params}")
-    df.sparkSession.read.format("jdbc")
-      .option("url", url)
-      .option("driver", driver)
-      .option("dbtable", s"(${query}) MY_TABLE")
-      .options(params)
-      .load()
+    logger.info(s"url:{$url}, driver:{$driver}, query:{$query},username : ${user.getOrElse(None)},params:{$params}")
+    val tempDf = df.sparkSession.read.format("jdbc")
+                .option("url", url)
+                .option("driver", driver)
+                .option("dbtable", s"(${query}) MY_TABLE")
+                .options(params)
+
+    if(user==None && password ==None) {
+      tempDf.load()
+    }
+    else {
+      tempDf
+        .option("user",s"${user.getOrElse()}")
+        .option("password",s"${password.getOrElse()}")
+        .load()
+    }
   }
 }
 

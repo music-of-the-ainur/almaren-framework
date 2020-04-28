@@ -15,7 +15,6 @@ class Test extends FunSuite with BeforeAndAfter {
     .config("spark.sql.shuffle.partitions", "1")
     .getOrCreate()
 
-
   val testTable = "movies"
 
   import spark.implicits._
@@ -45,6 +44,7 @@ class Test extends FunSuite with BeforeAndAfter {
 
   val moviesDf = spark.table(testTable)
 
+  test(testSourceTargetJdbcUserPassword(moviesDf), moviesDf, "SourceTargetJdbcUserPassword")
   test(testSourceTargetJdbc(moviesDf), moviesDf, "SourceTargetJdbcTest")
   repartitionAndColaeseTest(moviesDf)
   aliasTest(moviesDf)
@@ -107,14 +107,25 @@ class Test extends FunSuite with BeforeAndAfter {
   }
 
 
-  def testSourceTargetJdbc(df: DataFrame): DataFrame = {
+  def testSourceTargetJdbcUserPassword(df: DataFrame): DataFrame = {
     almaren.builder
       .sourceSql(s"select * from $testTable")
-      .targetJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "movies_test", SaveMode.Overwrite)
+      .targetJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "movies_test",Option("postgres"),Option("Temp!23"),SaveMode.Overwrite)
       .batch
 
     almaren.builder
-      .sourceJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "select * from movies_test")
+      .sourceJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "select * from movies_test",Option("postgres"),Option("Temp!23"))
+      .batch
+  }
+
+  def testSourceTargetJdbc(df: DataFrame): DataFrame = {
+    almaren.builder
+      .sourceSql(s"select * from $testTable")
+      .targetJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "movies_test",None,None,SaveMode.Overwrite)
+      .batch
+
+    almaren.builder
+      .sourceJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "select * from movies_test",None,None)
       .batch
   }
 

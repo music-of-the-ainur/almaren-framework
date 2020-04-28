@@ -50,7 +50,7 @@ class Test extends FunSuite with BeforeAndAfter {
   aliasTest(moviesDf)
   cacheTest(moviesDf)
   testingPipe(moviesDf)
-  
+
   after {
     spark.stop()
   }
@@ -110,22 +110,22 @@ class Test extends FunSuite with BeforeAndAfter {
   def testSourceTargetJdbcUserPassword(df: DataFrame): DataFrame = {
     almaren.builder
       .sourceSql(s"select * from $testTable")
-      .targetJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "movies_test",Option("temp"),Option("Temp!23"),SaveMode.Overwrite)
+      .targetJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "movies_test", Option("temp"), Option("Temp!23"), SaveMode.Overwrite)
       .batch
 
     almaren.builder
-      .sourceJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "select * from movies_test",Option("temp"),Option("Temp!23"))
+      .sourceJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "select * from movies_test", Option("temp"), Option("Temp!23"))
       .batch
   }
 
   def testSourceTargetJdbc(df: DataFrame): DataFrame = {
     almaren.builder
       .sourceSql(s"select * from $testTable")
-      .targetJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "movies_test",None,None,SaveMode.Overwrite)
+      .targetJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "movies_test", None, None, SaveMode.Overwrite)
       .batch
 
     almaren.builder
-      .sourceJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "select * from movies_test",None,None)
+      .sourceJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "select * from movies_test", None, None)
       .batch
   }
 
@@ -134,58 +134,56 @@ class Test extends FunSuite with BeforeAndAfter {
       .repartition(10).batch
 
     repartition_df.createTempView("test_new")
-    val coalase_df=almaren.builder.sourceSql("select * from test_new")
+    val coalase_df = almaren.builder.sourceSql("select * from test_new")
       .coalesce(5).batch
 
-    val repartition_size=repartition_df.rdd.partitions.size
-    val coalese_size=coalase_df.rdd.partitions.size
+    val repartition_size = repartition_df.rdd.partitions.size
+    val coalese_size = coalase_df.rdd.partitions.size
 
     test("repartition") {
       assert(repartition_size == 10)
     }
-    test("coalesce"){
+    test("coalesce") {
       assert(coalese_size == 5)
     }
 
   }
-  def aliasTest(df:DataFrame): Unit ={
+
+  def aliasTest(df: DataFrame): Unit = {
     almaren.builder.sourceSql(s"select * from $testTable").alias("alias_test").batch
 
-    val aliasTableDf=spark.read.table("alias_test")
-    val aliasTableCount=aliasTableDf.count()
+    val aliasTableDf = spark.read.table("alias_test")
+    val aliasTableCount = aliasTableDf.count()
 
-    test("alias")
-    {
-      assert(aliasTableCount>0)
+    test("alias") {
+      assert(aliasTableCount > 0)
     }
   }
-  def cacheTest(df:DataFrame): Unit ={
+
+  def cacheTest(df: DataFrame): Unit = {
 
     df.createTempView("cache_test")
 
-    val testCacheDf:DataFrame = almaren.builder.sourceSql("select * from cache_test").cache(true).batch
-    val bool_cache=testCacheDf.storageLevel.useMemory
-    test("Testing Cache")
-    {
+    val testCacheDf: DataFrame = almaren.builder.sourceSql("select * from cache_test").cache(true).batch
+    val bool_cache = testCacheDf.storageLevel.useMemory
+    test("Testing Cache") {
       assert(bool_cache)
     }
 
-    val testUnCacheDf=almaren.builder.sourceSql("select * from cache_test").cache(false).batch
-    val bool_uncache=testUnCacheDf.storageLevel.useMemory
-    test("Testing Uncache")
-    {
+    val testUnCacheDf = almaren.builder.sourceSql("select * from cache_test").cache(false).batch
+    val bool_uncache = testUnCacheDf.storageLevel.useMemory
+    test("Testing Uncache") {
       assert(!bool_uncache)
     }
 
   }
 
-  def testingPipe(df:DataFrame): Unit ={
+  def testingPipe(df: DataFrame): Unit = {
     df.createTempView("pipe_view")
-    val pipeDf=almaren.builder.sql("select * from pipe_view").pipe("echo 'Testing Echo Command ' ").batch
-    val pipeDfCount=pipeDf.count()
-    test("Testing Pipe")
-    {
-      assert(pipeDfCount>0)
+    val pipeDf = almaren.builder.sql("select * from pipe_view").pipe("echo 'Testing Echo Command ' ").batch
+    val pipeDfCount = pipeDf.count()
+    test("Testing Pipe") {
+      assert(pipeDfCount > 0)
     }
   }
 

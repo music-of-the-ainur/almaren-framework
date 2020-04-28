@@ -8,6 +8,6 @@ private[almaren] trait Source extends Core {
   def sourceSql(sql: String): Option[Tree] =
     SourceSql(sql)
 
-  def sourceJdbc(url: String, driver: String,query: String,user : Option[String],password : Option[String],params:Map[String,String] = Map[String,String]()): Option[Tree] =
-    SourceJdbc(url, driver, query,user,password,params)
+  def sourceJdbc(url: String, driver: String, query: String, user: Option[String], password: Option[String], params: Map[String, String] = Map[String, String]()): Option[Tree] =
+    SourceJdbc(url, driver, query, user, password, params)
 }

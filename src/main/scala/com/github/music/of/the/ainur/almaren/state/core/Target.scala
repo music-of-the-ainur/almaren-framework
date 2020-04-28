@@ -6,6 +6,7 @@ import org.apache.spark.sql.{DataFrame, SaveMode}
 
 private[almaren] abstract class Target extends State {
   override def executor(df: DataFrame): DataFrame = target(df)
+
   def target(df: DataFrame): DataFrame
 }
 
@@ -18,31 +19,31 @@ case class TargetSql(sql: String) extends Target {
   }
 }
 
-case class TargetJdbc(url: String, driver: String, dbtable: String,user : Option[String],password :Option[String],saveMode:SaveMode, params:Map[String,String]) extends Target {
+case class TargetJdbc(url: String, driver: String, dbtable: String, user: Option[String], password: Option[String], saveMode: SaveMode, params: Map[String, String]) extends Target {
   override def target(df: DataFrame): DataFrame = {
-    logger.info(s"url:{$url}, driver:{$driver}, dbtable:{$dbtable},user : {${user.getOrElse(None)}},params:{$params}")
-    val tempDf= df.write.format("jdbc")
-                 .option("url", url)
-                 .option("driver", driver)
-                 .option("dbtable", dbtable)
-                 .options(params)
-                 .mode(saveMode)
-    if(user==None && password==None) {
-         tempDf
-         .save()
+    logger.info(s"url:{$url}, driver:{$driver}, dbtable:{$dbtable}, user : {${user.getOrElse(None)}}, params:{$params}")
+    val tempDf = df.write.format("jdbc")
+      .option("url", url)
+      .option("driver", driver)
+      .option("dbtable", dbtable)
+      .options(params)
+      .mode(saveMode)
+    if (user.isEmpty && password.isEmpty) {
+      tempDf
+        .save()
       df
     }
     else {
       tempDf
-        .option("user",s"${user.getOrElse()}")
-        .option("password",s"${password.getOrElse()}")
+        .option("user", s"${user.getOrElse()}")
+        .option("password", s"${password.getOrElse()}")
         .save()
       df
     }
   }
 }
 
-case class TargetKafka(servers: String, options:Map[String,String]) extends Target {
+case class TargetKafka(servers: String, options: Map[String, String]) extends Target {
   override def target(df: DataFrame): DataFrame = {
     logger.info(s"options: $options")
     df.write
@@ -55,11 +56,10 @@ case class TargetKafka(servers: String, options:Map[String,String]) extends Targ
 }
 
 case class TargetFile(
-  format:String, 
-  path:String, 
-  params:Map[String,String],
-  saveMode:SaveMode) extends Target 
-{
+                       format: String,
+                       path: String,
+                       params: Map[String, String],
+                       saveMode: SaveMode) extends Target {
   override def target(df: DataFrame): DataFrame = {
     logger.info(s"format:{$format}, path:{$path}, params:{$params}")
     df.write

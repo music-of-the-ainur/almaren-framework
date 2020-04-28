@@ -110,11 +110,11 @@ class Test extends FunSuite with BeforeAndAfter {
   def testSourceTargetJdbcUserPassword(df: DataFrame): DataFrame = {
     almaren.builder
       .sourceSql(s"select * from $testTable")
-      .targetJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "movies_test",Option("postgres"),Option("Temp!23"),SaveMode.Overwrite)
+      .targetJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "movies_test",Option("temp"),Option("Temp!23"),SaveMode.Overwrite)
       .batch
 
     almaren.builder
-      .sourceJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "select * from movies_test",Option("postgres"),Option("Temp!23"))
+      .sourceJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "select * from movies_test",Option("temp"),Option("Temp!23"))
       .batch
   }
 

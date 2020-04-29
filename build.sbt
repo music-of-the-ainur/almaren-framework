@@ -27,6 +27,7 @@ libraryDependencies ++= Seq(
   "org.postgresql" % "postgresql" % "42.2.8" % "test"
 )
 
+
 enablePlugins(GitVersioning)
 
 resolvers +=

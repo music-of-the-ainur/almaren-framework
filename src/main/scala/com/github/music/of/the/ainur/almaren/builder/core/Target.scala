@@ -9,7 +9,7 @@ private[almaren] trait Target extends Core {
   def targetSql(sql: String): Option[Tree] =
     TargetSql(sql)
 
-  def targetJdbc(url: String, driver: String, dtable: String, user: Option[String], password: Option[String], saveMode: SaveMode = SaveMode.ErrorIfExists, params: Map[String, String] = Map[String, String]()): Option[Tree] =
+  def targetJdbc(url: String, driver: String, dtable: String, saveMode: SaveMode = SaveMode.ErrorIfExists, user: Option[String] = None, password: Option[String] = None, params: Map[String, String] = Map()): Option[Tree] =
     TargetJdbc(url, driver, dtable, user, password, saveMode, params)
 
   def targetKafka(servers: String, options: Map[String, String] = Map()): Option[Tree] =

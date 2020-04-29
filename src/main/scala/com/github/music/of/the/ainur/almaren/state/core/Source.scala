@@ -3,6 +3,7 @@ package com.github.music.of.the.ainur.almaren.state.core
 import com.github.music.of.the.ainur.almaren.State
 import org.apache.spark.sql.DataFrame
 
+
 private[ainur] abstract class Source() extends State {
   override def executor(df: DataFrame): DataFrame = source(df)
 
@@ -17,24 +18,22 @@ case class SourceSql(sql: String) extends Source {
   }
 }
 
-case class SourceJdbc(url: String, driver: String, query: String, user: Option[String], password: Option[String], params: Map[String, String] = Map[String, String]()) extends Source {
+case class SourceJdbc(url: String, driver: String, query: String, user: Option[String], password: Option[String], params: Map[String, String]) extends Source {
   override def source(df: DataFrame): DataFrame = {
-    logger.info(s"url:{$url}, driver:{$driver}, query:{$query}, username : {${user.getOrElse(None)}}, params:{$params}")
-    val tempDf = df.sparkSession.read.format("jdbc")
+    logger.info(s"url:{$url}, driver:{$driver}, query:{$query}, user:{$user}, params:{$params}")
+
+    val options = (user, password) match {
+      case (Some(user), None) => params + ("user" -> user)
+      case (Some(user), Some(password)) => params + ("user" -> user, "password" -> password)
+      case (_, _) => params
+    }
+
+    df.sparkSession.read.format("jdbc")
       .option("url", url)
       .option("driver", driver)
       .option("dbtable", s"(${query}) MY_TABLE")
-      .options(params)
-
-    if (user.isEmpty && password.isEmpty) {
-      tempDf.load()
-    }
-    else {
-      tempDf
-        .option("user", s"${user.getOrElse()}")
-        .option("password", s"${password.getOrElse()}")
-        .load()
-    }
+      .options(options)
+      .load()
   }
 }
 

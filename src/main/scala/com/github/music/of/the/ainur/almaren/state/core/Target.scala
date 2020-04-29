@@ -21,25 +21,22 @@ case class TargetSql(sql: String) extends Target {
 
 case class TargetJdbc(url: String, driver: String, dbtable: String, user: Option[String], password: Option[String], saveMode: SaveMode, params: Map[String, String]) extends Target {
   override def target(df: DataFrame): DataFrame = {
-    logger.info(s"url:{$url}, driver:{$driver}, dbtable:{$dbtable}, user : {${user.getOrElse(None)}}, params:{$params}")
-    val tempDf = df.write.format("jdbc")
+    logger.info(s"url:{$url}, driver:{$driver}, dbtable:{$dbtable}, user:{$user}, params:{$params}")
+
+    val options = (user, password) match {
+      case (Some(user), None) => params + ("user" -> user)
+      case (Some(user), Some(password)) => params + ("user" -> user, "password" -> password)
+      case (_, _) => params
+    }
+
+    df.write.format("jdbc")
       .option("url", url)
       .option("driver", driver)
       .option("dbtable", dbtable)
-      .options(params)
+      .options(options)
       .mode(saveMode)
-    if (user.isEmpty && password.isEmpty) {
-      tempDf
-        .save()
-      df
-    }
-    else {
-      tempDf
-        .option("user", s"${user.getOrElse()}")
-        .option("password", s"${password.getOrElse()}")
-        .save()
-      df
-    }
+      .save()
+    df
   }
 }
 

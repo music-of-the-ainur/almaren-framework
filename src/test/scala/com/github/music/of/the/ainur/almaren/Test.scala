@@ -44,8 +44,8 @@ class Test extends FunSuite with BeforeAndAfter {
 
   val moviesDf = spark.table(testTable)
 
-  test(testSourceTargetJdbcUserPassword(moviesDf), moviesDf, "SourceTargetJdbcUserPassword")
   test(testSourceTargetJdbc(moviesDf), moviesDf, "SourceTargetJdbcTest")
+  test(testSourceTargetJdbcUserPassword(moviesDf), moviesDf, "SourceTargetJdbcUserPassword")
   repartitionAndColaeseTest(moviesDf)
   aliasTest(moviesDf)
   cacheTest(moviesDf)
@@ -110,22 +110,22 @@ class Test extends FunSuite with BeforeAndAfter {
   def testSourceTargetJdbcUserPassword(df: DataFrame): DataFrame = {
     almaren.builder
       .sourceSql(s"select * from $testTable")
-      .targetJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "movies_test", Option("temp"), Option("Temp!23"), SaveMode.Overwrite)
+      .targetJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "movies_test", SaveMode.Overwrite, Some("postgres"), Some("foo"))
       .batch
 
     almaren.builder
-      .sourceJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "select * from movies_test", Option("temp"), Option("Temp!23"))
+      .sourceJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "select * from movies_test", Some("postgres"), Some("foo"))
       .batch
   }
 
   def testSourceTargetJdbc(df: DataFrame): DataFrame = {
     almaren.builder
       .sourceSql(s"select * from $testTable")
-      .targetJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "movies_test", None, None, SaveMode.Overwrite)
+      .targetJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "movies_test", SaveMode.Overwrite)
       .batch
 
     almaren.builder
-      .sourceJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "select * from movies_test", None, None)
+      .sourceJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "select * from movies_test")
       .batch
   }
 

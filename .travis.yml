@@ -25,6 +25,5 @@ services:
 
 before_script:
   - psql -c 'create database almaren;' -U postgres
-  - psql -c 'create user temp;'
-  - psql -c "ALTER USER temp PASSWORD 'Temp!23' ;"
+  - psql -c "ALTER USER postgres PASSWORD 'foo' ;"
 

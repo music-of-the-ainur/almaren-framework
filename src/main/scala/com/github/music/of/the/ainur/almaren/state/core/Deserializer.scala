@@ -17,17 +17,19 @@ abstract class Deserializer() extends State {
   
 }
 
-case class AvroDeserializer(columnName: String,schema: String) extends Deserializer {
+case class AvroDeserializer(columnName: String,schema: String,params:Map[String,String]) extends Deserializer {
   import org.apache.spark.sql.avro._
   import org.apache.spark.sql.functions._
   override def deserializer(df: DataFrame): DataFrame = {
     logger.info(s"columnName:{$columnName}, schema:{$schema}")
     df.withColumn(columnName,from_avro(col(columnName),schema))
       .select("*",columnName.concat(".*")).drop(columnName)
+
+
   }
 }
 
-case class JsonDeserializer(columnName: String,schema: Option[String]) extends Deserializer {
+case class JsonDeserializer(columnName: String,schema: Option[String],params:Map[String,String]) extends Deserializer {
   import org.apache.spark.sql.functions._
   override def deserializer(df: DataFrame): DataFrame = {
     import df.sparkSession.implicits._
@@ -42,7 +44,7 @@ case class JsonDeserializer(columnName: String,schema: Option[String]) extends D
     Almaren.spark.getOrCreate().read.json(df.sample(Constants.sampleDeserializer)).schema.toDDL
 }
 
-case class XMLDeserializer(columnName: String) extends Deserializer {
+case class XMLDeserializer(columnName: String,params:Map[String,String]) extends Deserializer {
   import com.databricks.spark.xml.XmlReader
   override def deserializer(df: DataFrame): DataFrame = {
     logger.info(s"columnName:{$columnName}")

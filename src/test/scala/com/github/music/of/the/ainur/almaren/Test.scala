@@ -5,7 +5,6 @@ import org.apache.spark.sql.functions._
 import org.apache.spark.sql.{AnalysisException, Column, DataFrame, SaveMode}
 import org.scalatest._
 
-
 import scala.collection.immutable._
 
 class Test extends FunSuite with BeforeAndAfter {
@@ -53,6 +52,7 @@ class Test extends FunSuite with BeforeAndAfter {
     testingPipe(moviesDf)
     deserializerJsonTest()
     deserializerXmlTest()
+
 
   after {
     spark.stop()
@@ -235,4 +235,5 @@ class Test extends FunSuite with BeforeAndAfter {
     test(xmldf, df, "Deserializer XML")
 
   }
+
 }

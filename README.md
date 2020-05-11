@@ -7,13 +7,13 @@
 To add Almaren Framework dependency to your sbt build:
 
 ```
-libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % "0.2.7-$SPARK_VERSION"
+libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % "0.2.8-$SPARK_VERSION"
 ```
 
 To run in spark-shell:
 
 ```
-spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.11:0.2.7-$SPARK_VERSION"
+spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.11:0.2.8-$SPARK_VERSION"
 ```
 
 ## Introduction

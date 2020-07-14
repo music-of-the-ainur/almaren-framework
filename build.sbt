@@ -6,7 +6,11 @@ lazy val scala211 = "2.11.12"
 crossScalaVersions := Seq(scala211)
 ThisBuild / scalaVersion := scala211
 
-val sparkVersion = "2.2.3"
+val sparkVersionReg = raw"(\d.\d.\d)".r
+val sparkVersion = scala.sys.process.Process("git rev-parse --abbrev-ref HEAD").lineStream.head.replace("spark-","") match {
+  case sparkVersionReg(sv) => sv
+  case _ => "2.3.0"
+}
 
 libraryDependencies ++= Seq(
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
@@ -14,7 +18,7 @@ libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-core" % sparkVersion % "provided",
   "org.apache.spark" %% "spark-sql" % sparkVersion % "provided",
   "com.databricks" %% "spark-xml" % "0.6.0",
-  "com.github.music-of-the-ainur" %% "quenya-dsl" % "1.0.2-2.3",
+  "com.github.music-of-the-ainur" %% "quenya-dsl" % s"1.0.2-$sparkVersion",
 
   "org.scalatest" %% "scalatest" % "3.0.5" % "test",
   "org.postgresql" % "postgresql" % "42.2.8" % "test"

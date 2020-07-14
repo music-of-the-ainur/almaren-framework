@@ -6,7 +6,7 @@ scala:
    - 2.11.12
 
 script:
-   - sbt ++$TRAVIS_SCALA_VERSION test
+  - sbt ++$TRAVIS_SCALA_VERSION test
 
 cache:
   directories:
@@ -24,3 +24,5 @@ services:
 
 before_script:
   - psql -c 'create database almaren;' -U postgres
+  - psql -c "ALTER USER postgres PASSWORD 'foo' ;"
+

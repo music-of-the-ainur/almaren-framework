@@ -20,6 +20,7 @@ sub publish_all {
     	say "[+] Publish:$version";
         my $sh = <<SHELL
             git checkout spark-$version
+            git tag -d v$release-$version
             git tag v$release-$version
             sbt +test +publishSigned
 SHELL

@@ -90,6 +90,14 @@ Read native Spark/Hive tables using Spark SQL.
 sourceSql("select monotonically_increasing_id() as id,* from database.tabname")
 ```
 
+### sourceFile
+
+Read files like CSV,Avro,JSON and XML
+
+```scala
+sourceFile("csv","/tmp/file.csv",Map("header" -> "true"))
+```
+
 ### sourceHbase
 
 Read from Hbase using [HBase Connector](https://github.com/hortonworks-spark/shc)

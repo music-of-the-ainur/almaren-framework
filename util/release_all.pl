@@ -38,7 +38,7 @@ sub merge_major {
     	    say "[+] Merge:$version";
             my $sh = <<SHELL
                 git checkout spark-$version
-                git merge spark-$last_version
+                git merge master
                 git push
 SHELL
 ;

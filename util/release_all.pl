@@ -33,8 +33,7 @@ sub merge_major {
 
     my @minors = keys %{{map{/(\d.\d)/;$1 => 1} @versions}};
     foreach my $minor (@minors) {
-        my ($last_version) =  (sort {$b cmp $a} grep {/\Q$minor/} @versions);
-        foreach my $version (grep {!/$last_version/} @versions) {
+        foreach my $version (@versions) {
     	    say "[+] Merge:$version";
             my $sh = <<SHELL
                 git checkout spark-$version

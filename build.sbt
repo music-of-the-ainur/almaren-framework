@@ -7,11 +7,7 @@ lazy val scala211 = "2.11.12"
 crossScalaVersions := Seq(scala211, scala212)
 ThisBuild / scalaVersion := scala212
 
-val sparkVersionReg = raw"(\d.\d.\d)".r
-val sparkVersion = scala.sys.process.Process("git rev-parse --abbrev-ref HEAD").lineStream.head.replace("spark-","") match {
-  case sparkVersionReg(sv) => sv
-  case _ => "2.4.5"
-}
+val sparkVersion = "2.4.0"
 
 libraryDependencies ++= Seq(
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",

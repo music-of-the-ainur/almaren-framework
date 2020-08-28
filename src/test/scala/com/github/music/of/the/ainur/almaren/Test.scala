@@ -46,6 +46,10 @@ class Test extends FunSuite with BeforeAndAfter {
 
   test(testSourceTargetJdbc(moviesDf), moviesDf, "SourceTargetJdbcTest")
   test(testSourceTargetJdbcUserPassword(moviesDf), moviesDf, "SourceTargetJdbcTestUserPassword")
+  test(testSourceFile("parquet","src/test/resources/sample_data/emp.parquet"),
+    spark.read.parquet("src/test/resources/sample_output/employee.parquet"),"SourceParquetFileTest")
+  test(testSourceFile("avro","src/test/resources/sample_data/emp.avro"),
+    spark.read.parquet("src/test/resources/sample_output/employee.parquet"),"SourceAvroFileTest")
   repartitionAndColaeseTest(moviesDf)
   aliasTest(moviesDf)
   cacheTest(moviesDf)
@@ -127,6 +131,13 @@ class Test extends FunSuite with BeforeAndAfter {
     almaren.builder
       .sourceJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "select * from movies_test")
       .batch
+  }
+
+  def testSourceFile(format:String,path:String):DataFrame ={
+    almaren.builder
+      .sourceFile(format,path,Map())
+      .batch
+
   }
 
   def repartitionAndColaeseTest(dataFrame: DataFrame) {

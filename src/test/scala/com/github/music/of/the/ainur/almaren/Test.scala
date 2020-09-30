@@ -4,6 +4,9 @@ import com.github.music.of.the.ainur.almaren.builder.Core.Implicit
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.{AnalysisException, Column, DataFrame, SaveMode}
 import org.scalatest._
+import org.apache.spark.sql.avro._
+
+
 
 import scala.collection.immutable._
 
@@ -56,6 +59,7 @@ class Test extends FunSuite with BeforeAndAfter {
   testingPipe(moviesDf)
   deserializerJsonTest()
   deserializerXmlTest()
+  deserializerAvroTest()
 
   after {
     spark.stop()
@@ -236,6 +240,8 @@ class Test extends FunSuite with BeforeAndAfter {
 
     val xmldf = almaren.builder.sourceSql("select * from sample_xml_table").deserializer("XML", "xml_string").batch
 
+    val xmlSchemaDf = almaren.builder.sourceSql("select * from sample_xml_table").deserializer("XML", "xml_string", Some("`address` STRING,`age` BIGINT,`name` STRING ")).batch
+
     val df = spark.read
       .format("xml")
       .option("rowTag", "json_string")
@@ -243,7 +249,32 @@ class Test extends FunSuite with BeforeAndAfter {
       .load("src/test/resources/sample_data/person.xml")
 
     test(xmldf, df, "Deserializer XML")
+    test(xmlSchemaDf, df, "Deserialize XML Schema")
 
+  }
+
+  def deserializerAvroTest(): Unit = {
+    val df = spark.range(10).select('id, 'id.cast("string").as("name"))
+    val struct_df = df.select(struct('id, 'name).as("struct"))
+
+    val avroStructDF = struct_df.select(to_avro('struct).as("avro_struct"))
+
+    avroStructDF.createOrReplaceTempView("avro_df")
+    val avroTypeStruct =
+      s"""
+         |{
+         |  "type": "record",
+         |  "name": "avro_struct",
+         |  "fields": [
+         |    {"name": "id", "type": "long"},
+         |    {"name": "name", "type": "string"}
+         |  ]
+         |}
+    """.stripMargin
+
+    val avroDeserialzedDf = almaren.builder.sourceSql("select * from avro_df").deserializer("AVRO", "avro_struct", Some(avroTypeStruct)).batch
+
+    test(df, avroDeserialzedDf, "Deserializer AVRO")
   }
 
 }

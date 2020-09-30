@@ -54,6 +54,8 @@ class Test extends FunSuite with BeforeAndAfter {
   aliasTest(moviesDf)
   cacheTest(moviesDf)
   testingPipe(moviesDf)
+  deserializerJsonTest()
+  deserializerXmlTest()
 
   after {
     spark.stop()
@@ -196,6 +198,52 @@ class Test extends FunSuite with BeforeAndAfter {
     test("Testing Pipe") {
       assert(pipeDfCount > 0)
     }
+  }
+
+  def deserializerJsonTest(): Unit = {
+    val jsonStr = Seq("""{"name":"John","age":21,"address":"New York"}""",
+      """{"name":"Peter","age":18,"address":"Prague"}""",
+      """{"name":"Tony","age":40,"address":"New York"}""").toDF("json_string").createOrReplaceTempView("sample_json_table")
+
+    val jsondf = almaren.builder.sourceSql("select * from sample_json_table").deserializer("JSON", "json_string").batch
+
+    val jsonschmeadf = almaren.builder.sourceSql("select * from sample_json_table").deserializer("JSON", "json_string", Option("`address` STRING,`age` BIGINT,`name` STRING ")).batch
+
+    val json_str = scala.io.Source.fromURL(getClass.getResource("/sample_data/person.json")).mkString
+    val resDf: DataFrame = spark.read.json(Seq(json_str).toDS)
+
+    test(jsondf, resDf, "Deserialize JSON")
+    test(jsonschmeadf, resDf, "Deserialize JSON Schema")
+  }
+
+  def deserializerXmlTest(): Unit = {
+    val xmlStr = Seq(
+      """ <json_string>
+                              <name>John</name>
+                              <age>21</age>
+                              <address>New York</address>
+                          </json_string>""",
+      """<json_string>
+                              <name>Peter</name>
+                              <age>18</age>
+                              <address>Prague</address>
+                          </json_string>""",
+      """<json_string>
+                              <name>Tony</name>
+                              <age>40</age>
+                              <address>New York</address>
+                          </json_string>""").toDF("xml_string").createOrReplaceTempView("sample_xml_table")
+
+    val xmldf = almaren.builder.sourceSql("select * from sample_xml_table").deserializer("XML", "xml_string").batch
+
+    val df = spark.read
+      .format("xml")
+      .option("rowTag", "json_string")
+      .option("rootTag", "Person")
+      .load("src/test/resources/sample_data/person.xml")
+
+    test(xmldf, df, "Deserializer XML")
+
   }
 
 }

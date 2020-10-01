@@ -111,7 +111,7 @@ Read from Cassandra using [Spark Cassandra Connector](https://github.com/datasta
 Read from JDBC using [Spark JDBC](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html)
 
 ```scala
-sourceJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","select * from table_name",Map("user"->"foo","password"->"bar"))
+sourceJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","select * from table_name",Some("user"),Some("password"))
 ```
 
 ### sourceBigQuery

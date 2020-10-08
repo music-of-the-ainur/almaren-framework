@@ -380,6 +380,70 @@ Start a HTTP keep-alive connection for each partition of the RDD and send a requ
 
 Read from BigQuery using [Google BigQuery Connector](https://github.com/GoogleCloudPlatform/spark-bigquery-connector)
 
+## Executors
+
+Executors are responsible to execute Almaren Tree i.e ```Option[Tree]``` to Apache Spark. Without invoke an /executor/, code won't be executed by Apache Spark. Follow the list of /executors/:
+
+## Batch
+
+Executes the Almaren Tree returning a Dataframe.
+
+```scala
+val tree = almaren.builder
+    .sourceSql("select monotonically_increasing_id() as id,* from movies")
+    .dsl("""id$id:LongType
+        |title$title:StringType
+        |year$year:LongType
+        |cast[0]$actor:StringType
+        |cast[1]$support_actor:StringType
+        |genres[0]$genre:StringType
+        |director@director
+        |	director.name$credit_name:StringType""".stripMargin)
+    .sql("""SELECT * FROM __TABLE__ WHERE actor NOT IN ("the","the life of")""")
+    .targetJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","movies",SaveMode.Overwrite)
+
+val df:DataFrame = tree.batch
+```
+
+## Streaming Kafka
+
+Read data from Kafka and execute's Almaren Tree providing the special table ```__STREAMING__```:
+
+| Column Name   | Data Type |
+|---------------|-----------|
+| key           | binary    |
+| value         | binary    |
+| topic         | string    |
+| partition     | int       |
+| offset        | long      |
+| timestamp     | long      |
+| timestampType | int       |
+
+The ```streaming(tree,params:Map[String,String]``` the params are the options available in ```readStream.format("kafka").options(params)``` you can check all the options [here](https://spark.apache.org/docs/2.4.0/structured-streaming-kafka-integration.html#kafka-specific-configurations)
+
+```scala
+val tree = almaren.builder
+    .sourceSql("select CAST(value AS STRING) as json_column FROM __STREAMING__")
+    .deserializer("json","json_column")
+    .dsl("""user.id$user_id:LongType
+        |user.name$user_name:StringType
+        |user.time_zone$time_zone:StringType
+        |user.friends_count$friends_count:LongType
+        |user.followers_count$followers_count:LongType
+        |source$source:StringType
+        |place.country$country:StringType
+        |timestamp_ms$timestamp_ms:LongType
+        |text$message:StringType
+        |entities@entitie
+        |	entitie.hashtags@hashtag
+        |		hashtag.text$hashtag:StringType""".stripMargin)
+  .sql("SELECT DISTINCT * FROM __TABLE__")
+  .sql("""SELECT sha2(concat_ws("",array(*)),256) as unique_hash,*,current_timestamp from __TABLE__""")
+  .targetJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","twitter_streaming",SaveMode.Append)
+
+almaren.streaming(tree,Map("kafka.bootstrap.servers" -> "localhost:9092","subscribe" -> "twitter", "startingOffsets" -> "earliest"))
+```
+
 ## Examples
 
 ### Example 1
@@ -400,6 +464,7 @@ val df:DataFrame = almaren.builder.sourceSql("SELECT * FROM db.schema.table")
     .sql("""SELECT *,unix_timestamp() as timestamp from __TABLE__""")
     .targetSql("INSERT OVERWRITE TABLE default.target_table SELECT * FROM __TABLE__")
     .batch
+valdf:DataFrame = 
 ```
 
 ### Example 2

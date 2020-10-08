@@ -81,8 +81,27 @@ almaren.streaming(streaming,Map("kafka.bootstrap.servers" -> "localhost:9092","s
 ```
 ## Debugging
 
-To debug the code you can turn on ```log4j.logger.com.github.music.of.the.ainur.almaren=DEBUG```, so you can see the state of each component like below:
+To debug the code you can turn on ```log4j.logger.com.github.music.of.the.ainur.almaren=DEBUG```, so you can see the state of each component.
 
+Example:
+
+```scala
+val df:DataFrame = almaren.builder
+    .sourceSql("select monotonically_increasing_id() as id,* from movies")
+    .dsl("""id$id:LongType
+        |title$title:StringType
+        |year$year:LongType
+        |cast[0]$actor:StringType
+        |cast[1]$support_actor:StringType
+        |genres[0]$genre:StringType
+        |director@director
+        |	director.name$credit_name:StringType""".stripMargin)
+    .sql("""SELECT * FROM __TABLE__ WHERE actor NOT IN ("the","the life of")""")
+    .targetJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","movies",SaveMode.Overwrite)
+    .batch
+```
+
+The output:
 
 ```
 20/10/08 11:38:53 INFO SourceSql: sql:{select monotonically_increasing_id() as id,* from movies}

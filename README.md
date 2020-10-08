@@ -18,7 +18,7 @@ spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.11:0.4
 
 ## Introduction
 
-The Almaren Framework provides a simplified consistent minimalistic layer over Apache Spark. While still allowing you to take advantage of native Apache Spark features. You can still combine it with standard Spark code.
+The Almaren Framework provides a simplified consistent minimalistic layer over Apache Spark, while still allowing you to take advantage of native Apache Spark features. You can even combine it with standard Spark code.
 
 ### Batch Example
 ```scala
@@ -55,7 +55,7 @@ val df:DataFrame = almaren.builder
 import com.github.music.of.the.ainur.almaren.builder.Core.Implicit
 import com.github.music.of.the.ainur.almaren.Almaren
 
-val almaren = Almaren("Straming App")
+val almaren = Almaren("Streaming App")
 
 val streaming = almaren.builder
     .sourceSql("select CAST(value AS STRING) as json_column FROM __STREAMING__")
@@ -423,7 +423,7 @@ sql("SELECT * FROM __TABLE__")
 ```
 ### DSL
 
-DSL(Domain Specific Language) simplifies the task to flatten, select, alias and properly set the datatype. It's very powerful to parser complex data structures.
+DSL(Domain Specific Language) simplifies the task to flatten, select, alias and properly set the datatype. It's very powerful to parse complex data structures.
 
 ```scala
 dsl("""title$title:StringType

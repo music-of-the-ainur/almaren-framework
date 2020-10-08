@@ -382,7 +382,7 @@ Read from BigQuery using [Google BigQuery Connector](https://github.com/GoogleCl
 
 ## Executors
 
-Executors are responsible to execute Almaren Tree i.e ```Option[Tree]``` to Apache Spark. Without invoke an /executor/, code won't be executed by Apache Spark. Follow the list of /executors/:
+Executors are responsible to execute Almaren Tree i.e ```Option[Tree]``` to Apache Spark. Without invoke an _executor_, code won't be executed by Apache Spark. Follow the list of _executors_:
 
 ## Batch
 

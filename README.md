@@ -83,6 +83,13 @@ almaren.streaming(streaming,Map("kafka.bootstrap.servers" -> "localhost:9092","s
 
 To debug the code you can turn on ```log4j.logger.com.github.music.of.the.ainur.almaren=DEBUG```, so you can see the state of each component.
 
+You also can setup the debug from Scala code:
+
+```scala
+import org.apache.log4j.{Level, Logger}
+Logger.getLogger("com.github.music.of.the.ainur.almaren").setLevel(Level.DEBUG)
+```
+
 Example:
 
 ```scala

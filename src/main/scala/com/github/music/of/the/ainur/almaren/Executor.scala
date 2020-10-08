@@ -2,19 +2,20 @@ package com.github.music.of.the.ainur.almaren
 
 import org.apache.spark.sql.DataFrame
 import com.github.music.of.the.ainur.almaren.util.Constants
+import com.typesafe.scalalogging.LazyLogging
 
 private[almaren] trait Executor extends Catalyst with Batch with Streaming
 
-private trait Catalyst {
+private trait Catalyst extends LazyLogging {
   // execute's PreOrder BT
 
   def catalyst(tree: Option[Tree],df:DataFrame = Almaren.spark.getOrCreate().emptyDataFrame): DataFrame = {
     val t = tree.getOrElse(throw NullCatalyst)
-    t.c.foldLeft(t.state.executor(df))((d,container) => catalyst(container,d))
+    t.c.foldLeft(t.state._executor(df))((d,container) => catalyst(container,d))
   }
 
   def catalyst(tree: Tree,df: DataFrame): DataFrame = {
-    val nodeDf = tree.state.executor(df)
+    val nodeDf = tree.state._executor(df)
     tree.c match {
       case node :: Nil => catalyst(node,nodeDf)
       case Nil => nodeDf

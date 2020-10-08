@@ -96,7 +96,7 @@ val df:DataFrame = almaren.builder
         |genres[0]$genre:StringType
         |director@director
         |	director.name$credit_name:StringType""".stripMargin)
-    .sql("""SELECT * FROM __TABLE__ WHERE actor NOT IN ("the","the life of")""")
+    .sql("""SELECT *,current_timestamp as date FROM __TABLE__ WHERE actor NOT IN ("the","the life of")""")
     .targetJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","movies",SaveMode.Overwrite)
     .batch
 ```
@@ -104,7 +104,7 @@ val df:DataFrame = almaren.builder
 The output:
 
 ```
-20/10/08 11:38:53 INFO SourceSql: sql:{select monotonically_increasing_id() as id,* from movies}
+20/10/08 11:57:10 INFO SourceSql: sql:{select monotonically_increasing_id() as id,* from movies}
 +---+----------------+--------------------+--------------------+----+
 | id|            cast|              genres|               title|year|
 +---+----------------+--------------------+--------------------+----+
@@ -131,7 +131,7 @@ The output:
 +---+----------------+--------------------+--------------------+----+
 only showing top 20 rows
 
-20/10/08 11:38:54 INFO Dsl: dsl:{id$id:LongType
+20/10/08 11:57:10 INFO Dsl: dsl:{id$id:LongType
 title$title:StringType
 year$year:LongType
 cast[0]$actor:StringType
@@ -165,183 +165,58 @@ director@director
 +---+--------------------+----+--------------+-------------+------+-----------+
 only showing top 20 rows
 
-20/10/08 11:38:54 INFO Sql: sql:{SELECT *,current_timestamp as date FROM __TABLE__}
-+---+--------------------+----+--------------+-------------+------+-----------+--------------------+
-| id|               title|year|         actor|support_actor| genre|credit_name|                date|
-+---+--------------------+----+--------------+-------------+------+-----------+--------------------+
-|  0|After Dark in Cen...|1900|          null|         null|  null|       null|2020-10-08 11:38:...|
-|  1|Boarding School G...|1900|          null|         null|  null|       null|2020-10-08 11:38:...|
-|  2|Buffalo Bill's Wi...|1900|          null|         null|  null|       null|2020-10-08 11:38:...|
-|  3|              Caught|1900|          null|         null|  null|       null|2020-10-08 11:38:...|
-|  4|Clowns Spinning Hats|1900|          null|         null|  null|       null|2020-10-08 11:38:...|
-|  5|Capture of Boer B...|1900|          null|         null| Short|       null|2020-10-08 11:38:...|
-|  6|The Enchanted Dra...|1900|          null|         null|  null|       null|2020-10-08 11:38:...|
-|  7|   Feeding Sea Lions|1900|   Paul Boyton|         null|  null|       null|2020-10-08 11:38:...|
-|  8|How to Make a Fat...|1900|          null|         null|Comedy|       null|2020-10-08 11:38:...|
-|  9|     New Life Rescue|1900|          null|         null|  null|       null|2020-10-08 11:38:...|
-| 10|    New Morning Bath|1900|          null|         null|  null|       null|2020-10-08 11:38:...|
-| 11|Searching Ruins o...|1900|          null|         null|  null|       null|2020-10-08 11:38:...|
-| 12|The Tribulations ...|1900|          null|         null|  null|       null|2020-10-08 11:38:...|
-| 13|Trouble in Hogan'...|1900|          null|         null|Comedy|       null|2020-10-08 11:38:...|
-| 14|      Two Old Sparks|1900|          null|         null| Short|       null|2020-10-08 11:38:...|
-| 15|The Wonder, Ching...|1900|Ching Ling Foo|         null| Short|       null|2020-10-08 11:38:...|
-| 16|  Watermelon Contest|1900|          null|         null| Short|       null|2020-10-08 11:38:...|
-| 17|   Acrobats in Cairo|1901|          null|         null|  null|       null|2020-10-08 11:38:...|
-| 18|  An Affair of Honor|1901|          null|         null|  null|       null|2020-10-08 11:38:...|
-| 19|Another Job for t...|1901|          null|         null|  null|       null|2020-10-08 11:38:...|
-+---+--------------------+----+--------------+-------------+------+-----------+--------------------+
+20/10/08 11:57:11 INFO Sql: sql:{SELECT *,current_timestamp as date FROM __TABLE__ WHERE actor NOT IN ("the","the life of")}
++---+--------------------+----+------------------+-----------------+----------+-----------+--------------------+
+| id|               title|year|             actor|    support_actor|     genre|credit_name|                date|
++---+--------------------+----+------------------+-----------------+----------+-----------+--------------------+
+|  7|   Feeding Sea Lions|1900|       Paul Boyton|             null|      null|       null|2020-10-08 11:57:...|
+| 15|The Wonder, Ching...|1900|    Ching Ling Foo|             null|     Short|       null|2020-10-08 11:57:...|
+|105| Alice in Wonderland|1903|         May Clark|             null|      null|       null|2020-10-08 11:57:...|
+|142|   Nicholas Nickleby|1903|William Carrington|             null|      null|       null|2020-10-08 11:57:...|
+|242|The Automobile Th...|1906|J. Stuart Blackton|Florence Lawrence|     Short|       null|2020-10-08 11:57:...|
+|245|Humorous Phases o...|1906|J. Stuart Blackton|             null|     Short|       null|2020-10-08 11:57:...|
+|250|             Ben-Hur|1907|   William S. Hart|             null|Historical|       null|2020-10-08 11:57:...|
+|251|        Daniel Boone|1907|    William Craven|Florence Lawrence| Biography|       null|2020-10-08 11:57:...|
+|252|How Brown Saw the...|1907|           Unknown|             null|    Comedy|       null|2020-10-08 11:57:...|
+|253|        Laughing Gas|1907|   Bertha Regustus|   Edward Boulden|    Comedy|       null|2020-10-08 11:57:...|
+|256|The Adventures of...|1908| Arthur V. Johnson|   Linda Arvidson|     Drama|       null|2020-10-08 11:57:...|
+|257|Antony and Cleopatra|1908| Florence Lawrence|William V. Ranous|      null|       null|2020-10-08 11:57:...|
+|258| Balked at the Altar|1908|    Linda Arvidson|  George Gebhardt|    Comedy|       null|2020-10-08 11:57:...|
+|259|The Bandit's Wate...|1908|    Charles Inslee|   Linda Arvidson|     Drama|       null|2020-10-08 11:57:...|
+|260|     The Black Viper|1908|    D. W. Griffith|             null|     Drama|       null|2020-10-08 11:57:...|
+|261|A Calamitous Elop...|1908|      Harry Solter|   Linda Arvidson|    Comedy|       null|2020-10-08 11:57:...|
+|262|The Call of the Wild|1908|    Charles Inslee|             null| Adventure|       null|2020-10-08 11:57:...|
+|263|   A Christmas Carol|1908|      Tom Ricketts|             null|     Drama|       null|2020-10-08 11:57:...|
+|264|Deceived Slumming...|1908|     Edward Dillon|   D. W. Griffith|    Comedy|       null|2020-10-08 11:57:...|
+|265|Dr. Jekyll and Mr...|1908|   Hobart Bosworth|      Betty Harte|    Horror|       null|2020-10-08 11:57:...|
++---+--------------------+----+------------------+-----------------+----------+-----------+--------------------+
 only showing top 20 rows
 
-20/10/08 11:38:54 INFO TargetJdbc: url:{jdbc:postgresql://localhost/almaren}, driver:{org.postgresql.Driver}, dbtable:{movies}, user:{None}, params:{Map()}
-+---+--------------------+----+--------------+-------------+------+-----------+--------------------+
-| id|               title|year|         actor|support_actor| genre|credit_name|                date|
-+---+--------------------+----+--------------+-------------+------+-----------+--------------------+
-|  0|After Dark in Cen...|1900|          null|         null|  null|       null|2020-10-08 11:38:...|
-|  1|Boarding School G...|1900|          null|         null|  null|       null|2020-10-08 11:38:...|
-|  2|Buffalo Bill's Wi...|1900|          null|         null|  null|       null|2020-10-08 11:38:...|
-|  3|              Caught|1900|          null|         null|  null|       null|2020-10-08 11:38:...|
-|  4|Clowns Spinning Hats|1900|          null|         null|  null|       null|2020-10-08 11:38:...|
-|  5|Capture of Boer B...|1900|          null|         null| Short|       null|2020-10-08 11:38:...|
-|  6|The Enchanted Dra...|1900|          null|         null|  null|       null|2020-10-08 11:38:...|
-|  7|   Feeding Sea Lions|1900|   Paul Boyton|         null|  null|       null|2020-10-08 11:38:...|
-|  8|How to Make a Fat...|1900|          null|         null|Comedy|       null|2020-10-08 11:38:...|
-|  9|     New Life Rescue|1900|          null|         null|  null|       null|2020-10-08 11:38:...|
-| 10|    New Morning Bath|1900|          null|         null|  null|       null|2020-10-08 11:38:...|
-| 11|Searching Ruins o...|1900|          null|         null|  null|       null|2020-10-08 11:38:...|
-| 12|The Tribulations ...|1900|          null|         null|  null|       null|2020-10-08 11:38:...|
-| 13|Trouble in Hogan'...|1900|          null|         null|Comedy|       null|2020-10-08 11:38:...|
-| 14|      Two Old Sparks|1900|          null|         null| Short|       null|2020-10-08 11:38:...|
-| 15|The Wonder, Ching...|1900|Ching Ling Foo|         null| Short|       null|2020-10-08 11:38:...|
-| 16|  Watermelon Contest|1900|          null|         null| Short|       null|2020-10-08 11:38:...|
-| 17|   Acrobats in Cairo|1901|          null|         null|  null|       null|2020-10-08 11:38:...|
-| 18|  An Affair of Honor|1901|          null|         null|  null|       null|2020-10-08 11:38:...|
-| 19|Another Job for t...|1901|          null|         null|  null|       null|2020-10-08 11:38:...|
-+---+--------------------+----+--------------+-------------+------+-----------+--------------------+
-only showing top 20 rows
-
-[info] Test2:
-[info] Run completed in 6 seconds, 328 milliseconds.
-[info] Total number of tests run: 0
-[info] Suites: completed 1, aborted 0
-[info] Tests: succeeded 0, failed 0, canceled 0, ignored 0, pending 0
-[info] No tests were executed.
-[success] Total time: 9 s, completed Oct 8, 2020 11:38:56 AM
-sbt:almaren-framework> testOnly com.github.music.of.the.ainur.almaren.Test2
-[info] Compiling 1 Scala source to /Users/mantovani/projects/music-of-the-ainur/almaren-framework/target/scala-2.12/classes ...
-[info] Compiling 1 Scala source to /Users/mantovani/projects/music-of-the-ainur/almaren-framework/target/scala-2.12/test-classes ...
-20/10/08 11:51:12 INFO SourceSql: sql:{select monotonically_increasing_id() as id,* from movies}
-+---+----------------+--------------------+--------------------+----+
-| id|            cast|              genres|               title|year|
-+---+----------------+--------------------+--------------------+----+
-|  0|              []|                  []|After Dark in Cen...|1900|
-|  1|              []|                  []|Boarding School G...|1900|
-|  2|              []|                  []|Buffalo Bill's Wi...|1900|
-|  3|              []|                  []|              Caught|1900|
-|  4|              []|                  []|Clowns Spinning Hats|1900|
-|  5|              []|[Short, Documentary]|Capture of Boer B...|1900|
-|  6|              []|                  []|The Enchanted Dra...|1900|
-|  7|   [Paul Boyton]|                  []|   Feeding Sea Lions|1900|
-|  8|              []|            [Comedy]|How to Make a Fat...|1900|
-|  9|              []|                  []|     New Life Rescue|1900|
-| 10|              []|                  []|    New Morning Bath|1900|
-| 11|              []|                  []|Searching Ruins o...|1900|
-| 12|              []|                  []|The Tribulations ...|1900|
-| 13|              []|            [Comedy]|Trouble in Hogan'...|1900|
-| 14|              []|             [Short]|      Two Old Sparks|1900|
-| 15|[Ching Ling Foo]|             [Short]|The Wonder, Ching...|1900|
-| 16|              []|             [Short]|  Watermelon Contest|1900|
-| 17|              []|                  []|   Acrobats in Cairo|1901|
-| 18|              []|                  []|  An Affair of Honor|1901|
-| 19|              []|                  []|Another Job for t...|1901|
-+---+----------------+--------------------+--------------------+----+
-only showing top 20 rows
-
-20/10/08 11:51:12 INFO Dsl: dsl:{id$id:LongType
-title$title:StringType
-year$year:LongType
-cast[0]$actor:StringType
-cast[1]$support_actor:StringType
-genres[0]$genre:StringType
-director@director
-	director.name$credit_name:StringType}
-+---+--------------------+----+--------------+-------------+------+-----------+
-| id|               title|year|         actor|support_actor| genre|credit_name|
-+---+--------------------+----+--------------+-------------+------+-----------+
-|  0|After Dark in Cen...|1900|          null|         null|  null|       null|
-|  1|Boarding School G...|1900|          null|         null|  null|       null|
-|  2|Buffalo Bill's Wi...|1900|          null|         null|  null|       null|
-|  3|              Caught|1900|          null|         null|  null|       null|
-|  4|Clowns Spinning Hats|1900|          null|         null|  null|       null|
-|  5|Capture of Boer B...|1900|          null|         null| Short|       null|
-|  6|The Enchanted Dra...|1900|          null|         null|  null|       null|
-|  7|   Feeding Sea Lions|1900|   Paul Boyton|         null|  null|       null|
-|  8|How to Make a Fat...|1900|          null|         null|Comedy|       null|
-|  9|     New Life Rescue|1900|          null|         null|  null|       null|
-| 10|    New Morning Bath|1900|          null|         null|  null|       null|
-| 11|Searching Ruins o...|1900|          null|         null|  null|       null|
-| 12|The Tribulations ...|1900|          null|         null|  null|       null|
-| 13|Trouble in Hogan'...|1900|          null|         null|Comedy|       null|
-| 14|      Two Old Sparks|1900|          null|         null| Short|       null|
-| 15|The Wonder, Ching...|1900|Ching Ling Foo|         null| Short|       null|
-| 16|  Watermelon Contest|1900|          null|         null| Short|       null|
-| 17|   Acrobats in Cairo|1901|          null|         null|  null|       null|
-| 18|  An Affair of Honor|1901|          null|         null|  null|       null|
-| 19|Another Job for t...|1901|          null|         null|  null|       null|
-+---+--------------------+----+--------------+-------------+------+-----------+
-only showing top 20 rows
-
-20/10/08 11:51:12 INFO Sql: sql:{SELECT * FROM __TABLE__ WHERE actor NOT IN ("the","the life of")}
-+---+--------------------+----+------------------+-----------------+----------+-----------+
-| id|               title|year|             actor|    support_actor|     genre|credit_name|
-+---+--------------------+----+------------------+-----------------+----------+-----------+
-|  7|   Feeding Sea Lions|1900|       Paul Boyton|             null|      null|       null|
-| 15|The Wonder, Ching...|1900|    Ching Ling Foo|             null|     Short|       null|
-|105| Alice in Wonderland|1903|         May Clark|             null|      null|       null|
-|142|   Nicholas Nickleby|1903|William Carrington|             null|      null|       null|
-|242|The Automobile Th...|1906|J. Stuart Blackton|Florence Lawrence|     Short|       null|
-|245|Humorous Phases o...|1906|J. Stuart Blackton|             null|     Short|       null|
-|250|             Ben-Hur|1907|   William S. Hart|             null|Historical|       null|
-|251|        Daniel Boone|1907|    William Craven|Florence Lawrence| Biography|       null|
-|252|How Brown Saw the...|1907|           Unknown|             null|    Comedy|       null|
-|253|        Laughing Gas|1907|   Bertha Regustus|   Edward Boulden|    Comedy|       null|
-|256|The Adventures of...|1908| Arthur V. Johnson|   Linda Arvidson|     Drama|       null|
-|257|Antony and Cleopatra|1908| Florence Lawrence|William V. Ranous|      null|       null|
-|258| Balked at the Altar|1908|    Linda Arvidson|  George Gebhardt|    Comedy|       null|
-|259|The Bandit's Wate...|1908|    Charles Inslee|   Linda Arvidson|     Drama|       null|
-|260|     The Black Viper|1908|    D. W. Griffith|             null|     Drama|       null|
-|261|A Calamitous Elop...|1908|      Harry Solter|   Linda Arvidson|    Comedy|       null|
-|262|The Call of the Wild|1908|    Charles Inslee|             null| Adventure|       null|
-|263|   A Christmas Carol|1908|      Tom Ricketts|             null|     Drama|       null|
-|264|Deceived Slumming...|1908|     Edward Dillon|   D. W. Griffith|    Comedy|       null|
-|265|Dr. Jekyll and Mr...|1908|   Hobart Bosworth|      Betty Harte|    Horror|       null|
-+---+--------------------+----+------------------+-----------------+----------+-----------+
-only showing top 20 rows
-
-20/10/08 11:51:13 INFO TargetJdbc: url:{jdbc:postgresql://localhost/almaren}, driver:{org.postgresql.Driver}, dbtable:{movies}, user:{None}, params:{Map()}
-+---+--------------------+----+------------------+-----------------+----------+-----------+
-| id|               title|year|             actor|    support_actor|     genre|credit_name|
-+---+--------------------+----+------------------+-----------------+----------+-----------+
-|  7|   Feeding Sea Lions|1900|       Paul Boyton|             null|      null|       null|
-| 15|The Wonder, Ching...|1900|    Ching Ling Foo|             null|     Short|       null|
-|105| Alice in Wonderland|1903|         May Clark|             null|      null|       null|
-|142|   Nicholas Nickleby|1903|William Carrington|             null|      null|       null|
-|242|The Automobile Th...|1906|J. Stuart Blackton|Florence Lawrence|     Short|       null|
-|245|Humorous Phases o...|1906|J. Stuart Blackton|             null|     Short|       null|
-|250|             Ben-Hur|1907|   William S. Hart|             null|Historical|       null|
-|251|        Daniel Boone|1907|    William Craven|Florence Lawrence| Biography|       null|
-|252|How Brown Saw the...|1907|           Unknown|             null|    Comedy|       null|
-|253|        Laughing Gas|1907|   Bertha Regustus|   Edward Boulden|    Comedy|       null|
-|256|The Adventures of...|1908| Arthur V. Johnson|   Linda Arvidson|     Drama|       null|
-|257|Antony and Cleopatra|1908| Florence Lawrence|William V. Ranous|      null|       null|
-|258| Balked at the Altar|1908|    Linda Arvidson|  George Gebhardt|    Comedy|       null|
-|259|The Bandit's Wate...|1908|    Charles Inslee|   Linda Arvidson|     Drama|       null|
-|260|     The Black Viper|1908|    D. W. Griffith|             null|     Drama|       null|
-|261|A Calamitous Elop...|1908|      Harry Solter|   Linda Arvidson|    Comedy|       null|
-|262|The Call of the Wild|1908|    Charles Inslee|             null| Adventure|       null|
-|263|   A Christmas Carol|1908|      Tom Ricketts|             null|     Drama|       null|
-|264|Deceived Slumming...|1908|     Edward Dillon|   D. W. Griffith|    Comedy|       null|
-|265|Dr. Jekyll and Mr...|1908|   Hobart Bosworth|      Betty Harte|    Horror|       null|
-+---+--------------------+----+------------------+-----------------+----------+-----------+
+20/10/08 11:57:11 INFO TargetJdbc: url:{jdbc:postgresql://localhost/almaren}, driver:{org.postgresql.Driver}, dbtable:{movies}, user:{None}, params:{Map()}
++---+--------------------+----+------------------+-----------------+----------+-----------+--------------------+
+| id|               title|year|             actor|    support_actor|     genre|credit_name|                date|
++---+--------------------+----+------------------+-----------------+----------+-----------+--------------------+
+|  7|   Feeding Sea Lions|1900|       Paul Boyton|             null|      null|       null|2020-10-08 11:57:...|
+| 15|The Wonder, Ching...|1900|    Ching Ling Foo|             null|     Short|       null|2020-10-08 11:57:...|
+|105| Alice in Wonderland|1903|         May Clark|             null|      null|       null|2020-10-08 11:57:...|
+|142|   Nicholas Nickleby|1903|William Carrington|             null|      null|       null|2020-10-08 11:57:...|
+|242|The Automobile Th...|1906|J. Stuart Blackton|Florence Lawrence|     Short|       null|2020-10-08 11:57:...|
+|245|Humorous Phases o...|1906|J. Stuart Blackton|             null|     Short|       null|2020-10-08 11:57:...|
+|250|             Ben-Hur|1907|   William S. Hart|             null|Historical|       null|2020-10-08 11:57:...|
+|251|        Daniel Boone|1907|    William Craven|Florence Lawrence| Biography|       null|2020-10-08 11:57:...|
+|252|How Brown Saw the...|1907|           Unknown|             null|    Comedy|       null|2020-10-08 11:57:...|
+|253|        Laughing Gas|1907|   Bertha Regustus|   Edward Boulden|    Comedy|       null|2020-10-08 11:57:...|
+|256|The Adventures of...|1908| Arthur V. Johnson|   Linda Arvidson|     Drama|       null|2020-10-08 11:57:...|
+|257|Antony and Cleopatra|1908| Florence Lawrence|William V. Ranous|      null|       null|2020-10-08 11:57:...|
+|258| Balked at the Altar|1908|    Linda Arvidson|  George Gebhardt|    Comedy|       null|2020-10-08 11:57:...|
+|259|The Bandit's Wate...|1908|    Charles Inslee|   Linda Arvidson|     Drama|       null|2020-10-08 11:57:...|
+|260|     The Black Viper|1908|    D. W. Griffith|             null|     Drama|       null|2020-10-08 11:57:...|
+|261|A Calamitous Elop...|1908|      Harry Solter|   Linda Arvidson|    Comedy|       null|2020-10-08 11:57:...|
+|262|The Call of the Wild|1908|    Charles Inslee|             null| Adventure|       null|2020-10-08 11:57:...|
+|263|   A Christmas Carol|1908|      Tom Ricketts|             null|     Drama|       null|2020-10-08 11:57:...|
+|264|Deceived Slumming...|1908|     Edward Dillon|   D. W. Griffith|    Comedy|       null|2020-10-08 11:57:...|
+|265|Dr. Jekyll and Mr...|1908|   Hobart Bosworth|      Betty Harte|    Horror|       null|2020-10-08 11:57:...|
++---+--------------------+----+------------------+-----------------+----------+-----------+--------------------+
 only showing top 20 rows
 ```
 

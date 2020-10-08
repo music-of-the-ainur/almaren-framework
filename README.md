@@ -16,6 +16,8 @@ To run in spark-shell:
 spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.11:0.5.0-2.4"
 ```
 
+
+
 ## Introduction
 
 The Almaren Framework provides a simplified consistent minimalistic layer over Apache Spark, while still allowing you to take advantage of native Apache Spark features. You can even combine it with standard Spark code.
@@ -384,7 +386,7 @@ Read from BigQuery using [Google BigQuery Connector](https://github.com/GoogleCl
 
 Executors are responsible to execute Almaren Tree i.e ```Option[Tree]``` to Apache Spark. Without invoke an _executor_, code won't be executed by Apache Spark. Follow the list of _executors_:
 
-## Batch
+### Batch
 
 Executes the Almaren Tree returning a Dataframe.
 
@@ -405,7 +407,7 @@ val tree = almaren.builder
 val df:DataFrame = tree.batch
 ```
 
-## Streaming Kafka
+### Streaming Kafka
 
 Read data from Kafka and execute's Almaren Tree providing the special table ```__STREAMING__```:
 

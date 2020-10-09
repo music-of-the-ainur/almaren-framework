@@ -16,6 +16,43 @@ To run in spark-shell:
 spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.11:0.5.0-2.4"
 ```
 
+## Table of Contents
+
+- [Introduction](#introduction)
+  * [Batch Example](#batch-example)
+  * [Streaming Example](#streaming-example)
+- [Debugging](#debugging)
+- [Components](#components)
+  * [sourceSql](#sourcesql)
+  * [sourceFile](#sourcefile)
+  * [sourceHbase](#sourcehbase)
+  * [sourceCassandra](#sourcecassandra)
+  * [sourceJdbc](#sourcejdbc)
+  * [sourceBigQuery](#sourcebigquery)
+  * [Cache](#cache)
+  * [Coalesce](#coalesce)
+  * [Repartition](#repartition)
+  * [Pipe](#pipe)
+  * [Alias](#alias)
+  * [Deserializer](#deserializer)
+  * [SQL](#sql)
+  * [DSL](#dsl)
+  * [HTTP](#http)
+  * [targetSql](#targetsql)
+  * [targetHbase](#targethbase)
+  * [targetCassandra](#targetcassandra)
+  * [targetJdbc](#targetjdbc)
+  * [targetKafka](#targetkafka)
+  * [targetHttp](#targethttp)
+  * [targetBigQuery](#targetbigquery)
+- [Executors](#executors)
+  * [Batch](#batch)
+  * [Streaming Kafka](#streaming-kafka)
+- [Examples](#examples)
+  * [Example 1](#example-1)
+  * [Example 2](#example-2)
+  * [Example 3](#example-3)
+  * [Example 4](#example-4)
 
 
 ## Introduction

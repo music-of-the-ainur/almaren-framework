@@ -421,7 +421,7 @@ Read data from Kafka and execute's Almaren Tree providing the special table ```_
 | timestamp     | long      |
 | timestampType | int       |
 
-The ```streaming(tree,params:Map[String,String]``` the params are the options available in ```readStream.format("kafka").options(params)``` you can check all the options [here](https://spark.apache.org/docs/2.4.0/structured-streaming-kafka-integration.html#kafka-specific-configurations)
+The ```streaming(tree,params:Map[String,String]``` method _params_ are the options available in ```readStream.format("kafka").options(params)``` you can check all the options [here](https://spark.apache.org/docs/2.4.0/structured-streaming-kafka-integration.html#kafka-specific-configurations)
 
 ```scala
 val tree = almaren.builder

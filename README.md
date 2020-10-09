@@ -268,7 +268,9 @@ only showing top 20 rows
 
 ## Components
 
-### sourceSql
+### Source
+
+#### sourceSql
 
 Read native Spark/Hive tables using Spark SQL.
 
@@ -276,7 +278,7 @@ Read native Spark/Hive tables using Spark SQL.
 sourceSql("select monotonically_increasing_id() as id,* from database.tabname")
 ```
 
-### sourceFile
+#### sourceFile
 
 Read files like CSV,Avro,JSON and XML
 
@@ -284,15 +286,15 @@ Read files like CSV,Avro,JSON and XML
 sourceFile("csv","/tmp/file.csv",Map("header" -> "true"))
 ```
 
-### sourceHbase
+#### sourceHbase
 
 Read from Hbase using [HBase Connector](https://github.com/hortonworks-spark/shc)
 
-### sourceCassandra
+#### sourceCassandra
 
 Read from Cassandra using [Spark Cassandra Connector](https://github.com/datastax/spark-cassandra-connector)
 
-### sourceJdbc
+#### sourceJdbc
 
 Read from JDBC using [Spark JDBC](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html)
 
@@ -300,11 +302,13 @@ Read from JDBC using [Spark JDBC](https://spark.apache.org/docs/latest/sql-data-
 sourceJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","select * from table_name",Some("user"),Some("password"))
 ```
 
-### sourceBigQuery
+#### sourceBigQuery
 
 Read from BigQuery using [Google BigQuery Connector](https://github.com/GoogleCloudPlatform/spark-bigquery-connector)
 
-### Cache
+### Main
+
+#### Cache
 
 Cache/Uncache both DataFrame or Table
 
@@ -312,7 +316,7 @@ Cache/Uncache both DataFrame or Table
 cache(true)
 ```
 
-### Coalesce
+#### Coalesce
 
 Decrease the number of partitions in the RDD to numPartitions. Useful for running operations more efficiently after filtering down a large dataset.
 
@@ -320,7 +324,7 @@ Decrease the number of partitions in the RDD to numPartitions. Useful for runnin
 coalesce(10)
 ```
 
-### Repartition
+#### Repartition
 
 Reshuffle the data in the RDD randomly to create either more or fewer partitions and balance it across them. This always shuffles all data over the network.
 
@@ -328,7 +332,7 @@ Reshuffle the data in the RDD randomly to create either more or fewer partitions
 repartition(100)
 ```
 
-### Pipe
+#### Pipe
 
 Pipe each partition of the RDD through a shell command, e.g. a Perl or bash script. RDD elements are written to the process's stdin and lines output to its stdout are returned as an RDD of strings.
 
@@ -336,7 +340,7 @@ Pipe each partition of the RDD through a shell command, e.g. a Perl or bash scri
 pipe("""perl -npE 's/(?:\d+)\s+([^\w]+)/:$1/mg'""")
 ```
 
-### Alias
+#### Alias
 
 Creates a temporary view using the previews component, `createOrReplaceTempView`.
 
@@ -345,7 +349,7 @@ alias("my_table")
 
 ```
 
-### Deserializer
+#### Deserializer
 
 Deserialize the following types XML, JSON and Avro to Spark DataFrame.
 
@@ -354,14 +358,14 @@ deserializer("JSON","column_name","`cast` ARRAY<STRING>,`genres` ARRAY<STRING>,`
 
 ```
 
-### SQL
+#### SQL
 
 [Spark SQL](https://docs.databricks.com/spark/latest/spark-sql/index.html) syntax. You can query preview component through the special table `__TABLE__`.
 
 ```scala
 sql("SELECT * FROM __TABLE__")
 ```
-### DSL
+#### DSL
 
 DSL(Domain Specific Language) simplifies the task to flatten, select, alias and properly set the datatype. It's very powerful to parse complex data structures.
 
@@ -373,11 +377,13 @@ dsl("""title$title:StringType
 	|genres[0]$genre:StringType""".stripMargin)
 ```
 
-### HTTP
+#### HTTP
 
 Start a HTTP keep-alive connection for each partition of the RDD and send a request for each row returning two columns, `header` and `body`.
 
-### targetSql
+### Target
+
+#### targetSql
 
 Write native Spark/Hive tables using [Spark SQL](https://docs.databricks.com/spark/latest/spark-sql/language-manual/insert.html).
 
@@ -385,15 +391,15 @@ Write native Spark/Hive tables using [Spark SQL](https://docs.databricks.com/spa
 targetSql("INSERT OVERWRITE TABLE database.table SELECT * FROM __TABLE__")
 ```
 
-### targetHbase
+#### targetHbase
 
 Write to Hbase using [HBase Connector](https://github.com/hortonworks-spark/shc)
 
-### targetCassandra
+#### targetCassandra
 
 Write to Cassandra using [Spark Cassandra Connector](https://github.com/datastax/spark-cassandra-connector)
 
-### targetJdbc
+#### targetJdbc
 
 Write to JDBC using [Spark JDBC](https://spark.apache.org/docs/latest/sql-data-targets-jdbc.html)
 
@@ -401,7 +407,7 @@ Write to JDBC using [Spark JDBC](https://spark.apache.org/docs/latest/sql-data-t
 targetJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","movies",SaveMode.Overwrite)
 ```
 
-### targetKafka
+#### targetKafka
 
 Write to Kafka, you must have a column named **value**, the content of this column will be sent to Kafka. You can specify the *topic* either with a column named **topic** or in the option as in the example below.
 Check the [documentation](https://spark.apache.org/docs/2.4.0/structured-streaming-kafka-integration.html) for the full list of parameters
@@ -411,11 +417,11 @@ sql("SELECT to_json(struct(*)) as value FROM __TABLE__").targetKafka("localhost:
 
 ```
 
-### targetHttp
+#### targetHttp
 
 Start a HTTP keep-alive connection for each partition of the RDD and send a request for each row.
 
-### targetBigQuery
+#### targetBigQuery
 
 Read from BigQuery using [Google BigQuery Connector](https://github.com/GoogleCloudPlatform/spark-bigquery-connector)
 

@@ -3,22 +3,10 @@
 [![Build Status](https://travis-ci.org/music-of-the-ainur/almaren-framework.svg?branch=master)](https://travis-ci.org/music-of-the-ainur/almaren-framework)
 [![Gitter Community](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/music-of-the-ainur/community)
 
-
-To add Almaren Framework dependency to your sbt build:
-
-```
-libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % "0.5.0-2.4"
-```
-
-To run in spark-shell:
-
-```
-spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.11:0.5.0-2.4"
-```
-
 ## Table of Contents
 
 - [Introduction](#introduction)
+  * [Dependency](#dependency)
   * [Batch Example](#batch-example)
   * [Streaming Example](#streaming-example)
 - [Debugging](#debugging)
@@ -57,10 +45,23 @@ spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.11:0.5
   * [Example 3](#example-3)
   * [Example 4](#example-4)
 
-
 ## Introduction
 
 The Almaren Framework provides a simplified consistent minimalistic layer over Apache Spark, while still allowing you to take advantage of native Apache Spark features. You can even combine it with standard Spark code.
+
+### Dependency
+
+To add Almaren Framework dependency to your sbt build:
+
+```
+libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % "0.5.0-2.4"
+```
+
+To run in spark-shell:
+
+```
+spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.11:0.5.0-2.4"
+```
 
 ### Batch Example
 ```scala

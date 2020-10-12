@@ -36,7 +36,6 @@ The Almaren Framework provides a simplified consistent minimalistic layer over A
     + [targetCassandra](#targetcassandra)
     + [targetJdbc](#targetjdbc)
     + [targetKafka](#targetkafka)
-    + [targetHttp](#targethttp)
     + [targetBigQuery](#targetbigquery)
 - [Executors](#executors)
   * [Batch](#batch)
@@ -422,10 +421,6 @@ Check the [documentation](https://spark.apache.org/docs/2.4.0/structured-streami
 sql("SELECT to_json(struct(*)) as value FROM __TABLE__").targetKafka("localhost:9092",Map("topic" -> "testing"))
 
 ```
-
-#### targetHttp
-
-Start a HTTP keep-alive connection for each partition of the RDD and send a request for each row.
 
 #### targetBigQuery
 

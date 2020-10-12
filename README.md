@@ -1,8 +1,57 @@
 # Almaren Framework
 
+The Almaren Framework provides a simplified consistent minimalistic layer over Apache Spark, while still allowing you to take advantage of native Apache Spark features. You can even combine it with standard Spark code.
+
 [![Build Status](https://travis-ci.org/music-of-the-ainur/almaren-framework.svg?branch=master)](https://travis-ci.org/music-of-the-ainur/almaren-framework)
 [![Gitter Community](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/music-of-the-ainur/community)
 
+## Table of Contents
+
+- [Introduction](#introduction)
+  * [Dependency](#dependency)
+  * [Batch Example](#batch-example)
+  * [Streaming Example](#streaming-example)
+- [Debugging](#debugging)
+- [Components](#components)
+  * [Source](#source)
+    + [sourceSql](#sourcesql)
+    + [sourceFile](#sourcefile)
+    + [sourceHbase](#sourcehbase)
+    + [sourceCassandra](#sourcecassandra)
+    + [sourceJdbc](#sourcejdbc)
+    + [sourceBigQuery](#sourcebigquery)
+  * [Main](#main)
+    + [Cache](#cache)
+    + [Coalesce](#coalesce)
+    + [Repartition](#repartition)
+    + [Pipe](#pipe)
+    + [Alias](#alias)
+    + [Deserializer](#deserializer)
+    + [SQL](#sql)
+    + [DSL](#dsl)
+    + [HTTP](#http)
+  * [Target](#target)
+    + [targetSql](#targetsql)
+    + [targetHbase](#targethbase)
+    + [targetCassandra](#targetcassandra)
+    + [targetJdbc](#targetjdbc)
+    + [targetKafka](#targetkafka)
+    + [targetHttp](#targethttp)
+    + [targetBigQuery](#targetbigquery)
+- [Executors](#executors)
+  * [Batch](#batch)
+  * [Streaming Kafka](#streaming-kafka)
+- [Examples](#examples)
+  * [Example 1](#example-1)
+  * [Example 2](#example-2)
+  * [Example 3](#example-3)
+  * [Example 4](#example-4)
+
+## Introduction
+
+The Almaren Framework provides a simplified consistent minimalistic layer over Apache Spark, while still allowing you to take advantage of native Apache Spark features. You can even combine it with standard Spark code.
+
+### Dependency
 
 To add Almaren Framework dependency to your sbt build:
 
@@ -15,10 +64,6 @@ To run in spark-shell:
 ```
 spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.11:0.5.0-2.4"
 ```
-
-## Introduction
-
-The Almaren Framework provides a simplified consistent minimalistic layer over Apache Spark, while still allowing you to take advantage of native Apache Spark features. You can even combine it with standard Spark code.
 
 ### Batch Example
 ```scala
@@ -229,7 +274,9 @@ only showing top 20 rows
 
 ## Components
 
-### sourceSql
+### Source
+
+#### sourceSql
 
 Read native Spark/Hive tables using Spark SQL.
 
@@ -237,7 +284,7 @@ Read native Spark/Hive tables using Spark SQL.
 sourceSql("select monotonically_increasing_id() as id,* from database.tabname")
 ```
 
-### sourceFile
+#### sourceFile
 
 Read files like CSV,Avro,JSON and XML
 
@@ -245,15 +292,15 @@ Read files like CSV,Avro,JSON and XML
 sourceFile("csv","/tmp/file.csv",Map("header" -> "true"))
 ```
 
-### sourceHbase
+#### sourceHbase
 
 Read from Hbase using [HBase Connector](https://github.com/hortonworks-spark/shc)
 
-### sourceCassandra
+#### sourceCassandra
 
 Read from Cassandra using [Spark Cassandra Connector](https://github.com/datastax/spark-cassandra-connector)
 
-### sourceJdbc
+#### sourceJdbc
 
 Read from JDBC using [Spark JDBC](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html)
 
@@ -261,11 +308,13 @@ Read from JDBC using [Spark JDBC](https://spark.apache.org/docs/latest/sql-data-
 sourceJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","select * from table_name",Some("user"),Some("password"))
 ```
 
-### sourceBigQuery
+#### sourceBigQuery
 
 Read from BigQuery using [Google BigQuery Connector](https://github.com/GoogleCloudPlatform/spark-bigquery-connector)
 
-### Cache
+### Main
+
+#### Cache
 
 Cache/Uncache both DataFrame or Table
 
@@ -273,7 +322,7 @@ Cache/Uncache both DataFrame or Table
 cache(true)
 ```
 
-### Coalesce
+#### Coalesce
 
 Decrease the number of partitions in the RDD to numPartitions. Useful for running operations more efficiently after filtering down a large dataset.
 
@@ -281,7 +330,7 @@ Decrease the number of partitions in the RDD to numPartitions. Useful for runnin
 coalesce(10)
 ```
 
-### Repartition
+#### Repartition
 
 Reshuffle the data in the RDD randomly to create either more or fewer partitions and balance it across them. This always shuffles all data over the network.
 
@@ -289,7 +338,7 @@ Reshuffle the data in the RDD randomly to create either more or fewer partitions
 repartition(100)
 ```
 
-### Pipe
+#### Pipe
 
 Pipe each partition of the RDD through a shell command, e.g. a Perl or bash script. RDD elements are written to the process's stdin and lines output to its stdout are returned as an RDD of strings.
 
@@ -297,7 +346,7 @@ Pipe each partition of the RDD through a shell command, e.g. a Perl or bash scri
 pipe("""perl -npE 's/(?:\d+)\s+([^\w]+)/:$1/mg'""")
 ```
 
-### Alias
+#### Alias
 
 Creates a temporary view using the previews component, `createOrReplaceTempView`.
 
@@ -306,7 +355,7 @@ alias("my_table")
 
 ```
 
-### Deserializer
+#### Deserializer
 
 Deserialize the following types XML, JSON and Avro to Spark DataFrame.
 
@@ -315,14 +364,14 @@ deserializer("JSON","column_name","`cast` ARRAY<STRING>,`genres` ARRAY<STRING>,`
 
 ```
 
-### SQL
+#### SQL
 
 [Spark SQL](https://docs.databricks.com/spark/latest/spark-sql/index.html) syntax. You can query preview component through the special table `__TABLE__`.
 
 ```scala
 sql("SELECT * FROM __TABLE__")
 ```
-### DSL
+#### DSL
 
 DSL(Domain Specific Language) simplifies the task to flatten, select, alias and properly set the datatype. It's very powerful to parse complex data structures.
 
@@ -334,11 +383,13 @@ dsl("""title$title:StringType
 	|genres[0]$genre:StringType""".stripMargin)
 ```
 
-### HTTP
+#### HTTP
 
 Start a HTTP keep-alive connection for each partition of the RDD and send a request for each row returning two columns, `header` and `body`.
 
-### targetSql
+### Target
+
+#### targetSql
 
 Write native Spark/Hive tables using [Spark SQL](https://docs.databricks.com/spark/latest/spark-sql/language-manual/insert.html).
 
@@ -346,15 +397,15 @@ Write native Spark/Hive tables using [Spark SQL](https://docs.databricks.com/spa
 targetSql("INSERT OVERWRITE TABLE database.table SELECT * FROM __TABLE__")
 ```
 
-### targetHbase
+#### targetHbase
 
 Write to Hbase using [HBase Connector](https://github.com/hortonworks-spark/shc)
 
-### targetCassandra
+#### targetCassandra
 
 Write to Cassandra using [Spark Cassandra Connector](https://github.com/datastax/spark-cassandra-connector)
 
-### targetJdbc
+#### targetJdbc
 
 Write to JDBC using [Spark JDBC](https://spark.apache.org/docs/latest/sql-data-targets-jdbc.html)
 
@@ -362,7 +413,7 @@ Write to JDBC using [Spark JDBC](https://spark.apache.org/docs/latest/sql-data-t
 targetJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","movies",SaveMode.Overwrite)
 ```
 
-### targetKafka
+#### targetKafka
 
 Write to Kafka, you must have a column named **value**, the content of this column will be sent to Kafka. You can specify the *topic* either with a column named **topic** or in the option as in the example below.
 Check the [documentation](https://spark.apache.org/docs/2.4.0/structured-streaming-kafka-integration.html) for the full list of parameters
@@ -372,13 +423,77 @@ sql("SELECT to_json(struct(*)) as value FROM __TABLE__").targetKafka("localhost:
 
 ```
 
-### targetHttp
+#### targetHttp
 
 Start a HTTP keep-alive connection for each partition of the RDD and send a request for each row.
 
-### targetBigQuery
+#### targetBigQuery
 
 Read from BigQuery using [Google BigQuery Connector](https://github.com/GoogleCloudPlatform/spark-bigquery-connector)
+
+## Executors
+
+Executors are responsible to execute Almaren Tree i.e ```Option[Tree]``` to Apache Spark. Without invoke an _executor_, code won't be executed by Apache Spark. Follow the list of _executors_:
+
+### Batch
+
+Executes the Almaren Tree returning a Dataframe.
+
+```scala
+val tree = almaren.builder
+    .sourceSql("select monotonically_increasing_id() as id,* from movies")
+    .dsl("""id$id:LongType
+        |title$title:StringType
+        |year$year:LongType
+        |cast[0]$actor:StringType
+        |cast[1]$support_actor:StringType
+        |genres[0]$genre:StringType
+        |director@director
+        |	director.name$credit_name:StringType""".stripMargin)
+    .sql("""SELECT * FROM __TABLE__ WHERE actor NOT IN ("the","the life of")""")
+    .targetJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","movies",SaveMode.Overwrite)
+
+val df:DataFrame = tree.batch
+```
+
+### Streaming Kafka
+
+Read data from Kafka and execute's Almaren Tree providing the special table ```__STREAMING__```:
+
+| Column Name   | Data Type |
+|---------------|-----------|
+| key           | binary    |
+| value         | binary    |
+| topic         | string    |
+| partition     | int       |
+| offset        | long      |
+| timestamp     | long      |
+| timestampType | int       |
+
+The ```streaming(tree,params:Map[String,String]``` method _params_ are the options available in ```readStream.format("kafka").options(params)``` you can check all the options [here](https://spark.apache.org/docs/2.4.0/structured-streaming-kafka-integration.html#kafka-specific-configurations)
+
+```scala
+val tree = almaren.builder
+    .sourceSql("select CAST(value AS STRING) as json_column FROM __STREAMING__")
+    .deserializer("json","json_column")
+    .dsl("""user.id$user_id:LongType
+        |user.name$user_name:StringType
+        |user.time_zone$time_zone:StringType
+        |user.friends_count$friends_count:LongType
+        |user.followers_count$followers_count:LongType
+        |source$source:StringType
+        |place.country$country:StringType
+        |timestamp_ms$timestamp_ms:LongType
+        |text$message:StringType
+        |entities@entitie
+        |	entitie.hashtags@hashtag
+        |		hashtag.text$hashtag:StringType""".stripMargin)
+  .sql("SELECT DISTINCT * FROM __TABLE__")
+  .sql("""SELECT sha2(concat_ws("",array(*)),256) as unique_hash,*,current_timestamp from __TABLE__""")
+  .targetJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","twitter_streaming",SaveMode.Append)
+
+almaren.streaming(tree,Map("kafka.bootstrap.servers" -> "localhost:9092","subscribe" -> "twitter", "startingOffsets" -> "earliest"))
+```
 
 ## Examples
 
@@ -400,6 +515,7 @@ val df:DataFrame = almaren.builder.sourceSql("SELECT * FROM db.schema.table")
     .sql("""SELECT *,unix_timestamp() as timestamp from __TABLE__""")
     .targetSql("INSERT OVERWRITE TABLE default.target_table SELECT * FROM __TABLE__")
     .batch
+valdf:DataFrame = 
 ```
 
 ### Example 2

@@ -510,7 +510,6 @@ val df:DataFrame = almaren.builder.sourceSql("SELECT * FROM db.schema.table")
     .sql("""SELECT *,unix_timestamp() as timestamp from __TABLE__""")
     .targetSql("INSERT OVERWRITE TABLE default.target_table SELECT * FROM __TABLE__")
     .batch
-valdf:DataFrame = 
 ```
 
 ### Example 2

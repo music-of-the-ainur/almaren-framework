@@ -16,10 +16,7 @@ The Almaren Framework provides a simplified consistent minimalistic layer over A
   * [Source](#source)
     + [sourceSql](#sourcesql)
     + [sourceFile](#sourcefile)
-    + [sourceHbase](#sourcehbase)
-    + [sourceCassandra](#sourcecassandra)
     + [sourceJdbc](#sourcejdbc)
-    + [sourceBigQuery](#sourcebigquery)
   * [Main](#main)
     + [Cache](#cache)
     + [Coalesce](#coalesce)
@@ -32,11 +29,8 @@ The Almaren Framework provides a simplified consistent minimalistic layer over A
     + [HTTP](#http)
   * [Target](#target)
     + [targetSql](#targetsql)
-    + [targetHbase](#targethbase)
-    + [targetCassandra](#targetcassandra)
     + [targetJdbc](#targetjdbc)
     + [targetKafka](#targetkafka)
-    + [targetBigQuery](#targetbigquery)
 - [Executors](#executors)
   * [Batch](#batch)
   * [Streaming Kafka](#streaming-kafka)
@@ -291,14 +285,6 @@ Read files like CSV,Avro,JSON and XML
 sourceFile("csv","/tmp/file.csv",Map("header" -> "true"))
 ```
 
-#### sourceHbase
-
-Read from Hbase using [HBase Connector](https://github.com/hortonworks-spark/shc)
-
-#### sourceCassandra
-
-Read from Cassandra using [Spark Cassandra Connector](https://github.com/datastax/spark-cassandra-connector)
-
 #### sourceJdbc
 
 Read from JDBC using [Spark JDBC](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html)
@@ -306,10 +292,6 @@ Read from JDBC using [Spark JDBC](https://spark.apache.org/docs/latest/sql-data-
 ```scala
 sourceJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","select * from table_name",Some("user"),Some("password"))
 ```
-
-#### sourceBigQuery
-
-Read from BigQuery using [Google BigQuery Connector](https://github.com/GoogleCloudPlatform/spark-bigquery-connector)
 
 ### Main
 
@@ -384,7 +366,7 @@ dsl("""title$title:StringType
 
 #### HTTP
 
-Start a HTTP keep-alive connection for each partition of the RDD and send a request for each row returning two columns, `header` and `body`.
+[HTTP Connector](https://github.com/music-of-the-ainur/http.almaren) to perform HTTP requests.
 
 ### Target
 
@@ -395,14 +377,6 @@ Write native Spark/Hive tables using [Spark SQL](https://docs.databricks.com/spa
 ```scala
 targetSql("INSERT OVERWRITE TABLE database.table SELECT * FROM __TABLE__")
 ```
-
-#### targetHbase
-
-Write to Hbase using [HBase Connector](https://github.com/hortonworks-spark/shc)
-
-#### targetCassandra
-
-Write to Cassandra using [Spark Cassandra Connector](https://github.com/datastax/spark-cassandra-connector)
 
 #### targetJdbc
 
@@ -421,10 +395,6 @@ Check the [documentation](https://spark.apache.org/docs/2.4.0/structured-streami
 sql("SELECT to_json(struct(*)) as value FROM __TABLE__").targetKafka("localhost:9092",Map("topic" -> "testing"))
 
 ```
-
-#### targetBigQuery
-
-Read from BigQuery using [Google BigQuery Connector](https://github.com/GoogleCloudPlatform/spark-bigquery-connector)
 
 ## Executors
 

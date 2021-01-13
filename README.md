@@ -2,7 +2,7 @@
 
 The Almaren Framework provides a simplified consistent minimalistic layer over Apache Spark, while still allowing you to take advantage of native Apache Spark features. You can even combine it with standard Spark code.
 
-[![Build Status](https://travis-ci.org/music-of-the-ainur/almaren-framework.svg?branch=master)](https://travis-ci.org/music-of-the-ainur/almaren-framework)
+[![Build Status](https://travis-ci.com/mantovani/almaren-framework.svg?branch=master)](https://travis-ci.com/mantovani/almaren-framework)
 [![Gitter Community](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/music-of-the-ainur/community)
 
 ## Table of Contents

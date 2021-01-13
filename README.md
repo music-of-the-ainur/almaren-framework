@@ -17,6 +17,9 @@ The Almaren Framework provides a simplified consistent minimalistic layer over A
     + [sourceSql](#sourcesql)
     + [sourceFile](#sourcefile)
     + [sourceJdbc](#sourcejdbc)
+    + [sourceSolr](#sourcesolr)
+    + [sourceMongoDb](#sourcemongodb)
+    + [sourceBigQuery](#sourcebigquery)
   * [Main](#main)
     + [Cache](#cache)
     + [Coalesce](#coalesce)
@@ -31,6 +34,9 @@ The Almaren Framework provides a simplified consistent minimalistic layer over A
     + [targetSql](#targetsql)
     + [targetJdbc](#targetjdbc)
     + [targetKafka](#targetkafka)
+    + [targetSolr](#targetsolr)
+    + [targetMongoDb](#targetmongodb)
+    + [targetBigQuery](#targetbigquery)
 - [Executors](#executors)
   * [Batch](#batch)
   * [Streaming Kafka](#streaming-kafka)
@@ -293,6 +299,18 @@ Read from JDBC using [Spark JDBC](https://spark.apache.org/docs/latest/sql-data-
 sourceJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","select * from table_name",Some("user"),Some("password"))
 ```
 
+#### sourceSolr
+
+Read from Solr using [Solr Connector](https://github.com/music-of-the-ainur/solr.almaren)
+
+#### sourceMongoDb
+
+Read from MongoDB using [MongoDB Connector](https://github.com/music-of-the-ainur/mongodb.almaren)
+
+#### sourceBigQuery
+
+Read from BigQuery using [BigQuery Connector](https://github.com/music-of-the-ainur/bigquery.almaren)
+
 ### Main
 
 #### Cache
@@ -395,6 +413,18 @@ Check the [documentation](https://spark.apache.org/docs/2.4.0/structured-streami
 sql("SELECT to_json(struct(*)) as value FROM __TABLE__").targetKafka("localhost:9092",Map("topic" -> "testing"))
 
 ```
+
+#### targetSolr
+
+Write to Solr using [Solr Connector](https://github.com/music-of-the-ainur/solr.almaren)
+
+#### targetMongoDb
+
+Write to MongoDB using [MongoDB Connector](https://github.com/music-of-the-ainur/mongodb.almaren)
+
+#### targetBigQuery
+
+Write to BigQuery using [BigQuery Connector](https://github.com/music-of-the-ainur/bigquery.almaren)
 
 ## Executors
 

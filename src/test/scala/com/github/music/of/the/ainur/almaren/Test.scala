@@ -60,6 +60,8 @@ class Test extends FunSuite with BeforeAndAfter {
   deserializerJsonTest()
   deserializerXmlTest()
   deserializerAvroTest()
+  testInferSchemaJsonColumn()
+  testInferSchemaDataframe(moviesDf)
 
   after {
     spark.stop()
@@ -275,6 +277,30 @@ class Test extends FunSuite with BeforeAndAfter {
     val avroDeserialzedDf = almaren.builder.sourceSql("select * from avro_df").deserializer("AVRO", "avro_struct", Some(avroTypeStruct)).batch
 
     test(df, avroDeserialzedDf, "Deserializer AVRO")
+  }
+
+  def testInferSchemaJsonColumn(): Unit = {
+    val jsonStr = Seq("""{"name":"John","age":21,"address":"New York"}""",
+      """{"name":"Peter","age":18,"address":"Prague"}""",
+      """{"name":"Tony","age":40,"address":"New York"}""").toDF("json_string").createOrReplaceTempView("sample_json_table")
+
+    val df = spark.sql("select * from sample_json_table")
+    val jsonSchema = "`address` STRING,`age` BIGINT,`name` STRING"
+    val generatedSchema = Util.genDDLFromJsonString(df, "json_string")
+    testSchema(jsonSchema, generatedSchema, "Test infer schema for json column")
+  }
+
+  def testInferSchemaDataframe(df: DataFrame): Unit = {
+    val dfSchema = "`cast` ARRAY<STRING>,`genres` ARRAY<STRING>,`title` STRING,`year` BIGINT"
+    val generatedSchema = Util.genDDLFromDataFrame(df)
+    testSchema(dfSchema, generatedSchema, "Test infer schema for dataframe")
+  }
+
+  def testSchema(jsonSchema: String, generatedSchema: String, name: String): Unit = {
+    test(s"$name") {
+      assert(jsonSchema.equals(generatedSchema))
+    }
+
   }
 
 }

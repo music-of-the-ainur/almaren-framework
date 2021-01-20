@@ -286,13 +286,13 @@ class Test extends FunSuite with BeforeAndAfter {
 
     val df = spark.sql("select * from sample_json_table")
     val jsonSchema = "`address` STRING,`age` BIGINT,`name` STRING"
-    val generatedSchema = Util.genDDLFromJsonString(df, "json_string")
+    val generatedSchema = Util.genDDLFromJsonString(df, "json_string",0.1)
     testSchema(jsonSchema, generatedSchema, "Test infer schema for json column")
   }
 
   def testInferSchemaDataframe(df: DataFrame): Unit = {
     val dfSchema = "`cast` ARRAY<STRING>,`genres` ARRAY<STRING>,`title` STRING,`year` BIGINT"
-    val generatedSchema = Util.genDDLFromDataFrame(df)
+    val generatedSchema = Util.genDDLFromDataFrame(df,0.1)
     testSchema(dfSchema, generatedSchema, "Test infer schema for dataframe")
   }
 

@@ -7,12 +7,12 @@ object Util {
 
   import spark.implicits._
 
-  def genDDLFromJsonString(df: DataFrame, field: String): String = {
+  def genDDLFromJsonString(df: DataFrame, field: String,sampleRatio : Double): String = {
 
-    spark.read.json(df.select(field).as[String]).sample(0.1).schema.toDDL
+    spark.read.json(df.select(field).as[String]).sample(sampleRatio).schema.toDDL
   }
 
-  def genDDLFromDataFrame(df: DataFrame): String = {
-    df.sample(0.1).schema.toDDL
+  def genDDLFromDataFrame(df: DataFrame,sampleRatio : Double): String = {
+    df.sample(sampleRatio).schema.toDDL
   }
 }

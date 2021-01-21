@@ -311,6 +311,10 @@ Read from MongoDB using [MongoDB Connector](https://github.com/music-of-the-ainu
 
 Read from BigQuery using [BigQuery Connector](https://github.com/music-of-the-ainur/bigquery.almaren)
 
+#### sourceNeo4j
+
+Read from BigQuery using [Neo4j Connector](https://github.com/music-of-the-ainur/neo4j.almaren)
+
 ### Main
 
 #### Cache

@@ -430,6 +430,10 @@ Write to MongoDB using [MongoDB Connector](https://github.com/music-of-the-ainur
 
 Write to BigQuery using [BigQuery Connector](https://github.com/music-of-the-ainur/bigquery.almaren)
 
+#### targetNeo4j
+
+Write to Neo4j using [Neo4j Connector](https://github.com/music-of-the-ainur/neo4j.almaren)
+
 ## Executors
 
 Executors are responsible to execute Almaren Tree i.e ```Option[Tree]``` to Apache Spark. Without invoke an _executor_, code won't be executed by Apache Spark. Follow the list of _executors_:

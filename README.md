@@ -386,6 +386,26 @@ dsl("""title$title:StringType
 
 [HTTP Connector](https://github.com/music-of-the-ainur/http.almaren) to perform HTTP requests.
 
+#### Util to generate Schema 
+
+To generate DDL for a json string column of a Dataframe, provide dataframe, JSON string column name and the sample ratio.
+
+
+```scala
+import com.github.music.of.the.ainur.almaren.Util
+
+val schema = Util.genDDLFromJsonString(df, "person_info",0.1)
+```
+
+To generate DDL for a Dataframe , provide dataframe and the sample ratio
+
+```scala
+import com.github.music.of.the.ainur.almaren.Util
+
+val schema = Util.genDDLFromDataFrame(df,0.1)
+```
+Default value of sample ratio is 1.0
+
 ### Target
 
 #### targetSql

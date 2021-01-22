@@ -313,7 +313,7 @@ Read from BigQuery using [BigQuery Connector](https://github.com/music-of-the-ai
 
 #### sourceNeo4j
 
-Read from BigQuery using [Neo4j Connector](https://github.com/music-of-the-ainur/neo4j.almaren)
+Read from Neo4j using [Neo4j Connector](https://github.com/music-of-the-ainur/neo4j.almaren)
 
 ### Main
 

@@ -101,3 +101,10 @@ case class Where(where:String) extends Main {
     df.where(where)
   }
 }
+
+case class Drop(drop:String*) extends Main {
+  override def core(df: DataFrame): DataFrame = {
+    logger.info(s"""drop:{${drop.mkString("\n")}}""")
+    df.drop(drop:_*)
+  }
+}

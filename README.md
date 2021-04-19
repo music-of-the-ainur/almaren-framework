@@ -32,6 +32,7 @@ The Almaren Framework provides a simplified consistent minimalistic layer over A
     + [HTTP](#http)
     + [SqlExpr](#sqlExpr)
     + [Where](#where)
+    + [Drop](#drop)
   * [Target](#target)
     + [targetSql](#targetsql)
     + [targetJdbc](#targetjdbc)
@@ -383,6 +384,14 @@ Filters rows using the given SQL expression.
 
 ```scala
 where("age > 15")
+```
+
+#### Drop
+
+Returns a new Dataset with columns dropped.
+
+```scala
+drop("col_1","col_2")
 ```
 
 #### SQL

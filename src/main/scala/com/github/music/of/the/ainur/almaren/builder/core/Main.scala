@@ -31,4 +31,7 @@ private[almaren] trait Main extends Core {
 
   def where(expr:String): Option[Tree] = 
     Where(expr)
+
+  def drop(drop:String*): Option[Tree] = 
+    Drop(drop:_*)
 }

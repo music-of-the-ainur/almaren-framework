@@ -50,6 +50,7 @@ ThisBuild / organizationHomepage := Some(url("https://github.com/music-of-the-ai
 
 
 // Remove all additional repository other than Maven Central from POM
+credentials += Credentials(Path.userHome / ".sbt" / "sonatype_credential")
 ThisBuild / pomIncludeRepository := { _ => false }
 ThisBuild / publishTo := {
   val nexus = "https://oss.sonatype.org/"

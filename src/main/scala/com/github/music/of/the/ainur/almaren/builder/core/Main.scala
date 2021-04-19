@@ -27,5 +27,8 @@ private[almaren] trait Main extends Core {
     Dsl(dsl)
 
   def sqlExpr(exprs:String*): Option[Tree] = 
-    sqlExpr(exprs:_*)
+    SqlExpr(exprs:_*)
+
+  def where(expr:String): Option[Tree] = 
+    Where(expr)
 }

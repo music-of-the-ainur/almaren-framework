@@ -88,6 +88,10 @@ case class Cache(opType:Boolean = true,tableName:Option[String] = None) extends 
     }
 }
 
-case class sqlExpr(exprs:String*) extends Main {
+case class SqlExpr(exprs:String*) extends Main {
   override def core(df: DataFrame): DataFrame = df.selectExpr(exprs:_*)
+}
+
+case class Where(expr:String) extends Main {
+  override def core(df: DataFrame): DataFrame = df.where(expr)
 }

@@ -31,6 +31,7 @@ The Almaren Framework provides a simplified consistent minimalistic layer over A
     + [DSL](#dsl)
     + [HTTP](#http)
     + [SqlExpr](#sqlExpr)
+    + [Where](#where)
   * [Target](#target)
     + [targetSql](#targetsql)
     + [targetJdbc](#targetjdbc)
@@ -368,12 +369,20 @@ deserializer("JSON","column_name","`cast` ARRAY<STRING>,`genres` ARRAY<STRING>,`
 
 ```
 
-#### sqlExpr 
+#### SqlExpr 
 
 Selects a set of SQL expressions, like `selectExpr`.
 
 ```scala
 sqlExpr("*","foo as baz","a as b")
+```
+
+#### Where
+
+Filters rows using the given SQL expression.
+
+```scala
+where("age > 15")
 ```
 
 #### SQL

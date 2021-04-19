@@ -2,8 +2,8 @@ package com.github.music.of.the.ainur.almaren.builder.core
 
 import com.github.music.of.the.ainur.almaren.Tree
 import com.github.music.of.the.ainur.almaren.builder.Core
-import com.github.music.of.the.ainur.almaren.state.core.{SourceJdbc, SourceSql, SourceFile}
-
+import com.github.music.of.the.ainur.almaren.state.core.{SourceJdbc, SourceSql, SourceFile, SourceDataFrame}
+import org.apache.spark.sql.{DataFrame, Dataset}
 
 private[almaren] trait Source extends Core {
   def sourceSql(sql: String): Option[Tree] =
@@ -14,4 +14,7 @@ private[almaren] trait Source extends Core {
 
   def sourceFile(format: String, path: String, params: Map[String, String] = Map()): Option[Tree] =
     SourceFile(format,path,params)
+
+  def sourceDataFrame[T](ds: Dataset[T]): Option[Tree] = 
+    SourceDataFrame(ds.toDF())
 }

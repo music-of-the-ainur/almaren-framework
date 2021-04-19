@@ -277,6 +277,13 @@ only showing top 20 rows
 ## Components
 
 ### Source
+#### sourceDataFrame
+
+Read from an existing DataFrame
+
+```scala
+sourceDataFrame(df)
+```
 
 #### sourceSql
 

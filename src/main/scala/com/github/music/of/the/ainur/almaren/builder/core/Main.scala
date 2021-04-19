@@ -25,4 +25,7 @@ private[almaren] trait Main extends Core {
 
   def dsl(dsl:String): Option[Tree] =
     Dsl(dsl)
+
+  def sqlExpr(exprs:String*): Option[Tree] = 
+    sqlExpr(exprs:_*)
 }

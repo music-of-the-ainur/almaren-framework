@@ -87,3 +87,7 @@ case class Cache(opType:Boolean = true,tableName:Option[String] = None) extends 
       case false => df.sqlContext.uncacheTable(tableName)
     }
 }
+
+case class sqlExpr(exprs:String*) extends Main {
+  override def core(df: DataFrame): DataFrame = df.selectExpr(exprs:_*)
+}

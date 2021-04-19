@@ -367,6 +367,14 @@ deserializer("JSON","column_name","`cast` ARRAY<STRING>,`genres` ARRAY<STRING>,`
 
 ```
 
+#### sqlExpr 
+
+Selects a set of SQL expressions, like `selectExpr`.
+
+```scala
+sqlExpr("*","foo as baz","a as b")
+```
+
 #### SQL
 
 [Spark SQL](https://docs.databricks.com/spark/latest/spark-sql/index.html) syntax. You can query preview component through the special table `__TABLE__`.

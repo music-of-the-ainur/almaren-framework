@@ -30,6 +30,7 @@ The Almaren Framework provides a simplified consistent minimalistic layer over A
     + [SQL](#sql)
     + [DSL](#dsl)
     + [HTTP](#http)
+    + [SqlExpr](#sqlExpr)
   * [Target](#target)
     + [targetSql](#targetsql)
     + [targetJdbc](#targetjdbc)

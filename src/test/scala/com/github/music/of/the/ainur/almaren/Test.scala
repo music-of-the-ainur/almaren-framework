@@ -57,6 +57,7 @@ class Test extends FunSuite with BeforeAndAfter {
   aliasTest(moviesDf)
   cacheTest(moviesDf)
   testingPipe(moviesDf)
+  testingWhere(moviesDf)
   deserializerJsonTest()
   deserializerXmlTest()
   deserializerAvroTest()
@@ -188,6 +189,17 @@ class Test extends FunSuite with BeforeAndAfter {
     test(testDF, testDropcompare, "Testing Drop")
 
   }
+  def testingWhere(moviesDf: DataFrame): Unit = {
+
+    moviesDf.createTempView("Test_where")
+
+    val testDF: DataFrame = almaren.builder.sourceSql("select year from Test_where").where("year = 1990").batch
+    val testWherecompare = almaren.builder.sourceSql("select year from Test_where WHERE year = '1990'").batch
+
+
+    test(testDF, testWherecompare, "Testing Where")
+  }
+
 
   def cacheTest(df: DataFrame): Unit = {
 

@@ -14,6 +14,7 @@ The Almaren Framework provides a simplified consistent minimalistic layer over A
 - [Debugging](#debugging)
 - [Components](#components)
   * [Source](#source)
+    + [sourceDataFrame](#sourceDataFrame)
     + [sourceSql](#sourcesql)
     + [sourceFile](#sourcefile)
     + [sourceJdbc](#sourcejdbc)
@@ -58,13 +59,13 @@ The Almaren Framework provides a simplified consistent minimalistic layer over A
 To add Almaren Framework dependency to your sbt build:
 
 ```
-libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % "0.8.0-2.4"
+libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % "0.9.0-2.4"
 ```
 
 To run in spark-shell:
 
 ```
-spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.11:0.8.0-2.4"
+spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.11:0.9.0-2.4"
 ```
 
 ### Batch Example
@@ -277,6 +278,13 @@ only showing top 20 rows
 ## Components
 
 ### Source
+#### sourceDataFrame
+
+Read from an existing DataFrame
+
+```scala
+sourceDataFrame(df)
+```
 
 #### sourceSql
 

@@ -47,8 +47,8 @@ class Test extends FunSuite with BeforeAndAfter {
 
   val moviesDf = spark.table(testTable)
 
-  test(testSourceTargetJdbc(moviesDf), moviesDf, "SourceTargetJdbcTest")
-  test(testSourceTargetJdbcUserPassword(moviesDf), moviesDf, "SourceTargetJdbcTestUserPassword")
+//  test(testSourceTargetJdbc(moviesDf), moviesDf, "SourceTargetJdbcTest")
+//  test(testSourceTargetJdbcUserPassword(moviesDf), moviesDf, "SourceTargetJdbcTestUserPassword")
   test(testSourceFile("parquet","src/test/resources/sample_data/emp.parquet"),
     spark.read.parquet("src/test/resources/sample_output/employee.parquet"),"SourceParquetFileTest")
   test(testSourceFile("avro","src/test/resources/sample_data/emp.avro"),
@@ -177,6 +177,16 @@ class Test extends FunSuite with BeforeAndAfter {
     test("alias") {
       assert(aliasTableCount > 0)
     }
+  }
+  def testingDrop(moviesDf: DataFrame): Unit = {
+
+    moviesDf.createTempView("Test_drop")
+
+    val testDF: DataFrame = almaren.builder.sourceSql("select title,year from Test_drop").drop("title").batch
+    val testDropcompare = almaren.builder.sourceSql("select year from Test_drop").batch
+
+    test(testDF, testDropcompare, "Testing Drop")
+
   }
 
   def cacheTest(df: DataFrame): Unit = {

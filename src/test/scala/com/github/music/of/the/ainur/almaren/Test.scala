@@ -58,6 +58,8 @@ class Test extends FunSuite with BeforeAndAfter {
   cacheTest(moviesDf)
   testingPipe(moviesDf)
   testingWhere(moviesDf)
+  testingDrop(moviesDf)
+  testingSqlExpr()
   deserializerJsonTest()
   deserializerXmlTest()
   deserializerAvroTest()
@@ -199,9 +201,24 @@ class Test extends FunSuite with BeforeAndAfter {
 
     test(testDF, testWherecompare, "Testing Where")
   }
+  def testingSqlExpr(): Unit = {
+
+    val df = Seq(
+      ("John", "Smith", "London", 55.3),
+      ("David", "Jones", "India", 62.5),
+      ("Michael", "Johnson", "Indonesia", 68.2),
+      ("Chris", "Lee", "Brazil", 53.4),
+      ("Mike", "Brown", "Russia", 65.6)
+    ).toDF("first_name", "last_name", "country", "salary")
+    df.createOrReplaceTempView("person_info")
 
 
-  def cacheTest(df: DataFrame): Unit = {
+    val testDF  = almaren.builder.sourceSql("select CAST (salary as INT) from person_info" ).batch
+    val testSqlExprcompare = almaren.builder.sourceSql("select * from person_info").sqlExpr("CAST(salary as int)").batch
+    test(testDF, testSqlExprcompare, "Testing sqlExpr")
+ }
+
+    def cacheTest(df: DataFrame): Unit = {
 
     df.createTempView("cache_test")
 

@@ -22,6 +22,7 @@ class Test extends FunSuite with BeforeAndAfter {
 
   import spark.implicits._
 
+
   createSampleData(testTable)
 
   // TODO improve it
@@ -60,6 +61,7 @@ class Test extends FunSuite with BeforeAndAfter {
   testingWhere(moviesDf)
   testingDrop(moviesDf)
   testingSqlExpr()
+  testingSourceDataFrame()
   deserializerJsonTest()
   deserializerXmlTest()
   deserializerAvroTest()
@@ -217,6 +219,16 @@ class Test extends FunSuite with BeforeAndAfter {
     val testSqlExprcompare = almaren.builder.sourceSql("select * from person_info").sqlExpr("CAST(salary as int)").batch
     test(testDF, testSqlExprcompare, "Testing sqlExpr")
  }
+  def testingSourceDataFrame(): Unit = {
+
+    val testDS = spark.range(3)
+    val testCompareDf = spark.range(3).toDF
+    val testDF = almaren.builder.sourceDataFrame(testDS).batch
+
+    test(testDF, testCompareDf, "Testing SourceDF")
+  }
+
+
 
     def cacheTest(df: DataFrame): Unit = {
 

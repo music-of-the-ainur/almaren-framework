@@ -55,6 +55,7 @@ class Test extends FunSuite with BeforeAndAfter {
   test(testSourceFile("avro","src/test/resources/sample_data/emp.avro"),
     spark.read.parquet("src/test/resources/sample_output/employee.parquet"),"SourceAvroFileTest")
   repartitionAndColaeseTest(moviesDf)
+  repartitionWithColumnTest()
   aliasTest(moviesDf)
   cacheTest(moviesDf)
   testingPipe(moviesDf)
@@ -171,6 +172,38 @@ class Test extends FunSuite with BeforeAndAfter {
       assert(coalese_size == 5)
     }
 
+  }
+
+  def repartitionWithColumnTest() {
+
+    val df = Seq(
+      ("John", "Smith", "London"),
+      ("John", "Smith", "London"),
+      ("David", "Jones", "India"),
+      ("Michael", "Johnson", "Indonesia"),
+      ("Michael", "Johnson", "Indonesia"),
+      ("Chris", "Lee", "India"),
+      ("Mike", "Brown", "Russia"),
+      ("Mike", "Brown", "Russia"),
+      ("Mike", "Brown", "Russia")
+    ).toDF("first_name", "last_name", "country")
+
+    val repartitionDfAlmaren = almaren
+      .builder
+      .sourceDataFrame(df)
+      .repartitionWithColumn(4, col("country"))
+      .batch
+
+    val repartitionDf = df.repartition(4, col("country"))
+
+    val partitionCountAlmaren = repartitionDfAlmaren.rdd.partitions.size
+    val partitionCount = repartitionDf.rdd.partitions.size
+
+    test("Repartition with column - partitions count test ") {
+      assert(partitionCountAlmaren == partitionCount)
+    }
+
+    test(repartitionDfAlmaren, repartitionDf, "Testing repartition with Column data")
   }
 
   def aliasTest(df: DataFrame): Unit = {

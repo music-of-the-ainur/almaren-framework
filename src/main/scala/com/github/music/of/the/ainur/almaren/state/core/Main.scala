@@ -2,7 +2,7 @@ package com.github.music.of.the.ainur.almaren.state.core
 
 import com.github.music.of.the.ainur.almaren.State
 import com.github.music.of.the.ainur.almaren.util.Constants
-import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.{Column, DataFrame}
 
 private[almaren] abstract class Main extends State {
   override def executor(df: DataFrame): DataFrame = core(df)
@@ -45,6 +45,14 @@ case class Repartition(size:Int) extends Main {
   def repartition(df: DataFrame): DataFrame = {
     logger.info(s"{$size}")
     df.repartition(size)
+  }
+}
+
+case class RepartitionWithColumn(size: Int,partitionExprs:Column*) extends Main {
+  override def core(df: DataFrame): DataFrame = repartition(df)
+  def repartition(df: DataFrame): DataFrame = {
+    logger.info(s"{$size},{${partitionExprs.mkString("\n")}}")
+    df.repartition(size,partitionExprs:_*)
   }
 }
 

@@ -60,12 +60,12 @@ class Test extends FunSuite with BeforeAndAfter {
 
   val moviesDf = spark.table(testTable)
 
-//  test(testSourceTargetJdbc(moviesDf), moviesDf, "SourceTargetJdbcTest")
-//  test(testSourceTargetJdbcUserPassword(moviesDf), moviesDf, "SourceTargetJdbcTestUserPassword")
-//  test(testSourceFile("parquet","src/test/resources/sample_data/emp.parquet"),
-//    spark.read.parquet("src/test/resources/sample_output/employee.parquet"),"SourceParquetFileTest")
-//  test(testSourceFile("avro","src/test/resources/sample_data/emp.avro"),
-//    spark.read.parquet("src/test/resources/sample_output/employee.parquet"),"SourceAvroFileTest")
+  test(testSourceTargetJdbc(moviesDf), moviesDf, "SourceTargetJdbcTest")
+  test(testSourceTargetJdbcUserPassword(moviesDf), moviesDf, "SourceTargetJdbcTestUserPassword")
+  test(testSourceFile("parquet","src/test/resources/sample_data/emp.parquet"),
+    spark.read.parquet("src/test/resources/sample_output/employee.parquet"),"SourceParquetFileTest")
+  test(testSourceFile("avro","src/test/resources/sample_data/emp.avro"),
+    spark.read.parquet("src/test/resources/sample_output/employee.parquet"),"SourceAvroFileTest")
   repartitionAndColaeseTest(moviesDf)
   repartitionWithColumnTest(df)
   repartitionWithSizeAndColumnTest(df)

@@ -48,7 +48,15 @@ case class Repartition(size:Int) extends Main {
   }
 }
 
-case class RepartitionWithColumn(size: Int,partitionExprs:Column*) extends Main {
+case class RepartitionWithColumn(partitionExprs:Column*) extends Main {
+  override def core(df: DataFrame): DataFrame = repartition(df)
+  def repartition(df: DataFrame): DataFrame = {
+    logger.info(s"{${partitionExprs.mkString("\n")}}")
+    df.repartition(partitionExprs:_*)
+  }
+}
+
+case class RepartitionWithSizeAndColumn(size: Int,partitionExprs:Column*) extends Main {
   override def core(df: DataFrame): DataFrame = repartition(df)
   def repartition(df: DataFrame): DataFrame = {
     logger.info(s"{$size},{${partitionExprs.mkString("\n")}}")

@@ -352,6 +352,12 @@ Reshuffle the data in the RDD randomly to create either more or fewer partitions
 ```scala
 repartition(100)
 ```
+
+##### Repartition using Columns 
+```scala
+repartition(col("name")) 
+```
+
 ##### Repartition using Size and Columns
 
 ```scala

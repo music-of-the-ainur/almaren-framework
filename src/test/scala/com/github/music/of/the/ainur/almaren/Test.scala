@@ -191,7 +191,7 @@ class Test extends FunSuite with BeforeAndAfter {
     val repartitionDfAlmaren = almaren
       .builder
       .sourceDataFrame(df)
-      .repartitionWithColumn(4, col("country"))
+      .repartition(4, col("country"))
       .batch
 
     val repartitionDf = df.repartition(4, col("country"))

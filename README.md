@@ -348,8 +348,14 @@ coalesce(10)
 
 Reshuffle the data in the RDD randomly to create either more or fewer partitions and balance it across them. This always shuffles all data over the network.
 
+##### Repartition using Size 
 ```scala
 repartition(100)
+```
+##### Repartition using Size and Columns
+
+```scala
+repartition(100,col("name")) 
 ```
 
 #### Pipe

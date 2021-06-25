@@ -21,7 +21,7 @@ private[almaren] trait Main extends Core {
   def repartition(size:Int): Option[Tree] =
     Repartition(size)
 
-  def repartitionWithColumn(size: Int,partitionExprs:Column*): Option[Tree] =
+  def repartition(size: Int,partitionExprs:Column*): Option[Tree] =
     RepartitionWithColumn(size)
 
   def pipe(command:String): Option[Tree] =

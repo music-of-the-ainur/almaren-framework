@@ -42,6 +42,18 @@ class Test extends FunSuite with BeforeAndAfter {
     .sql("""SELECT * FROM __TABLE__""")
     .batch
 
+  val df = Seq(
+    ("John", "Smith", "London"),
+    ("John", "Smith", "London"),
+    ("David", "Jones", "India"),
+    ("Michael", "Johnson", "Indonesia"),
+    ("Michael", "Johnson", "Indonesia"),
+    ("Chris", "Lee", "India"),
+    ("Mike", "Brown", "Russia"),
+    ("Mike", "Brown", "Russia"),
+    ("Mike", "Brown", "Russia")
+  ).toDF("first_name", "last_name", "country")
+
   test(readTest("foo_table"), movies, "foo")
   test(readTest("title_table"), spark.sql("select * from title"), "title")
   test(readTest("year_table"), spark.sql("select * from year"), "year")
@@ -55,6 +67,8 @@ class Test extends FunSuite with BeforeAndAfter {
   test(testSourceFile("avro","src/test/resources/sample_data/emp.avro"),
     spark.read.parquet("src/test/resources/sample_output/employee.parquet"),"SourceAvroFileTest")
   repartitionAndColaeseTest(moviesDf)
+  repartitionWithColumnTest(df)
+  repartitionWithSizeAndColumnTest(df)
   aliasTest(moviesDf)
   cacheTest(moviesDf)
   testingPipe(moviesDf)
@@ -171,6 +185,46 @@ class Test extends FunSuite with BeforeAndAfter {
       assert(coalese_size == 5)
     }
 
+  }
+
+  def repartitionWithColumnTest(dataFrame: DataFrame) {
+
+    val repartitionDfAlmaren = almaren
+      .builder
+      .sourceDataFrame(df)
+      .repartition(col("country"))
+      .batch
+
+    val repartitionDf = df.repartition(col("country"))
+
+    val partitionCountAlmaren = repartitionDfAlmaren.rdd.partitions.size
+    val partitionCount = repartitionDf.rdd.partitions.size
+
+    test("Repartition with column - partitions count test ") {
+      assert(partitionCountAlmaren == partitionCount)
+    }
+
+    test(repartitionDfAlmaren, repartitionDf, "Testing repartition with Column data")
+  }
+
+  def repartitionWithSizeAndColumnTest(dataFrame: DataFrame) {
+
+    val repartitionDfAlmaren = almaren
+      .builder
+      .sourceDataFrame(df)
+      .repartition(4, col("country"))
+      .batch
+
+    val repartitionDf = df.repartition(4, col("country"))
+
+    val partitionCountAlmaren = repartitionDfAlmaren.rdd.partitions.size
+    val partitionCount = repartitionDf.rdd.partitions.size
+
+    test("Repartition with size and column - partitions count test ") {
+      assert(partitionCountAlmaren == partitionCount)
+    }
+
+    test(repartitionDfAlmaren, repartitionDf, "Testing repartition with Size and Column data")
   }
 
   def aliasTest(df: DataFrame): Unit = {

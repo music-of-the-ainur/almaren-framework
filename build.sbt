@@ -2,12 +2,11 @@ ThisBuild / name := "almaren-framework"
 ThisBuild / organization := "com.github.music-of-the-ainur"
 
 lazy val scala212 = "2.12.10"
-lazy val scala211 = "2.11.12"
 
-crossScalaVersions := Seq(scala211, scala212)
+crossScalaVersions := Seq(scala212)
 ThisBuild / scalaVersion := scala212
 
-val sparkVersion = "2.4.5"
+val sparkVersion = "3.1.2"
 
 libraryDependencies ++= Seq(
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
@@ -17,7 +16,7 @@ libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-sql-kafka-0-10" % sparkVersion % "provided" excludeAll(ExclusionRule(organization = "net.jpountz.lz4")),
   "org.apache.spark" %% "spark-avro" % sparkVersion,
   "com.databricks" %% "spark-xml" % "0.10.0",
-  "com.github.music-of-the-ainur" %% "quenya-dsl" % s"1.1.3-2.4",
+  "com.github.music-of-the-ainur" %% "quenya-dsl" % "1.1.3-3.1-rc1",
   "org.scalatest" %% "scalatest" % "3.0.5" % "test",
   "org.postgresql" % "postgresql" % "42.2.8" % "test"
 )

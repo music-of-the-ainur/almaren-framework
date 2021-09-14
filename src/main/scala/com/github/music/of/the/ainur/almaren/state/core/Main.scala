@@ -2,7 +2,7 @@ package com.github.music.of.the.ainur.almaren.state.core
 
 import com.github.music.of.the.ainur.almaren.State
 import com.github.music.of.the.ainur.almaren.util.Constants
-import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.{Column, DataFrame}
 
 private[almaren] abstract class Main extends State {
   override def executor(df: DataFrame): DataFrame = core(df)
@@ -48,6 +48,22 @@ case class Repartition(size:Int) extends Main {
   }
 }
 
+case class RepartitionWithColumn(partitionExprs:Column*) extends Main {
+  override def core(df: DataFrame): DataFrame = repartition(df)
+  def repartition(df: DataFrame): DataFrame = {
+    logger.info(s"{${partitionExprs.mkString("\n")}}")
+    df.repartition(partitionExprs:_*)
+  }
+}
+
+case class RepartitionWithSizeAndColumn(size: Int,partitionExprs:Column*) extends Main {
+  override def core(df: DataFrame): DataFrame = repartition(df)
+  def repartition(df: DataFrame): DataFrame = {
+    logger.info(s"{$size},{${partitionExprs.mkString("\n")}}")
+    df.repartition(size,partitionExprs:_*)
+  }
+}
+
 case class Pipe(command:String) extends Main {
   override def core(df: DataFrame): DataFrame = pipe(df)
   def pipe(df: DataFrame): DataFrame = {
@@ -86,4 +102,25 @@ case class Cache(opType:Boolean = true,tableName:Option[String] = None) extends 
       case true => df.sqlContext.cacheTable(tableName)
       case false => df.sqlContext.uncacheTable(tableName)
     }
+}
+
+case class SqlExpr(exprs:String*) extends Main {
+  override def core(df: DataFrame): DataFrame = {
+    logger.info(s"""exprs:{${exprs.mkString("\n")}}""")
+    df.selectExpr(exprs:_*)
+  }
+}
+
+case class Where(where:String) extends Main {
+  override def core(df: DataFrame): DataFrame = {
+   logger.info(s"where:{$where}")
+    df.where(where)
+  }
+}
+
+case class Drop(drop:String*) extends Main {
+  override def core(df: DataFrame): DataFrame = {
+    logger.info(s"""drop:{${drop.mkString("\n")}}""")
+    df.drop(drop:_*)
+  }
 }

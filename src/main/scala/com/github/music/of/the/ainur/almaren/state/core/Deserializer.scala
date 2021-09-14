@@ -14,7 +14,6 @@ abstract class Deserializer() extends State {
   def deserializer(df: DataFrame): DataFrame
   implicit def string2Schema(schema: String): DataType =
     StructType.fromDDL(schema)
-  
 }
 
 case class AvroDeserializer(columnName: String,schema: String) extends Deserializer {
@@ -42,10 +41,21 @@ case class JsonDeserializer(columnName: String,schema: Option[String]) extends D
     Almaren.spark.getOrCreate().read.json(df.sample(Constants.sampleDeserializer)).schema.toDDL
 }
 
-case class XMLDeserializer(columnName: String) extends Deserializer {
-  import com.databricks.spark.xml.XmlReader
+case class XMLDeserializer(columnName: String, schema: Option[String]) extends Deserializer {
+  import com.databricks.spark.xml.functions.from_xml
+  import com.databricks.spark.xml.schema_of_xml
+  import org.apache.spark.sql.functions._
+
   override def deserializer(df: DataFrame): DataFrame = {
     logger.info(s"columnName:{$columnName}")
-    new XmlReader().xmlRdd(df.sparkSession,df.select(columnName).rdd.map(r => r(0).asInstanceOf[String])).toDF
+    import df.sparkSession.implicits._
+    val xmlSchema = schema match {
+      case Some(s) => StructType.fromDDL(s)
+      case None => schema_of_xml(df.select(columnName).as[String])
+    }
+    df
+      .withColumn(columnName, from_xml(col(columnName), xmlSchema))
+      .select("*",columnName.concat(".*"))
+      .drop(columnName)
   }
 }

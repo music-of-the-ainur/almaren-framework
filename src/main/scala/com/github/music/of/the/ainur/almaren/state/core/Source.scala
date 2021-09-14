@@ -45,3 +45,10 @@ case class SourceFile(format: String, path: String, params: Map[String, String])
       .load(path)
   }
 }
+
+case class SourceDataFrame(df:DataFrame) extends Source {
+  override def source(ignoreDf:DataFrame): DataFrame = {
+    logger.info("")
+    df
+  }
+}

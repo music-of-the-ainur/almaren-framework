@@ -4,6 +4,9 @@ import com.github.music.of.the.ainur.almaren.builder.Core.Implicit
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.{AnalysisException, Column, DataFrame, SaveMode}
 import org.scalatest._
+import org.apache.spark.sql.avro._
+
+
 
 import scala.collection.immutable._
 
@@ -18,6 +21,7 @@ class Test extends FunSuite with BeforeAndAfter {
   val testTable = "movies"
 
   import spark.implicits._
+
 
   createSampleData(testTable)
 
@@ -38,6 +42,18 @@ class Test extends FunSuite with BeforeAndAfter {
     .sql("""SELECT * FROM __TABLE__""")
     .batch
 
+  val df = Seq(
+    ("John", "Smith", "London"),
+    ("John", "Smith", "London"),
+    ("David", "Jones", "India"),
+    ("Michael", "Johnson", "Indonesia"),
+    ("Michael", "Johnson", "Indonesia"),
+    ("Chris", "Lee", "India"),
+    ("Mike", "Brown", "Russia"),
+    ("Mike", "Brown", "Russia"),
+    ("Mike", "Brown", "Russia")
+  ).toDF("first_name", "last_name", "country")
+
   test(readTest("foo_table"), movies, "foo")
   test(readTest("title_table"), spark.sql("select * from title"), "title")
   test(readTest("year_table"), spark.sql("select * from year"), "year")
@@ -51,9 +67,20 @@ class Test extends FunSuite with BeforeAndAfter {
   test(testSourceFile("avro","src/test/resources/sample_data/emp.avro"),
     spark.read.parquet("src/test/resources/sample_output/employee.parquet"),"SourceAvroFileTest")
   repartitionAndColaeseTest(moviesDf)
+  repartitionWithColumnTest(df)
+  repartitionWithSizeAndColumnTest(df)
   aliasTest(moviesDf)
   cacheTest(moviesDf)
   testingPipe(moviesDf)
+  testingWhere(moviesDf)
+  testingDrop(moviesDf)
+  testingSqlExpr()
+  testingSourceDataFrame()
+  deserializerJsonTest()
+  deserializerXmlTest()
+  deserializerAvroTest()
+  testInferSchemaJsonColumn()
+  testInferSchemaDataframe(moviesDf)
 
   after {
     spark.stop()
@@ -160,6 +187,46 @@ class Test extends FunSuite with BeforeAndAfter {
 
   }
 
+  def repartitionWithColumnTest(dataFrame: DataFrame) {
+
+    val repartitionDfAlmaren = almaren
+      .builder
+      .sourceDataFrame(df)
+      .repartition(col("country"))
+      .batch
+
+    val repartitionDf = df.repartition(col("country"))
+
+    val partitionCountAlmaren = repartitionDfAlmaren.rdd.partitions.size
+    val partitionCount = repartitionDf.rdd.partitions.size
+
+    test("Repartition with column - partitions count test ") {
+      assert(partitionCountAlmaren == partitionCount)
+    }
+
+    test(repartitionDfAlmaren, repartitionDf, "Testing repartition with Column data")
+  }
+
+  def repartitionWithSizeAndColumnTest(dataFrame: DataFrame) {
+
+    val repartitionDfAlmaren = almaren
+      .builder
+      .sourceDataFrame(df)
+      .repartition(4, col("country"))
+      .batch
+
+    val repartitionDf = df.repartition(4, col("country"))
+
+    val partitionCountAlmaren = repartitionDfAlmaren.rdd.partitions.size
+    val partitionCount = repartitionDf.rdd.partitions.size
+
+    test("Repartition with size and column - partitions count test ") {
+      assert(partitionCountAlmaren == partitionCount)
+    }
+
+    test(repartitionDfAlmaren, repartitionDf, "Testing repartition with Size and Column data")
+  }
+
   def aliasTest(df: DataFrame): Unit = {
     almaren.builder.sourceSql(s"select * from $testTable").alias("alias_test").batch
 
@@ -170,8 +237,54 @@ class Test extends FunSuite with BeforeAndAfter {
       assert(aliasTableCount > 0)
     }
   }
+  def testingDrop(moviesDf: DataFrame): Unit = {
 
-  def cacheTest(df: DataFrame): Unit = {
+    moviesDf.createTempView("Test_drop")
+
+    val testDF: DataFrame = almaren.builder.sourceSql("select title,year from Test_drop").drop("title").batch
+    val testDropcompare = almaren.builder.sourceSql("select year from Test_drop").batch
+
+    test(testDF, testDropcompare, "Testing Drop")
+
+  }
+  def testingWhere(moviesDf: DataFrame): Unit = {
+
+    moviesDf.createTempView("Test_where")
+
+    val testDF: DataFrame = almaren.builder.sourceSql("select year from Test_where").where("year = 1990").batch
+    val testWherecompare = almaren.builder.sourceSql("select year from Test_where WHERE year = '1990'").batch
+
+
+    test(testDF, testWherecompare, "Testing Where")
+  }
+  def testingSqlExpr(): Unit = {
+
+    val df = Seq(
+      ("John", "Smith", "London", 55.3),
+      ("David", "Jones", "India", 62.5),
+      ("Michael", "Johnson", "Indonesia", 68.2),
+      ("Chris", "Lee", "Brazil", 53.4),
+      ("Mike", "Brown", "Russia", 65.6)
+    ).toDF("first_name", "last_name", "country", "salary")
+    df.createOrReplaceTempView("person_info")
+
+
+    val testDF  = almaren.builder.sourceSql("select CAST (salary as INT) from person_info" ).batch
+    val testSqlExprcompare = almaren.builder.sourceSql("select * from person_info").sqlExpr("CAST(salary as int)").batch
+    test(testDF, testSqlExprcompare, "Testing sqlExpr")
+ }
+  def testingSourceDataFrame(): Unit = {
+
+    val testDS = spark.range(3)
+    val testCompareDf = spark.range(3).toDF
+    val testDF = almaren.builder.sourceDataFrame(testDS).batch
+
+    test(testDF, testCompareDf, "Testing SourceDF")
+  }
+
+
+
+    def cacheTest(df: DataFrame): Unit = {
 
     df.createTempView("cache_test")
 
@@ -196,6 +309,103 @@ class Test extends FunSuite with BeforeAndAfter {
     test("Testing Pipe") {
       assert(pipeDfCount > 0)
     }
+  }
+
+  def deserializerJsonTest(): Unit = {
+    val jsonStr = Seq("""{"name":"John","age":21,"address":"New York"}""",
+      """{"name":"Peter","age":18,"address":"Prague"}""",
+      """{"name":"Tony","age":40,"address":"New York"}""").toDF("json_string").createOrReplaceTempView("sample_json_table")
+
+    val jsondf = almaren.builder.sourceSql("select * from sample_json_table").deserializer("JSON", "json_string").batch
+
+    val jsonschmeadf = almaren.builder.sourceSql("select * from sample_json_table").deserializer("JSON", "json_string", Option("`address` STRING,`age` BIGINT,`name` STRING ")).batch
+
+    val json_str = scala.io.Source.fromURL(getClass.getResource("/sample_data/person.json")).mkString
+    val resDf: DataFrame = spark.read.json(Seq(json_str).toDS)
+
+    test(jsondf, resDf, "Deserialize JSON")
+    test(jsonschmeadf, resDf, "Deserialize JSON Schema")
+  }
+
+  def deserializerXmlTest(): Unit = {
+    val xmlStr = Seq(
+      """ <json_string>
+                              <name>John</name>
+                              <age>21</age>
+                              <address>New York</address>
+                          </json_string>""",
+      """<json_string>
+                              <name>Peter</name>
+                              <age>18</age>
+                              <address>Prague</address>
+                          </json_string>""",
+      """<json_string>
+                              <name>Tony</name>
+                              <age>40</age>
+                              <address>New York</address>
+                          </json_string>""").toDF("xml_string").createOrReplaceTempView("sample_xml_table")
+
+    val xmldf = almaren.builder.sourceSql("select * from sample_xml_table").deserializer("XML", "xml_string").batch
+
+    val xmlSchemaDf = almaren.builder.sourceSql("select * from sample_xml_table").deserializer("XML", "xml_string", Some("`address` STRING,`age` BIGINT,`name` STRING ")).batch
+
+    val df = spark.read
+      .format("xml")
+      .option("rowTag", "json_string")
+      .option("rootTag", "Person")
+      .load("src/test/resources/sample_data/person.xml")
+
+    test(xmldf, df, "Deserializer XML")
+    test(xmlSchemaDf, df, "Deserialize XML Schema")
+
+  }
+
+  def deserializerAvroTest(): Unit = {
+    val df = spark.range(10).select('id, 'id.cast("string").as("name"))
+    val struct_df = df.select(struct('id, 'name).as("struct"))
+
+    val avroStructDF = struct_df.select(to_avro('struct).as("avro_struct"))
+
+    avroStructDF.createOrReplaceTempView("avro_df")
+    val avroTypeStruct =
+      s"""
+         |{
+         |  "type": "record",
+         |  "name": "avro_struct",
+         |  "fields": [
+         |    {"name": "id", "type": "long"},
+         |    {"name": "name", "type": "string"}
+         |  ]
+         |}
+    """.stripMargin
+
+    val avroDeserialzedDf = almaren.builder.sourceSql("select * from avro_df").deserializer("AVRO", "avro_struct", Some(avroTypeStruct)).batch
+
+    test(df, avroDeserialzedDf, "Deserializer AVRO")
+  }
+
+  def testInferSchemaJsonColumn(): Unit = {
+    val jsonStr = Seq("""{"name":"John","age":21,"address":"New York"}""",
+      """{"name":"Peter","age":18,"address":"Prague"}""",
+      """{"name":"Tony","age":40,"address":"New York"}""").toDF("json_string").createOrReplaceTempView("sample_json_table")
+
+    val df = spark.sql("select * from sample_json_table")
+    val jsonSchema = "`address` STRING,`age` BIGINT,`name` STRING"
+    val generatedSchema = Util.genDDLFromJsonString(df, "json_string",0.1)
+    testSchema(jsonSchema, generatedSchema, "Test infer schema for json column")
+  }
+
+  def testInferSchemaDataframe(df: DataFrame): Unit = {
+    val dfSchema = "`cast` ARRAY<STRING>,`genres` ARRAY<STRING>,`title` STRING,`year` BIGINT"
+    val generatedSchema = Util.genDDLFromDataFrame(df,0.1)
+    testSchema(dfSchema, generatedSchema, "Test infer schema for dataframe")
+  }
+
+  def testSchema(jsonSchema: String, generatedSchema: String, name: String): Unit = {
+    test(s"$name") {
+      assert(jsonSchema.equals(generatedSchema))
+    }
+
   }
 
 }

@@ -6,7 +6,7 @@ lazy val scala212 = "2.12.10"
 crossScalaVersions := Seq(scala212)
 ThisBuild / scalaVersion := scala212
 
-val sparkVersion = "3.1.2"
+val sparkVersion = "3.2.0"
 val majorVersionReg = "([0-9]+\\.[0-9]+).{0,}".r
 
 val majorVersionReg(majorVersion) = sparkVersion

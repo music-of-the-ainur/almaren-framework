@@ -66,6 +66,8 @@ class Test extends FunSuite with BeforeAndAfter {
     spark.read.parquet("src/test/resources/sample_output/employee.parquet"),"SourceParquetFileTest")
   test(testSourceFile("avro","src/test/resources/sample_data/emp.avro"),
     spark.read.parquet("src/test/resources/sample_output/employee.parquet"),"SourceAvroFileTest")
+  test(testTargetFile("parquet","src/test/resources/sample_target/target.parquet",SaveMode.Overwrite),df,"TargetParquetFileTest")
+  test(testTargetFile("avro","src/test/resources/sample_target/target.avro",SaveMode.Overwrite),df,"TargetAvroFileTest")
   repartitionAndColaeseTest(moviesDf)
   repartitionWithColumnTest(df)
   repartitionWithSizeAndColumnTest(df)
@@ -165,6 +167,15 @@ class Test extends FunSuite with BeforeAndAfter {
       .sourceFile(format,path,Map())
       .batch
 
+  }
+  def testTargetFile(format:String,path:String,saveMode:SaveMode):DataFrame = {
+    almaren.builder
+      .sourceDataFrame(df)
+      .targetFile(format,path,saveMode)
+      .batch
+    almaren.builder
+      .sourceFile(format,path,Map())
+      .batch
   }
 
   def repartitionAndColaeseTest(dataFrame: DataFrame) {

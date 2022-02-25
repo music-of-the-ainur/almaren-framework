@@ -62,7 +62,8 @@ case class TargetFile(
     df.write
       .format(format)
       .options(params)
-      .save()
+      .mode(saveMode)
+      .save(path)
     df
   }
 }

@@ -41,6 +41,7 @@ The Almaren Framework provides a simplified consistent minimalistic layer over A
     + [targetSolr](#targetsolr)
     + [targetMongoDb](#targetmongodb)
     + [targetBigQuery](#targetbigquery)
+    + [targetFile](#targetfile)
 - [Executors](#executors)
   * [Batch](#batch)
   * [Streaming Kafka](#streaming-kafka)
@@ -480,6 +481,14 @@ Write to BigQuery using [BigQuery Connector](https://github.com/music-of-the-ain
 #### targetNeo4j
 
 Write to Neo4j using [Neo4j Connector](https://github.com/music-of-the-ainur/neo4j.almaren)
+
+#### targetFile
+
+Write to File, you must have the following parameters: format, path, saveMode of the file and parameters as a Map. Check the [documentation](https://spark.apache.org/docs/latest/sql-data-sources-generic-options.html) for the full list of parameters.
+
+```scala
+targetFile("parquet","/home/abc/targetlocation/output.parquet",Map("batchSize"->10000),SaveMode.Overwrite)
+```
 
 ## Executors
 

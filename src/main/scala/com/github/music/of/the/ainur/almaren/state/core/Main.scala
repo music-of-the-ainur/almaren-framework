@@ -64,7 +64,7 @@ case class RepartitionWithSizeAndColumn(size: Int,partitionExprs:Column*) extend
   }
 }
 
-case class Pipe(command:String) extends Main {
+case class Pipe(command:String*) extends Main {
   override def core(df: DataFrame): DataFrame = pipe(df)
   def pipe(df: DataFrame): DataFrame = {
     import df.sparkSession.implicits._

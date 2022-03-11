@@ -3,6 +3,7 @@ package com.github.music.of.the.ainur.almaren.state.core
 import com.github.music.of.the.ainur.almaren.State
 import com.github.music.of.the.ainur.almaren.util.Constants
 import org.apache.spark.sql.{DataFrame, SaveMode}
+import org.apache.spark.sql.Column
 
 private[almaren] abstract class Target extends State {
   override def executor(df: DataFrame): DataFrame = target(df)
@@ -56,14 +57,19 @@ case class TargetFile(
                        format: String,
                        path: String,
                        params: Map[String, String],
-                       saveMode: SaveMode) extends Target {
+                       saveMode: SaveMode,
+                       partitionBy:Column*) extends Target {
   override def target(df: DataFrame): DataFrame = {
     logger.info(s"format:{$format}, path:{$path}, params:{$params}")
     df.write
       .format(format)
       .options(params)
       .mode(saveMode)
-      .save(path)
+      .partitionBy("last_name")
+      .bucketBy(3,"first_name")
+      .sortBy("first_name")
+      .option("path",path)
+      .saveAsTable("samp")
     df
   }
 }

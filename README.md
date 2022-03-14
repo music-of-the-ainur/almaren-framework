@@ -59,13 +59,13 @@ The Almaren Framework provides a simplified consistent minimalistic layer over A
 To add Almaren Framework dependency to your sbt build:
 
 ```
-libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % "0.9.2-$SPARK_VERSION"
+libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % "0.9.3-$SPARK_VERSION"
 ```
 
 To run in spark-shell:
 
 ```
-spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.12:0.9.2-$SPARK_VERSION"
+spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.12:0.9.3-$SPARK_VERSION"
 ```
 
 ### Batch Example

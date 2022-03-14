@@ -304,7 +304,7 @@ class Test extends FunSuite with BeforeAndAfter {
 
   def testingPipe(df: DataFrame): Unit = {
     df.createTempView("pipe_view")
-    val pipeDf = almaren.builder.sql("select * from pipe_view").pipe("echo 'Testing Echo Command ' ").batch
+    val pipeDf = almaren.builder.sql("select * from pipe_view").pipe("echo","Testing Echo Command").batch
     val pipeDfCount = pipeDf.count()
     test("Testing Pipe") {
       assert(pipeDfCount > 0)

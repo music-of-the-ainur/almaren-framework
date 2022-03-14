@@ -484,10 +484,10 @@ Write to Neo4j using [Neo4j Connector](https://github.com/music-of-the-ainur/neo
 
 #### targetFile
 
-Write to File, you must have the following parameters: format, path, saveMode of the file and parameters as a Map. Check the [documentation](https://spark.apache.org/docs/latest/sql-data-sources-generic-options.html) for the full list of parameters.
+Write to File, you must have the following parameters: format, path, saveMode of the file and parameters as a Map. For partitioning provide a list of columns, for bucketing provide number of buckets and list of columns, and for sorting provide list of columns. Check the [documentation](https://spark.apache.org/docs/latest/sql-data-sources-generic-options.html) for the full list of parameters.
 
 ```scala
-targetFile("parquet","/home/abc/targetlocation/output.parquet",Map("batchSize"->10000),SaveMode.Overwrite)
+targetFile("parquet","/home/abc/targetlocation/output.parquet",SaveMode.Overwrite,Map("batchSize"->10000),List("partitionColumns"),(5,List("bucketingColumns")),List("sortingColumns"))
 ```
 
 ## Executors

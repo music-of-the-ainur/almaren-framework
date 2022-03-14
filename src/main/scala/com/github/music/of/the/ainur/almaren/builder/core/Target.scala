@@ -14,6 +14,12 @@ private[almaren] trait Target extends Core {
 
   def targetKafka(servers: String, options: Map[String, String] = Map()): Option[Tree] =
     TargetKafka(servers, options)
-  def targetFile(format:String,path:String,saveMode:SaveMode,params:Map[String,String]=Map()) :Option[Tree] =
-    TargetFile(format,path,params,saveMode)
+  def targetFile(format: String,
+                 path: String,
+                 saveMode: SaveMode,
+                 params: Map[String, String] = Map(),
+                 partitionBy: List[String] = List.empty,
+                 bucketBy: (Int,List[String]) = (64,List.empty),
+                 sortBy: List[String] = List.empty): Option[Tree] =
+    TargetFile(format, path, params, saveMode, partitionBy, bucketBy, sortBy)
 }

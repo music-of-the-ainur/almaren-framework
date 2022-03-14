@@ -1,0 +1,11 @@
+version: '3'
+services:
+  postgres:
+    image: "postgres:13.4"
+    restart: always
+    container_name: "kosh"
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+

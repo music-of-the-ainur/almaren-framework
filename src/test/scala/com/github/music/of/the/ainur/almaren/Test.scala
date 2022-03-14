@@ -66,8 +66,8 @@ class Test extends FunSuite with BeforeAndAfter {
     spark.read.parquet("src/test/resources/sample_output/employee.parquet"),"SourceParquetFileTest")
   test(testSourceFile("avro","src/test/resources/sample_data/emp.avro"),
     spark.read.parquet("src/test/resources/sample_output/employee.parquet"),"SourceAvroFileTest")
-  test(testTargetFile("parquet","src/test/resources/sample_target/target.parquet",SaveMode.Overwrite),df,"TargetParquetFileTest")
-  test(testTargetFile("avro","src/test/resources/sample_target/target.avro",SaveMode.Overwrite),df,"TargetAvroFileTest")
+  test(testTargetFile("parquet","src/test/resources/sample_target/target.parquet",SaveMode.Overwrite,Map(),List("first_name"),(4,List("last_name")),List("first_name")),df,"TargetParquetFileTest")
+  test(testTargetFile("avro","src/test/resources/sample_target/target.avro",SaveMode.Overwrite,Map(),List("first_name"),(4,List("last_name")),List("first_name")),df,"TargetAvroFileTest")
   repartitionAndColaeseTest(moviesDf)
   repartitionWithColumnTest(df)
   repartitionWithSizeAndColumnTest(df)
@@ -168,10 +168,10 @@ class Test extends FunSuite with BeforeAndAfter {
       .batch
 
   }
-  def testTargetFile(format:String,path:String,saveMode:SaveMode):DataFrame = {
+  def testTargetFile(format:String,path:String,saveMode:SaveMode,params:Map[String,String],partitionBy:List[String],bucketBy:(Int,List[String]),sortBy:List[String]):DataFrame = {
     almaren.builder
       .sourceDataFrame(df)
-      .targetFile(format,path,saveMode)
+      .targetFile(format,path,saveMode,params,partitionBy,bucketBy,sortBy)
       .batch
     almaren.builder
       .sourceFile(format,path,Map())

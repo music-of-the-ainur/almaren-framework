@@ -65,8 +65,14 @@ class Test extends FunSuite with BeforeAndAfter {
     spark.read.parquet("src/test/resources/sample_output/employee.parquet"),"SourceParquetFileTest")
   test(testSourceFile("avro","src/test/resources/sample_data/emp.avro"),
     spark.read.parquet("src/test/resources/sample_output/employee.parquet"),"SourceAvroFileTest")
-  test(testTargetFile("parquet","src/test/resources/sample_target/target.parquet",SaveMode.Overwrite,Map(),List("year"),(3,List("title")),List("title"),Some("table1")),movies,"TargetParquetFileTest")
-  test(testTargetFile("avro","src/test/resources/sample_target/target.avro",SaveMode.Overwrite,Map(),List("year"),(3,List("title")),List("title"),Some("table2")),movies,"TargetAvroFileTest")
+  test(testTargetFileTarget("parquet","src/test/resources/sample_target/target.parquet",SaveMode.Overwrite,Map(),List("year"),(3,List("title")),List("title"),Some("table1")),movies,"TargetParquetFileTest")
+  test(testTargetFileTarget("avro","src/test/resources/sample_target/target.avro",SaveMode.Overwrite,Map(),List("year"),(3,List("title")),List("title"),Some("table2")),movies,"TargetAvroFileTest")
+  test(testSourceFile("parquet","src/test/resources/sample_target/target.parquet"),movies,"TargetParquetFileTest1")
+  test(testSourceFile("avro","src/test/resources/sample_target/target.avro"),movies,"TargetAvroFileTest1")
+  test(testTargetFileTarget("parquet","src/test/resources/sample_target/target.parquet",SaveMode.Overwrite,Map(),List("year"),(3,List("title")),List("title"),Some("table1")),testSourceFile("parquet","src/test/resources/sample_target/target.parquet"),"TargetParquetFileTest2")
+  test(testTargetFileTarget("avro","src/test/resources/sample_target/target.avro",SaveMode.Overwrite,Map(),List("year"),(3,List("title")),List("title"),Some("table2")),testSourceFile("avro","src/test/resources/sample_target/target.avro"),"TargetAvroFileTest2")
+  testTargetFileBucketPartition("src/test/resources/sample_target/target.parquet",List("year"),(3,List("title")))
+  //testTargetFileBucketPartition("src/test/resources/sample_target/target.avro",List("year"),(3,List("title")))
   repartitionAndColaeseTest(moviesDf)
   repartitionWithColumnTest(df)
   repartitionWithSizeAndColumnTest(df)
@@ -167,26 +173,25 @@ class Test extends FunSuite with BeforeAndAfter {
       .batch
 
   }
-  def testTargetFile(format:String,path:String,saveMode:SaveMode,params:Map[String,String],partitionBy:List[String],bucketBy:(Int,List[String]),sortBy:List[String],tableName:Option[String]):DataFrame = {
-     almaren.builder
+  def testTargetFileTarget(format:String,path:String,saveMode:SaveMode,params:Map[String,String],partitionBy:List[String],bucketBy:(Int,List[String]),sortBy:List[String],tableName:Option[String]):DataFrame={
+    almaren.builder
       .sourceDataFrame(movies)
       .targetFile(format,path,saveMode,params,partitionBy,bucketBy,sortBy,tableName)
       .batch
-    val files = getListOfDirectories(path).map(_.toString)
+  }
+  def testTargetFileBucketPartition(path:String,partitionBy:List[String],bucketBy:(Int,List[String])) = {
+    val filesList = getListOfDirectories(path).map(_.toString)
     if(partitionBy.nonEmpty) {
-      val extractFiles = files.map(a => a.substring(a.lastIndexOf("=") + 1))
-      val sourceDfcolumnDf = movies.select(partitionBy(0)).distinct.as[String].collect.toList
-      val a = extractFiles.intersect(sourceDfcolumnDf)
-      assert(a.size == sourceDfcolumnDf.size)
+      val extractFiles = filesList.map(a => a.substring(a.lastIndexOf("=") + 1))
+      val distinctValues = movies.select(partitionBy(0)).distinct.as[String].collect.toList
+      val checkLists = extractFiles.intersect(distinctValues)
+      test("partitionBy"){assert(checkLists.size == distinctValues.size)}
     }
     if(bucketBy._2.nonEmpty) {
-      val check = files.map(f => getListOfFiles(f).size)
+      val check = filesList.map(f => getListOfFiles(f).size)
       val bool = if (check.forall(_ == check.head)) check.head == 2 * bucketBy._1 else false
-      assert(bool == true)
+      test("bucketBy"){ assert(bool == true) }
     }
-    almaren.builder
-      .sourceFile(format,path,Map())
-      .batch
   }
   def getListOfDirectories(dir: String):List[File] = {
     val d = new File(dir)

@@ -2,8 +2,8 @@ package com.github.music.of.the.ainur.almaren.state.core
 
 import com.github.music.of.the.ainur.almaren.State
 import com.github.music.of.the.ainur.almaren.util.Constants
-import org.apache.spark.sql.{DataFrame, SaveMode}
-import org.apache.spark.sql.Column
+import org.apache.spark.sql.{Column, DataFrame, DataFrameWriter, SaveMode}
+
 
 private[almaren] abstract class Target extends State {
   override def executor(df: DataFrame): DataFrame = target(df)
@@ -53,24 +53,43 @@ case class TargetKafka(servers: String, options: Map[String, String]) extends Ta
   }
 }
 
-case class TargetFile(
-                       format: String,
-                       path: String,
-                       params: Map[String, String],
-                       saveMode: SaveMode,
-                       partitionBy:Column*) extends Target {
+case class TargetFile(format: String,
+                      path: String,
+                      params: Map[String, String],
+                      saveMode: SaveMode,
+                      partitionBy: List[String],
+                      bucketBy: (Int, List[String]),
+                      sortBy: List[String]) extends Target {
   override def target(df: DataFrame): DataFrame = {
-    logger.info(s"format:{$format}, path:{$path}, params:{$params}")
-    df.write
+    logger.info(s"format:{$format}, path:{$path}, params:{$params}, partitionBy:{$partitionBy}, bucketBy:{$bucketBy}, sort:{$sortBy}")
+    val write = df.write
       .format(format)
       .options(params)
       .mode(saveMode)
-      .partitionBy("last_name")
-      .bucketBy(3,"first_name")
-      .sortBy("first_name")
-      .option("path",path)
-      .saveAsTable("samp")
+
+    val partitionWrite = if (partitionBy.nonEmpty) {
+      write.partitionBy(partitionBy: _*)
+    }
+    else {
+      write
+    }
+
+    val bucketWrite = if (bucketBy._2.nonEmpty) {
+      partitionWrite.bucketBy(bucketBy._1, bucketBy._2.head, bucketBy._2.tail: _*)
+    }
+    else {
+      partitionWrite
+    }
+
+    if (sortBy.nonEmpty) {
+      bucketWrite.sortBy(sortBy.head, sortBy.tail: _*)
+    }
+    else {
+      bucketWrite.save
+    }
+
     df
   }
 }
+
 

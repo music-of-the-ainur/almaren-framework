@@ -1,13 +1,12 @@
 package com.github.music.of.the.ainur.almaren
 
 import com.github.music.of.the.ainur.almaren.builder.Core.Implicit
+import org.apache.spark.sql.avro._
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.{AnalysisException, Column, DataFrame, SaveMode}
 import org.scalatest._
-import org.apache.spark.sql.avro._
 
-
-
+import java.io.File
 import scala.collection.immutable._
 
 class Test extends FunSuite with BeforeAndAfter {
@@ -66,8 +65,8 @@ class Test extends FunSuite with BeforeAndAfter {
     spark.read.parquet("src/test/resources/sample_output/employee.parquet"),"SourceParquetFileTest")
   test(testSourceFile("avro","src/test/resources/sample_data/emp.avro"),
     spark.read.parquet("src/test/resources/sample_output/employee.parquet"),"SourceAvroFileTest")
-  test(testTargetFile("parquet","src/test/resources/sample_target/target.parquet",SaveMode.Overwrite,Map(),List("first_name"),(4,List("last_name")),List("first_name")),df,"TargetParquetFileTest")
-  test(testTargetFile("avro","src/test/resources/sample_target/target.avro",SaveMode.Overwrite,Map(),List("first_name"),(4,List("last_name")),List("first_name")),df,"TargetAvroFileTest")
+  test(testTargetFile("parquet","src/test/resources/sample_target/target.parquet",SaveMode.Overwrite,Map(),List("year"),(3,List("title")),List("title"),Some("table1")),movies,"TargetParquetFileTest")
+  test(testTargetFile("avro","src/test/resources/sample_target/target.avro",SaveMode.Overwrite,Map(),List("year"),(3,List("title")),List("title"),Some("table2")),movies,"TargetAvroFileTest")
   repartitionAndColaeseTest(moviesDf)
   repartitionWithColumnTest(df)
   repartitionWithSizeAndColumnTest(df)
@@ -168,16 +167,43 @@ class Test extends FunSuite with BeforeAndAfter {
       .batch
 
   }
-  def testTargetFile(format:String,path:String,saveMode:SaveMode,params:Map[String,String],partitionBy:List[String],bucketBy:(Int,List[String]),sortBy:List[String]):DataFrame = {
-    almaren.builder
-      .sourceDataFrame(df)
-      .targetFile(format,path,saveMode,params,partitionBy,bucketBy,sortBy)
+  def testTargetFile(format:String,path:String,saveMode:SaveMode,params:Map[String,String],partitionBy:List[String],bucketBy:(Int,List[String]),sortBy:List[String],tableName:Option[String]):DataFrame = {
+     almaren.builder
+      .sourceDataFrame(movies)
+      .targetFile(format,path,saveMode,params,partitionBy,bucketBy,sortBy,tableName)
       .batch
+    val files = getListOfDirectories(path).map(_.toString)
+    if(partitionBy.nonEmpty) {
+      val extractFiles = files.map(a => a.substring(a.lastIndexOf("=") + 1))
+      val sourceDfcolumnDf = movies.select(partitionBy(0)).distinct.as[String].collect.toList
+      val a = extractFiles.intersect(sourceDfcolumnDf)
+      assert(a.size == sourceDfcolumnDf.size)
+    }
+    if(bucketBy._2.nonEmpty) {
+      val check = files.map(f => getListOfFiles(f).size)
+      val bool = if (check.forall(_ == check.head)) check.head == 2 * bucketBy._1 else false
+      assert(bool == true)
+    }
     almaren.builder
       .sourceFile(format,path,Map())
       .batch
   }
-
+  def getListOfDirectories(dir: String):List[File] = {
+    val d = new File(dir)
+    if (d.exists && d.isDirectory) {
+      d.listFiles.filter(_.isDirectory).toList
+    } else {
+      List[File]()
+    }
+  }
+  def getListOfFiles(dir: String):List[File] = {
+    val d = new File(dir)
+    if (d.exists && d.isDirectory) {
+      d.listFiles.filter(_.isFile).toList
+    } else {
+      List[File]()
+    }
+  }
   def repartitionAndColaeseTest(dataFrame: DataFrame) {
     val repartition_df = almaren.builder.sourceSql(s"select * from $testTable")
       .repartition(10).batch

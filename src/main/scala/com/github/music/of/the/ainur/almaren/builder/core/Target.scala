@@ -16,10 +16,11 @@ private[almaren] trait Target extends Core {
     TargetKafka(servers, options)
   def targetFile(format: String,
                  path: String,
-                 saveMode: SaveMode,
+                 saveMode: SaveMode = SaveMode.Overwrite,
                  params: Map[String, String] = Map(),
                  partitionBy: List[String] = List.empty,
                  bucketBy: (Int,List[String]) = (64,List.empty),
-                 sortBy: List[String] = List.empty): Option[Tree] =
-    TargetFile(format, path, params, saveMode, partitionBy, bucketBy, sortBy)
+                 sortBy: List[String] = List.empty,
+                tableName:Option[String]): Option[Tree] =
+    TargetFile(format, path, params, saveMode, partitionBy, bucketBy, sortBy,tableName)
 }

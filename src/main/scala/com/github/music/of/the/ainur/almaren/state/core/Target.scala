@@ -60,9 +60,9 @@ case class TargetFile(format: String,
                       partitionBy: List[String],
                       bucketBy: (Int, List[String]),
                       sortBy: List[String],
-                     tableName:Option[String]) extends Target {
+                      tableName:Option[String]) extends Target {
   override def target(df: DataFrame): DataFrame = {
-    logger.info(s"format:{$format}, path:{$path}, params:{$params}, partitionBy:{$partitionBy}, bucketBy:{$bucketBy}, sort:{$sortBy}")
+    logger.info(s"format:{$format}, path:{$path}, params:{$params}, partitionBy:{$partitionBy}, bucketBy:{$bucketBy}, sort:{$sortBy},tableName:{$tableName}")
     val write = df.write
       .format(format)
       .option("path",path)

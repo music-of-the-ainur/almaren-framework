@@ -90,12 +90,12 @@ class Test extends FunSuite with BeforeAndAfter {
   test(testSourceFile("avro", "src/test/resources/sample_target/target.avro"), movies, "TargetAvroFileTest1")
 
   test(
-    testTargetFileTarget("parquet", "src/test/resources/sample_target/target.parquet", SaveMode.Overwrite, Map(), List("year"), (3, List("title")), List("title"), Some("table1")),
-    testSourceSql("table1"),
+    testTargetFileTarget("parquet", "src/test/resources/sample_target/target.parquet", SaveMode.Overwrite, Map(), List("year"), (3, List("title")), List("title"), Some("tableTarget1")),
+    testSourceSql("tableTarget1"),
     "TargetParquetFileTest2")
   test(
-    testTargetFileTarget("avro", "src/test/resources/sample_target/target.avro", SaveMode.Overwrite, Map(), List("year"), (3, List("title")), List("title"), Some("table2")),
-    testSourceSql("table2"),
+    testTargetFileTarget("avro", "src/test/resources/sample_target/target.avro", SaveMode.Overwrite, Map(), List("year"), (3, List("title")), List("title"), Some("tableTarget2")),
+    testSourceSql("tableTarget2"),
     "TargetAvroFileTest2")
 
   testTargetFileBucketPartition("src/test/resources/sample_target/target.parquet", List("year"), (3, List("title")))
@@ -187,11 +187,11 @@ class Test extends FunSuite with BeforeAndAfter {
   def testSourceTargetJdbc(df: DataFrame): DataFrame = {
     almaren.builder
       .sourceSql(s"select * from $testTable")
-      .targetJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "movies_test", SaveMode.Overwrite)
+      .targetJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "movies_test", SaveMode.Overwrite, Some("postgres"), Some("foo"))
       .batch
 
     almaren.builder
-      .sourceJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "select * from movies_test")
+      .sourceJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "select * from movies_test", Some("postgres"), Some("foo"))
       .batch
   }
 

@@ -68,9 +68,10 @@ case class TargetFile(format: String,
       .option("path", path)
       .options(params)
       .mode(saveMode)
-    if (partitionBy.nonEmpty) {
+
+    if (partitionBy.nonEmpty)
       write.partitionBy(partitionBy: _*)
-    }
+
     if (bucketBy._2.nonEmpty) {
       write.bucketBy(bucketBy._1, bucketBy._2.head, bucketBy._2.tail: _*)
       if (sortBy.nonEmpty)
@@ -79,6 +80,7 @@ case class TargetFile(format: String,
     }
     else
       write.save
+
     df
   }
 }

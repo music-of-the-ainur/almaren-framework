@@ -98,8 +98,8 @@ class Test extends FunSuite with BeforeAndAfter {
     testSourceSql("tableTarget2"),
     "TargetAvroFileTest2")
 
-  testTargetFileBucketPartition("src/test/resources/sample_target/target.parquet", List("year"), (3, List("title")))
-  testTargetFileBucketPartition("src/test/resources/sample_target/target.avro",List("year"),(3,List("title")))
+  testTargetFileBucketPartition("src/test/resources/sample_target/target.parquet", List("year"), (3, List("title")),"parquet")
+  testTargetFileBucketPartition("src/test/resources/sample_target/target.avro",List("year"),(3,List("title")),"avro")
 
   repartitionAndColaeseTest(moviesDf)
   repartitionWithColumnTest(df)
@@ -204,7 +204,7 @@ class Test extends FunSuite with BeforeAndAfter {
 
   def testSourceSql(tableName: String): DataFrame = {
     almaren.builder
-      .sourceSql(tableName)
+      .sourceSql(s"select * from $tableName")
       .batch
 
   }
@@ -216,20 +216,20 @@ class Test extends FunSuite with BeforeAndAfter {
       .batch
   }
 
-  def testTargetFileBucketPartition(path: String, partitionBy: List[String], bucketBy: (Int, List[String])) = {
+  def testTargetFileBucketPartition(path: String, partitionBy: List[String], bucketBy: (Int, List[String]),fileFormat: String) = {
     val filesList = getListOfDirectories(path).map(_.toString)
     if (partitionBy.nonEmpty) {
       val extractFiles = filesList.map(a => a.substring(a.lastIndexOf("=") + 1))
       val distinctValues = movies.select(partitionBy(0)).distinct.as[String].collect.toList
       val checkLists = extractFiles.intersect(distinctValues)
-      test("partitionBy") {
+      test(s"partitionBy_$fileFormat") {
         assert(checkLists.size == distinctValues.size)
       }
     }
     if (bucketBy._2.nonEmpty) {
       val check = filesList.map(f => getListOfFiles(f).size)
       val bool = if (check.forall(_ == check.head)) check.head == 2 * bucketBy._1 else false
-      test("bucketBy") {
+      test(s"bucketBy_$fileFormat") {
         assert(bool == true)
       }
     }
@@ -498,3 +498,4 @@ class Test extends FunSuite with BeforeAndAfter {
   }
 
 }
+

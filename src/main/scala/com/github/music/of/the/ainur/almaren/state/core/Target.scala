@@ -76,10 +76,12 @@ case class TargetFile(format: String,
       write.bucketBy(bucketBy._1, bucketBy._2.head, bucketBy._2.tail: _*)
       if (sortBy.nonEmpty)
         write.sortBy(sortBy.head, sortBy.tail: _*)
-      write.saveAsTable(tableName.getOrElse(throw new Exception("tableName not provided")))
     }
-    else
-      write.save
+
+    tableName match {
+      case Some(tableName) => write.saveAsTable(tableName)
+      case _ => write.save
+    }
 
     df
   }

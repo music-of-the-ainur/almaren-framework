@@ -60,12 +60,12 @@ case class TargetFile(format: String,
                       partitionBy: List[String],
                       bucketBy: (Int, List[String]),
                       sortBy: List[String],
-                      tableName:Option[String]) extends Target {
+                      tableName: Option[String]) extends Target {
   override def target(df: DataFrame): DataFrame = {
     logger.info(s"format:{$format}, path:{$path}, params:{$params}, partitionBy:{$partitionBy}, bucketBy:{$bucketBy}, sort:{$sortBy},tableName:{$tableName}")
     val write = df.write
       .format(format)
-      .option("path",path)
+      .option("path", path)
       .options(params)
       .mode(saveMode)
     if (partitionBy.nonEmpty) {
@@ -75,7 +75,7 @@ case class TargetFile(format: String,
       write.bucketBy(bucketBy._1, bucketBy._2.head, bucketBy._2.tail: _*)
       if (sortBy.nonEmpty)
         write.sortBy(sortBy.head, sortBy.tail: _*)
-             .saveAsTable(tableName.getOrElse(throw new Exception("tableName not provided")))
+          .saveAsTable(tableName.getOrElse(throw new Exception("tableName not provided")))
       else
         write.save
     }

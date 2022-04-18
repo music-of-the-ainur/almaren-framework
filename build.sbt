@@ -19,7 +19,7 @@ libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-sql-kafka-0-10" % sparkVersion % "provided" excludeAll(ExclusionRule(organization = "net.jpountz.lz4")),
   "org.apache.spark" %% "spark-avro" % sparkVersion,
   "com.databricks" %% "spark-xml" % "0.10.0",
-  "com.github.music-of-the-ainur" %% "quenya-dsl" % s"1.1.4-${majorVersion}",
+  "com.github.music-of-the-ainur" %% "quenya-dsl" % s"1.2.0-${majorVersion}",
   "org.scalatest" %% "scalatest" % "3.0.5" % "test",
   "org.postgresql" % "postgresql" % "42.2.8" % "test"
 )

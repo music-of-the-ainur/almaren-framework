@@ -6,7 +6,7 @@ lazy val scala212 = "2.12.10"
 crossScalaVersions := Seq(scala212)
 ThisBuild / scalaVersion := scala212
 
-val sparkVersion = "3.1.2"
+val sparkVersion = "3.2.0"
 val majorVersionReg = "([0-9]+\\.[0-9]+).{0,}".r
 
 val majorVersionReg(majorVersion) = sparkVersion
@@ -20,6 +20,8 @@ libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-avro" % sparkVersion,
   "com.databricks" %% "spark-xml" % "0.10.0",
   "com.github.music-of-the-ainur" %% "quenya-dsl" % s"1.2.0-${majorVersion}",
+  "com.github.music-of-the-ainur" %% "quenya-dsl" % s"1.1.4-${majorVersion}",
+  "io.netty" % "netty-all" % "4.1.71.Final",
   "org.scalatest" %% "scalatest" % "3.0.5" % "test",
   "org.postgresql" % "postgresql" % "42.2.8" % "test"
 )

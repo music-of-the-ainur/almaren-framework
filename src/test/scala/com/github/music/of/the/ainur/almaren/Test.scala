@@ -27,19 +27,19 @@ class Test extends FunSuite with BeforeAndAfter {
 
   // TODO improve it
   val movies = almaren.builder
-    .sourceSql(s"select monotonically_increasing_id() as id,* from $testTable")
-    .sql("select * from __table__")
+    .sourceSql(s"select monotonically_increasing_id() as id,* from $testTable").alias("temp")
+    .sql("select * from temp")
     .fork(
-      almaren.builder.sql("""select id,title from __TABLE__""").alias("title"),
-      almaren.builder.sql("""select id,year from __TABLE__""").alias("year")
+      almaren.builder.sql("""select id,title from temp""").alias("title"),
+      almaren.builder.sql("""select id,year from temp""").alias("year")
     ).dsl(
     """
 		|title$title:StringType
 		|year$year:LongType
 		|cast[0]$actor:StringType
 		|cast[1]$support_actor:StringType
- 		|genres[0]$genre:StringType""".stripMargin)
-    .sql("""SELECT * FROM __TABLE__""")
+ 		|genres[0]$genre:StringType""".stripMargin).alias("temp1")
+    .sql("""SELECT * FROM temp1""")
     .batch
 
   val df = Seq(

@@ -59,13 +59,13 @@ The Almaren Framework provides a simplified consistent minimalistic layer over A
 To add Almaren Framework dependency to your sbt build:
 
 ```
-libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % "0.9.3-3.1"
+libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % "0.9.4-3.2"
 ```
 
 To run in spark-shell:
 
 ```
-spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.12:0.9.3-3.1"
+spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.12:0.9.4-3.2"
 ```
 
 ### Batch Example
@@ -90,8 +90,8 @@ val df:DataFrame = almaren.builder
         |cast[1]$support_actor:StringType
         |genres[0]$genre:StringType
         |director@director
-        |	director.name$credit_name:StringType""".stripMargin)
-    .sql("""SELECT * FROM __TABLE__ WHERE actor NOT IN ("the","the life of")""")
+        |	director.name$credit_name:StringType""".stripMargin).alias("table")
+    .sql("""SELECT * FROM table WHERE actor NOT IN ("the","the life of")""")
     .targetJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","movies",SaveMode.Overwrite)
     .batch
 ```
@@ -119,9 +119,9 @@ val streaming = almaren.builder
         |text$message:StringType
         |entities@entitie
         |	entitie.hashtags@hashtag
-        |		hashtag.text$hashtag:StringType""".stripMargin)
-  .sql("SELECT DISTINCT * FROM __TABLE__")
-  .sql("""SELECT sha2(concat_ws("",array(*)),256) as unique_hash,*,current_timestamp from __TABLE__""")
+        |		hashtag.text$hashtag:StringType""".stripMargin).alias("table")
+  .sql("SELECT DISTINCT * FROM table").alias("table1")
+  .sql("""SELECT sha2(concat_ws("",array(*)),256) as unique_hash,*,current_timestamp from table1""")
   .targetJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","twitter_streaming",SaveMode.Append)
 
 almaren.streaming(streaming,Map("kafka.bootstrap.servers" -> "localhost:9092","subscribe" -> "twitter", "startingOffsets" -> "earliest"))
@@ -150,8 +150,8 @@ val df:DataFrame = almaren.builder
         |cast[1]$support_actor:StringType
         |genres[0]$genre:StringType
         |director@director
-        |	director.name$credit_name:StringType""".stripMargin)
-    .sql("""SELECT *,current_timestamp as date FROM __TABLE__ WHERE actor NOT IN ("the","the life of")""")
+        |	director.name$credit_name:StringType""".stripMargin).alias("table")
+    .sql("""SELECT *,current_timestamp as date FROM table WHERE actor NOT IN ("the","the life of")""")
     .targetJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","movies",SaveMode.Overwrite)
     .batch
 ```
@@ -499,8 +499,8 @@ val tree = almaren.builder
         |cast[1]$support_actor:StringType
         |genres[0]$genre:StringType
         |director@director
-        |	director.name$credit_name:StringType""".stripMargin)
-    .sql("""SELECT * FROM __TABLE__ WHERE actor NOT IN ("the","the life of")""")
+        |	director.name$credit_name:StringType""".stripMargin).alias("table")
+    .sql("""SELECT * FROM table WHERE actor NOT IN ("the","the life of")""")
     .targetJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","movies",SaveMode.Overwrite)
 
 val df:DataFrame = tree.batch
@@ -537,9 +537,9 @@ val tree = almaren.builder
         |text$message:StringType
         |entities@entitie
         |	entitie.hashtags@hashtag
-        |		hashtag.text$hashtag:StringType""".stripMargin)
-  .sql("SELECT DISTINCT * FROM __TABLE__")
-  .sql("""SELECT sha2(concat_ws("",array(*)),256) as unique_hash,*,current_timestamp from __TABLE__""")
+        |		hashtag.text$hashtag:StringType""".stripMargin).alias("table")
+  .sql("SELECT DISTINCT * FROM table").alias("table1")
+  .sql("""SELECT sha2(concat_ws("",array(*)),256) as unique_hash,*,current_timestamp from table1""")
   .targetJdbc("jdbc:postgresql://localhost/almaren","org.postgresql.Driver","twitter_streaming",SaveMode.Append)
 
 almaren.streaming(tree,Map("kafka.bootstrap.servers" -> "localhost:9092","subscribe" -> "twitter", "startingOffsets" -> "earliest"))
@@ -578,14 +578,14 @@ Default value of sample ratio is 1.0
 val almaren = Almaren("appName")
 val df:DataFrame = almaren.builder.sourceSql("SELECT * FROM db.schema.table")
     .deserializer("JSON","json_str")
-    .dsl("uuid$id:StringType
+    .dsl("""uuid$id:StringType
         |code$area_code:LongType
         |names@name
         |	name.firstName$first_name:StringType
         |	name.secondName$second_name:StringType
         |	name.lastName$last_name:StringType
-        |source_id$source_id:LongType".stripMargin)
-    .sql("""SELECT *,unix_timestamp() as timestamp from __TABLE__""")
+        |source_id$source_id:LongType""".stripMargin).alias("table")
+    .sql("""SELECT *,unix_timestamp() as timestamp from table""")
     .targetJdbc("jdbc:postgresql://localhost/database","org.postgresql.Driver","target_table",SaveMode.Append)
 ```
 
@@ -596,22 +596,22 @@ val df:DataFrame = almaren.builder.sourceSql("SELECT * FROM db.schema.table")
 ```scala
 val almaren = Almaren("appName")
         
-val target1 = almaren.builder.dsl("uuid$id:StringType
+val target1 = almaren.builder.dsl("""uuid$id:StringType
     |code$area_code:LongType
     |names@name
     |    name.firstName$first_name:StringType
     |    name.secondName$second_name:StringType
     |    name.lastName$last_name:StringType
-    |source_id$source_id:LongType".stripMargin)
-.sql("SELECT *,unix_timestamp() as timestamp from __TABLE__")
+    |source_id$source_id:LongType""".stripMargin).alias("table")
+.sql("SELECT *,unix_timestamp() as timestamp from table")
 .targetCassandra("test1","kv1")
     
-val target2 = almaren.builder.dsl("uuid$id:StringType
+val target2 = almaren.builder.dsl("""uuid$id:StringType
     |code$area_code:LongType
     |phones@phone
     |    phone.number$phone_number:StringType
-    |source_id$source_id:LongType".stripMargin)
-.sql("SELECT *,unix_timestamp() as timestamp from __TABLE__")
+    |source_id$source_id:LongType""".stripMargin).alias("table")
+.sql("SELECT *,unix_timestamp() as timestamp from table")
 .targetCassandra("test2","kv2")
 
 almaren.builder.sourceSql("SELECT * FROM db.schema.table")
@@ -649,10 +649,10 @@ val sourcePerson = almaren.builder.sourceHbase("""{
     |}
 |}""").sql(""" SELECT * FROM __TABLE__ WHERE type = "PREMIUM" """).alias("person")
 
-almaren.builder.sql(""" SELECT * FROM person JOIN policy ON policy.person_id = person.id """)
-    .sql("SELECT *,unix_timestamp() as timestamp FROM __TABLE__")
+almaren.builder.sql(""" SELECT * FROM person JOIN policy ON policy.person_id = person.id """).alias("table")
+    .sql("SELECT *,unix_timestamp() as timestamp FROM table").alias("table1")
     .coalesce(100)
-    .targetSql("INSERT INTO TABLE area.premimum_users SELECT * FROM __TABLE__")
+    .targetSql("INSERT INTO TABLE area.premimum_users SELECT * FROM table1")
     .batch(sourcePolicy,sourceHbase)
 ```
 
@@ -662,8 +662,8 @@ almaren.builder.sql(""" SELECT * FROM person JOIN policy ON policy.person_id = p
 
 ```scala
 val almaren = Almaren("appName")
-val sourceData = almaren.builder.sourceJdbc("oracle.jdbc.driver.OracleDriver","jdbc:oracle:thin:@localhost:1521:xe","SELECT * FROM schema.table WHERE st_date >= (sysdate-1) AND st_date < sysdate")
-    .sql("SELECT to_json(named_struct('id', id,))) as __BODY__ from __TABLE__")
+val sourceData = almaren.builder.sourceJdbc("oracle.jdbc.driver.OracleDriver","jdbc:oracle:thin:@localhost:1521:xe","SELECT * FROM schema.table WHERE st_date >= (sysdate-1) AND st_date < sysdate").alias("table")
+    .sql("SELECT to_json(named_struct('id', id,))) as __BODY__ from table")
     .coalesce(30)
     .targetHttp("https://host.com:9093/api/foo","post",Map("Authorization" -> "Basic QWxhZGRpbjpPcGVuU2VzYW1l"))
     

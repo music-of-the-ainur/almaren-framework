@@ -5,6 +5,7 @@
 .metals/
 .bloop/
 project/metals.sbt
+.bsp/
 
 # spark
 spark-warehouse

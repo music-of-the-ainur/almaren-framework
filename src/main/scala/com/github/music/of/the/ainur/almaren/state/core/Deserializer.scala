@@ -11,11 +11,8 @@ import org.apache.spark.sql.Dataset
 trait Deserializer extends State {
 
   def columnName: String
-
   def schema: Option[String]
-
   def options: Map[String, String]
-
   def autoFlatten: Boolean
 
   override def executor(df: DataFrame): DataFrame = deserializer(df)

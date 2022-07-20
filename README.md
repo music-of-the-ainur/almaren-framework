@@ -349,12 +349,12 @@ coalesce(10)
 
 Reshuffle the data in the RDD randomly to create either more or fewer partitions and balance it across them. This always shuffles all data over the network.
 
-##### Repartition using Size
+##### Repartition using Size 
 ```scala
 repartition(100)
 ```
 
-##### Repartition using Columns
+##### Repartition using Columns 
 ```scala
 repartition(col("name")) 
 ```
@@ -391,7 +391,7 @@ deserializer("JSON","column_name","`cast` ARRAY<STRING>,`genres` ARRAY<STRING>,`
 
 ```
 
-#### SqlExpr
+#### SqlExpr 
 
 Selects a set of SQL expressions, like `selectExpr`.
 
@@ -554,9 +554,9 @@ val tree = almaren.builder
 almaren.streaming(tree,Map("kafka.bootstrap.servers" -> "localhost:9092","subscribe" -> "twitter", "startingOffsets" -> "earliest"))
 ```
 
-## Util
+## Util 
 
-### Generate Schema
+### Generate Schema 
 
 To generate DDL for a json string column of a Dataframe, provide dataframe, JSON string column name and the sample ratio.
 

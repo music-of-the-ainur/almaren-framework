@@ -51,17 +51,36 @@ case class TargetKafka(servers: String, options: Map[String, String]) extends Ta
   }
 }
 
-case class TargetFile(
-                       format: String,
-                       path: String,
-                       params: Map[String, String],
-                       saveMode: SaveMode) extends Target {
+case class TargetFile(format: String,
+                      path: String,
+                      params: Map[String, String],
+                      saveMode: SaveMode,
+                      partitionBy: List[String],
+                      bucketBy: (Int, List[String]),
+                      sortBy: List[String],
+                      tableName: Option[String]) extends Target {
   override def target(df: DataFrame): DataFrame = {
-    logger.info(s"format:{$format}, path:{$path}, params:{$params}")
-    df.write
+    logger.info(s"format:{$format}, path:{$path}, params:{$params}, partitionBy:{$partitionBy}, bucketBy:{$bucketBy}, sort:{$sortBy},tableName:{$tableName}")
+    val write = df.write
       .format(format)
+      .option("path", path)
       .options(params)
-      .save()
+      .mode(saveMode)
+
+    if (partitionBy.nonEmpty)
+      write.partitionBy(partitionBy: _*)
+
+    if (bucketBy._2.nonEmpty) {
+      write.bucketBy(bucketBy._1, bucketBy._2.head, bucketBy._2.tail: _*)
+      if (sortBy.nonEmpty)
+        write.sortBy(sortBy.head, sortBy.tail: _*)
+    }
+
+    tableName match {
+      case Some(tableName) => write.saveAsTable(tableName)
+      case _ => write.save
+    }
+
     df
   }
 }

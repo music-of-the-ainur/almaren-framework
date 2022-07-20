@@ -27,7 +27,6 @@ case class Sql(sql: String) extends Main {
   override def core(df: DataFrame): DataFrame = sql(df)
   def sql(df: DataFrame): DataFrame = {
     logger.info(s"sql:{$sql}")
-    df.createOrReplaceTempView(Constants.TempTableName)
     df.sqlContext.sql(sql)
   }
 }

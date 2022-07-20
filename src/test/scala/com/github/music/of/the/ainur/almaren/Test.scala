@@ -15,7 +15,6 @@ class Test extends FunSuite with BeforeAndAfter {
   val spark = almaren.spark
     .master("local[*]")
     .config("spark.sql.shuffle.partitions", "1")
-    .config("spark.some.config.option", "some-value")
     .getOrCreate()
 
   val testTable = "movies"

@@ -41,6 +41,7 @@ The Almaren Framework provides a simplified consistent minimalistic layer over A
     + [targetSolr](#targetsolr)
     + [targetMongoDb](#targetmongodb)
     + [targetBigQuery](#targetbigquery)
+    + [targetFile](#targetfile)
 - [Executors](#executors)
   * [Batch](#batch)
   * [Streaming Kafka](#streaming-kafka)
@@ -59,13 +60,13 @@ The Almaren Framework provides a simplified consistent minimalistic layer over A
 To add Almaren Framework dependency to your sbt build:
 
 ```
-libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % "0.9.3-3.1"
+libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % "0.9.3-$SPARK_VERSION"
 ```
 
 To run in spark-shell:
 
 ```
-spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.12:0.9.3-3.1"
+spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.12:0.9.3-$SPARK_VERSION"
 ```
 
 ### Batch Example
@@ -348,12 +349,12 @@ coalesce(10)
 
 Reshuffle the data in the RDD randomly to create either more or fewer partitions and balance it across them. This always shuffles all data over the network.
 
-##### Repartition using Size 
+##### Repartition using Size
 ```scala
 repartition(100)
 ```
 
-##### Repartition using Columns 
+##### Repartition using Columns
 ```scala
 repartition(col("name")) 
 ```
@@ -390,7 +391,7 @@ deserializer("JSON","column_name","`cast` ARRAY<STRING>,`genres` ARRAY<STRING>,`
 
 ```
 
-#### SqlExpr 
+#### SqlExpr
 
 Selects a set of SQL expressions, like `selectExpr`.
 
@@ -481,6 +482,14 @@ Write to BigQuery using [BigQuery Connector](https://github.com/music-of-the-ain
 
 Write to Neo4j using [Neo4j Connector](https://github.com/music-of-the-ainur/neo4j.almaren)
 
+#### targetFile
+
+Write to File, you must have the following parameters: format, path, saveMode of the file and parameters as a Map. For partitioning provide a list of columns, for bucketing provide number of buckets and list of columns, for sorting provide list of columns, and tableName. Check the [documentation](https://spark.apache.org/docs/latest/sql-data-sources-generic-options.html) for the full list of parameters.
+
+```scala
+targetFile("parquet","/home/abc/targetlocation/output.parquet",SaveMode.Overwrite,Map("batchSize"->10000),List("partitionColumns"),(5,List("bucketingColumns")),List("sortingColumns"),Some("sampleTableName"))
+```
+
 ## Executors
 
 Executors are responsible to execute Almaren Tree i.e ```Option[Tree]``` to Apache Spark. Without invoke an _executor_, code won't be executed by Apache Spark. Follow the list of _executors_:
@@ -545,9 +554,9 @@ val tree = almaren.builder
 almaren.streaming(tree,Map("kafka.bootstrap.servers" -> "localhost:9092","subscribe" -> "twitter", "startingOffsets" -> "earliest"))
 ```
 
-## Util 
+## Util
 
-### Generate Schema 
+### Generate Schema
 
 To generate DDL for a json string column of a Dataframe, provide dataframe, JSON string column name and the sample ratio.
 

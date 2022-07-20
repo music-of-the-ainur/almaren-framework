@@ -2,11 +2,12 @@ ThisBuild / name := "almaren-framework"
 ThisBuild / organization := "com.github.music-of-the-ainur"
 
 lazy val scala212 = "2.12.10"
+lazy val scala211 = "2.11.12"
 
-crossScalaVersions := Seq(scala212)
+crossScalaVersions := Seq(scala211, scala212)
 ThisBuild / scalaVersion := scala212
 
-val sparkVersion = "3.1.2"
+val sparkVersion = "2.4.8"
 val majorVersionReg = "([0-9]+\\.[0-9]+).{0,}".r
 
 val majorVersionReg(majorVersion) = sparkVersion
@@ -41,6 +42,12 @@ ThisBuild / developers := List(
     name  = "Daniel Mantovani",
     email = "daniel.mantovani@modak.com",
     url   = url("https://github.com/music-of-the-ainur")
+  ),
+  Developer(
+    id = "badrinathpatchikolla",
+    name = "Badrinath Patchikolla",
+    email = "badrinath.patchikolla@modakanalytics.com",
+    url = url("https://github.com/music-of-the-ainur")
   )
 )
 

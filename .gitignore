@@ -5,6 +5,10 @@
 .metals/
 .bloop/
 project/metals.sbt
+.bsp/
+.bloop/
+target/
+project/project/
 
 # spark
 spark-warehouse

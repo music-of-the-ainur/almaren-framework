@@ -1,12 +1,14 @@
 package com.github.music.of.the.ainur.almaren.state.core
 
 import com.github.music.of.the.ainur.almaren.{Almaren, SchemaRequired, State}
-import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.{DataFrame, DataFrameReader, Dataset}
 import org.apache.spark.sql.types.{DataType, StructType}
 
 import scala.language.implicitConversions
 import com.github.music.of.the.ainur.almaren.util.Constants
-import org.apache.spark.sql.Dataset
+import org.apache.spark.sql.functions.col
+
+import javax.xml.crypto.Data
 
 trait Deserializer extends State {
 
@@ -15,7 +17,13 @@ trait Deserializer extends State {
   def options: Map[String, String]
   def autoFlatten: Boolean
 
-  override def executor(df: DataFrame): DataFrame = deserializer(df)
+  override def executor(df: DataFrame): DataFrame = {
+    val newDf = deserializer(df)
+    if(autoFlatten)
+      autoFlatten(newDf,columnName)
+    else
+      newDf
+  }
 
   def deserializer(df: DataFrame): DataFrame
 
@@ -27,80 +35,67 @@ trait Deserializer extends State {
       select("*", columnName.concat(".*")).
       drop(columnName)
 
-  def sampleData[T](df: Dataset[T]): Dataset[T] =
+  def sampleData[T](df: Dataset[T]): Dataset[T] = {
     df.sample(
-      options.get("samplingRatio").orElse(Some("1.0")).get.toDouble
+      options.getOrElse("samplingRatio","1.0").toDouble
+    ).limit(
+      options.getOrElse("samplingMaxLines","10000").toInt
     )
+  }
+
+  def getReadWithOptions: DataFrameReader =
+    Almaren.spark.getOrCreate().read.options(options)
+
+  def getDDL(df:DataFrame): String =
+    df.schema.toDDL
 }
 
-case class AvroDeserializer(columnName: String, schema: Option[String], options: Map[String, String], autoFlatten: Boolean) extends Deserializer {
-
-  import org.apache.spark.sql.avro._
+case class AvroDeserializer(columnName: String, schema: Option[String] = None, options: Map[String, String],autoFlatten: Boolean,mandatorySchema: String) extends Deserializer {
+  import org.apache.spark.sql.avro.functions.from_avro
   import org.apache.spark.sql.functions._
   import collection.JavaConversions._
 
+  schema.map(_ => throw SchemaRequired(s"AvroDeserializer, don't use 'schema' it must be None, use 'mandatorySchema' "))
+
   override def deserializer(df: DataFrame): DataFrame = {
-    import df.sparkSession.implicits._
-    logger.info(s"columnName:{$columnName}, schema:{$schema}")
-    val newDf = df.withColumn(columnName,
-      from_avro(
-        col(columnName),
-        schema.get)
-    )
-    if (autoFlatten)
-      autoFlatten(newDf, columnName)
-    else
-      newDf
+    logger.info(s"columnName:{$columnName}, schema:{$mandatorySchema}, options:{$options}, autoFlatten:{$autoFlatten}")
+    df.withColumn(columnName,from_avro(col(columnName),mandatorySchema,options))
   }
 }
 
-case class JsonDeserializer(columnName: String, schema: Option[String], options: Map[String, String], autoFlatten: Boolean) extends Deserializer {
+case class JsonDeserializer(columnName: String, schema: Option[String], options: Map[String, String],autoFlatten: Boolean) extends Deserializer {
 
   import org.apache.spark.sql.functions._
   import collection.JavaConversions._
 
   override def deserializer(df: DataFrame): DataFrame = {
     import df.sparkSession.implicits._
-    logger.info(s"columnName:{$columnName}, schema:{$schema}")
-    val newDf = df.withColumn(columnName,
+    logger.info(s"columnName:{$columnName}, schema:{$schema}, options:{$options}, autoFlatten:{$autoFlatten}")
+    df.withColumn(columnName,
       from_json(
         col(columnName),
-        schema.getOrElse(getSchemaDDL(df.selectExpr(columnName).as[(String)], options)),
+        schema.getOrElse(getSchemaDDL(df.selectExpr(columnName).as[(String)])),
         options
-      ))
-    if (autoFlatten)
-      autoFlatten(newDf, columnName)
-    else
-      newDf
-  }
+      ))}
 
-  private def getSchemaDDL(df: Dataset[String], options: Map[String, String]): String =
-    Almaren.spark.getOrCreate().read.options(options).json(sampleData(df)).schema.toDDL
+  private def getSchemaDDL(df: Dataset[String]): String =
+    getDDL(getReadWithOptions.json(sampleData(df)))
 }
 
-case class XMLDeserializer(columnName: String, schema: Option[String], options: Map[String, String], autoFlatten: Boolean) extends Deserializer {
+case class XMLDeserializer(columnName: String, schema: Option[String], options: Map[String, String],autoFlatten: Boolean) extends Deserializer {
 
-  import org.apache.spark.sql.functions._
   import com.databricks.spark.xml.functions.from_xml
   import com.databricks.spark.xml.schema_of_xml
-  import collection.JavaConversions._
+  import org.apache.spark.sql.functions._
 
   override def deserializer(df: DataFrame): DataFrame = {
+    logger.info(s"columnName:{$columnName}, schema:{$schema}, options:{$options}, autoFlatten:{$autoFlatten}")
     import df.sparkSession.implicits._
-    logger.info(s"columnName:{$columnName}, schema:{$schema}")
     val xmlSchema = schema match {
       case Some(s) => StructType.fromDDL(s)
-      case None => schema_of_xml(df.select(columnName).as[String],options)
+      case None => schema_of_xml(sampleData(df.select(columnName).as[String]),options = options)
     }
-    println(xmlSchema)
-    val newDf = df.withColumn(columnName,
-      from_xml(col(columnName),
-        xmlSchema,
-        options
-      ))
-    if (autoFlatten)
-      autoFlatten(newDf, columnName)
-    else
-      newDf
+    df
+      .withColumn(columnName, from_xml(col(columnName), xmlSchema, options))
   }
 }

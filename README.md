@@ -41,6 +41,7 @@ The Almaren Framework provides a simplified consistent minimalistic layer over A
     + [targetSolr](#targetsolr)
     + [targetMongoDb](#targetmongodb)
     + [targetBigQuery](#targetbigquery)
+    + [targetFile](#targetfile)
 - [Executors](#executors)
   * [Batch](#batch)
   * [Streaming Kafka](#streaming-kafka)
@@ -59,13 +60,13 @@ The Almaren Framework provides a simplified consistent minimalistic layer over A
 To add Almaren Framework dependency to your sbt build:
 
 ```
-libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % "0.9.4-3.2"
+libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % "0.9.5-3.2"
 ```
 
 To run in spark-shell:
 
 ```
-spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.12:0.9.4-3.2"
+spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.12:0.9.5-3.2"
 ```
 
 ### Batch Example
@@ -481,6 +482,14 @@ Write to BigQuery using [BigQuery Connector](https://github.com/music-of-the-ain
 
 Write to Neo4j using [Neo4j Connector](https://github.com/music-of-the-ainur/neo4j.almaren)
 
+#### targetFile
+
+Write to File, you must have the following parameters: format, path, saveMode of the file and parameters as a Map. For partitioning provide a list of columns, for bucketing provide number of buckets and list of columns, for sorting provide list of columns, and tableName. Check the [documentation](https://spark.apache.org/docs/latest/sql-data-sources-generic-options.html) for the full list of parameters.
+
+```scala
+targetFile("parquet","/home/abc/targetlocation/output.parquet",SaveMode.Overwrite,Map("batchSize"->10000),List("partitionColumns"),(5,List("bucketingColumns")),List("sortingColumns"),Some("sampleTableName"))
+```
+
 ## Executors
 
 Executors are responsible to execute Almaren Tree i.e ```Option[Tree]``` to Apache Spark. Without invoke an _executor_, code won't be executed by Apache Spark. Follow the list of _executors_:
@@ -636,7 +645,8 @@ val sourcePolicy = almaren.builder.sourceHbase("""{
     |"status":{"cf":"Policy", "col":"status", "type":"string"},
     |"person_id":{"cf":"Policy", "col":"source", "type":"long"}
     |}
-|}""").sql(""" SELECT * FROM __TABLE__ WHERE status = "ACTIVE" """).alias("policy")
+|}""").alias("hbase")
+        .sql(""" SELECT * FROM hbase WHERE status = "ACTIVE" """).alias("policy")
 
 val sourcePerson = almaren.builder.sourceHbase("""{
     |"table":{"namespace":"default", "name":"person"},
@@ -647,7 +657,8 @@ val sourcePerson = almaren.builder.sourceHbase("""{
     |"type":{"cf":"Policy", "col":"type", "type":"string"},
     |"age":{"cf":"Policy", "col":"source", "type":"string"}
     |}
-|}""").sql(""" SELECT * FROM __TABLE__ WHERE type = "PREMIUM" """).alias("person")
+    |}""").alias("hbase")
+        .sql(""" SELECT * FROM hbase WHERE type = "PREMIUM" """).alias("person")
 
 almaren.builder.sql(""" SELECT * FROM person JOIN policy ON policy.person_id = person.id """).alias("table")
     .sql("SELECT *,unix_timestamp() as timestamp FROM table").alias("table1")

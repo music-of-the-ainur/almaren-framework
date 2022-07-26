@@ -2,7 +2,7 @@ package com.github.music.of.the.ainur.almaren.builder.core
 
 import com.github.music.of.the.ainur.almaren.Tree
 import com.github.music.of.the.ainur.almaren.builder.Core
-import com.github.music.of.the.ainur.almaren.state.core.{TargetFile, TargetJdbc, TargetKafka, TargetSql}
+import com.github.music.of.the.ainur.almaren.state.core.{TargetFile, TargetJdbc, TargetSql, TargetKafka}
 import org.apache.spark.sql.SaveMode
 
 private[almaren] trait Target extends Core {
@@ -24,4 +24,5 @@ private[almaren] trait Target extends Core {
                  sortBy: List[String] = List.empty,
                  tableName: Option[String]): Option[Tree] =
     TargetFile(format, path, params, saveMode, partitionBy, bucketBy, sortBy, tableName)
+
 }

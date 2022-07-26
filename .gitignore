@@ -1,14 +1,12 @@
-# vscode
-.vscode/
 
 # metals
 .metals/
 .bloop/
 project/metals.sbt
+project/project/
 .bsp/
 .bloop/
 target/
-project/project/
 
 # spark
 spark-warehouse
@@ -16,8 +14,7 @@ spark-warehouse
 metastore_db
 .gradle
 .vertx
-.metals
-.bloop
+.vscode
 
 # mac
 .DS_Store
@@ -139,4 +136,5 @@ flycheck_*.el
 
 # directory configuration
 .dir-locals.el
+
 

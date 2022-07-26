@@ -14,7 +14,6 @@ private[almaren] abstract class Target extends State {
 case class TargetSql(sql: String) extends Target {
   override def target(df: DataFrame): DataFrame = {
     logger.info(s"sql:{$sql}")
-    df.createOrReplaceTempView(Constants.TempTableName)
     val sqlDf = df.sqlContext.sql(sql)
     df
   }

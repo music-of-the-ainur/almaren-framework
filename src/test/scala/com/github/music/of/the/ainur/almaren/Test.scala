@@ -5,6 +5,7 @@ import org.apache.spark.sql.avro._
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.{AnalysisException, Column, DataFrame, SaveMode}
 import org.scalatest._
+import org.apache.spark.sql.avro._
 
 import java.io.File
 import scala.collection.immutable._
@@ -15,6 +16,7 @@ class Test extends FunSuite with BeforeAndAfter {
   val spark = almaren.spark
     .master("local[*]")
     .config("spark.sql.shuffle.partitions", "1")
+    .config("spark.some.config.option", "some-value")
     .getOrCreate()
 
   val testTable = "movies"
@@ -26,19 +28,19 @@ class Test extends FunSuite with BeforeAndAfter {
 
   // TODO improve it
   val movies = almaren.builder
-    .sourceSql(s"select monotonically_increasing_id() as id,* from $testTable")
-    .sql("select * from __table__")
+    .sourceSql(s"select monotonically_increasing_id() as id,* from $testTable").alias("temp")
+    .sql("select * from temp")
     .fork(
-      almaren.builder.sql("""select id,title from __TABLE__""").alias("title"),
-      almaren.builder.sql("""select id,year from __TABLE__""").alias("year")
+      almaren.builder.sql("""select id,title from temp""").alias("title"),
+      almaren.builder.sql("""select id,year from temp""").alias("year")
     ).dsl(
     """
 		|title$title:StringType
 		|year$year:LongType
 		|cast[0]$actor:StringType
 		|cast[1]$support_actor:StringType
- 		|genres[0]$genre:StringType""".stripMargin)
-    .sql("""SELECT * FROM __TABLE__""")
+ 		|genres[0]$genre:StringType""".stripMargin).alias("temp1")
+    .sql("""SELECT * FROM temp1""")
     .batch
 
   val df = Seq(
@@ -65,42 +67,38 @@ class Test extends FunSuite with BeforeAndAfter {
     spark.read.parquet("src/test/resources/sample_output/employee.parquet"), "SourceParquetFileTest")
   test(testSourceFile("avro", "src/test/resources/sample_data/emp.avro"),
     spark.read.parquet("src/test/resources/sample_output/employee.parquet"), "SourceAvroFileTest")
-
-  test(
-    testTargetFileTarget("parquet",
-      "src/test/resources/sample_target/target.parquet",
-      SaveMode.Overwrite,
-      Map(),
-      List("year"),
-      (3, List("title")),
-      List("title"),
-      Some("table1")),
+  test(testTargetFileTarget("parquet",
+    "/tmp/target.parquet",
+    SaveMode.Overwrite,
+    Map(),
+    List("year"),
+    (3, List("title")),
+    List("title"),
+    Some("table1")),
     movies, "TargetParquetFileTest")
-  test(
-    testTargetFileTarget("avro", "src/test/resources/sample_target/target.avro",
-      SaveMode.Overwrite,
-      Map(),
-      List("year"),
-      (3, List("title")),
-      List("title"),
-      Some("table2")),
+  test(testTargetFileTarget("avro", "/tmp/target.avro",
+    SaveMode.Overwrite,
+    Map(),
+    List("year"),
+    (3, List("title")),
+    List("title"),
+    Some("table2")),
     movies, "TargetAvroFileTest")
 
-  test(testSourceFile("parquet", "src/test/resources/sample_target/target.parquet"), movies, "TargetParquetFileTest1")
-  test(testSourceFile("avro", "src/test/resources/sample_target/target.avro"), movies, "TargetAvroFileTest1")
+  test(testSourceFile("parquet", "/tmp/target.parquet"), movies, "TargetParquetFileTest1")
+  test(testSourceFile("avro", "/tmp/target.avro"), movies, "TargetAvroFileTest1")
 
   test(
-    testTargetFileTarget("parquet", "src/test/resources/sample_target/target.parquet", SaveMode.Overwrite, Map(), List("year"), (3, List("title")), List("title"), Some("tableTarget1")),
+    testTargetFileTarget("parquet", "/tmp/target.parquet", SaveMode.Overwrite, Map(), List("year"), (3, List("title")), List("title"), Some("tableTarget1")),
     testSourceSql("tableTarget1"),
     "TargetParquetFileTest2")
   test(
-    testTargetFileTarget("avro", "src/test/resources/sample_target/target.avro", SaveMode.Overwrite, Map(), List("year"), (3, List("title")), List("title"), Some("tableTarget2")),
+    testTargetFileTarget("avro", "/tmp/target.avro", SaveMode.Overwrite, Map(), List("year"), (3, List("title")), List("title"), Some("tableTarget2")),
     testSourceSql("tableTarget2"),
     "TargetAvroFileTest2")
 
-  testTargetFileBucketPartition("src/test/resources/sample_target/target.parquet", List("year"), (3, List("title")),"parquet")
-  testTargetFileBucketPartition("src/test/resources/sample_target/target.avro",List("year"),(3,List("title")),"avro")
-
+  testTargetFileBucketPartition("/tmp/target.parquet", List("year"), (3, List("title")), "parquet")
+  testTargetFileBucketPartition("/tmp/target.avro", List("year"), (3, List("title")), "avro")
   repartitionAndColaeseTest(moviesDf)
   repartitionWithColumnTest(df)
   repartitionWithSizeAndColumnTest(df)
@@ -200,6 +198,56 @@ class Test extends FunSuite with BeforeAndAfter {
       .sourceFile(format, path, Map())
       .batch
 
+  }
+
+  def testSourceSql(tableName: String): DataFrame = {
+    almaren.builder
+      .sourceSql(s"select * from $tableName")
+      .batch
+  }
+
+  def testTargetFileTarget(format: String, path: String, saveMode: SaveMode, params: Map[String, String], partitionBy: List[String], bucketBy: (Int, List[String]), sortBy: List[String], tableName: Option[String]): DataFrame = {
+    almaren.builder
+      .sourceDataFrame(movies)
+      .targetFile(format, path, saveMode, params, partitionBy, bucketBy, sortBy, tableName)
+      .batch
+  }
+
+  def testTargetFileBucketPartition(path: String, partitionBy: List[String], bucketBy: (Int, List[String]), fileFormat: String) = {
+    val filesList = getListOfDirectories(path).map(_.toString)
+    if (partitionBy.nonEmpty) {
+      val extractFiles = filesList.map(a => a.substring(a.lastIndexOf("=") + 1))
+      val distinctValues = movies.select(partitionBy(0)).distinct.as[String].collect.toList
+      val checkLists = extractFiles.intersect(distinctValues)
+      test(s"partitionBy_$fileFormat") {
+        assert(checkLists.size == distinctValues.size)
+      }
+    }
+    if (bucketBy._2.nonEmpty) {
+      val check = filesList.map(f => getListOfFiles(f).size)
+      val bool = if (check.forall(_ == check.head)) check.head == 2 * bucketBy._1 else false
+      test(s"bucketBy_$fileFormat") {
+        assert(bool == true)
+      }
+    }
+  }
+
+  def getListOfDirectories(dir: String): List[File] = {
+    val d = new File(dir)
+    if (d.exists && d.isDirectory) {
+      d.listFiles.filter(_.isDirectory).toList
+    } else {
+      List[File]()
+    }
+  }
+
+  def getListOfFiles(dir: String): List[File] = {
+    val d = new File(dir)
+    if (d.exists && d.isDirectory) {
+      d.listFiles.filter(_.isFile).toList
+    } else {
+      List[File]()
+    }
   }
 
   def testSourceSql(tableName: String): DataFrame = {
@@ -497,5 +545,5 @@ class Test extends FunSuite with BeforeAndAfter {
 
   }
 
-}
 
+}

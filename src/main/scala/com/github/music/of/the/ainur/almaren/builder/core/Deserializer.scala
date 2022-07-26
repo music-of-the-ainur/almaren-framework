@@ -2,18 +2,19 @@ package com.github.music.of.the.ainur.almaren.builder.core
 
 import com.github.music.of.the.ainur.almaren.builder.Core
 import com.github.music.of.the.ainur.almaren.state.core._
-import com.github.music.of.the.ainur.almaren.{Tree, InvalidDecoder, SchemaRequired, State}
+import com.github.music.of.the.ainur.almaren.{InvalidDecoder, SchemaRequired, State, Tree}
+
+import java.util.Collections
 
 private[almaren] trait Deserializer extends Core {
-  def deserializer(decoder:String,columnName:String,schemaInfo:Option[String] = None): Option[Tree] = {
+  def deserializer(decoder:String,columnName:String,schemaInfo:Option[String] = None,options:Map[String,String] = Map(),autoFlatten:Boolean = true): Option[Tree] = {
 
-    def json(): State =
-      JsonDeserializer(columnName,schemaInfo)
-    def xml(): State =
-      XMLDeserializer(columnName,schemaInfo)
-    def avro(): State =
-      AvroDeserializer(columnName,schemaInfo.getOrElse(throw SchemaRequired(decoder)))
-
+    def json: State =
+      JsonDeserializer(columnName,schemaInfo,options,autoFlatten)
+    def xml: State =
+      XMLDeserializer(columnName,schemaInfo,options,autoFlatten)
+    def avro: State =
+      AvroDeserializer(columnName,None,options,autoFlatten,schemaInfo.getOrElse(throw SchemaRequired(decoder)))
 
     decoder.toUpperCase match {
       case "JSON" => json

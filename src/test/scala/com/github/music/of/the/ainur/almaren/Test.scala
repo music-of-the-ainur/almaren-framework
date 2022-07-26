@@ -1,6 +1,7 @@
 package com.github.music.of.the.ainur.almaren
 
 import com.github.music.of.the.ainur.almaren.builder.Core.Implicit
+import org.apache.spark.sql.avro._
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.{AnalysisException, Column, DataFrame, SaveMode}
 import org.scalatest._
@@ -213,6 +214,57 @@ class Test extends FunSuite with BeforeAndAfter {
   }
 
   def testTargetFileBucketPartition(path: String, partitionBy: List[String], bucketBy: (Int, List[String]), fileFormat: String) = {
+    val filesList = getListOfDirectories(path).map(_.toString)
+    if (partitionBy.nonEmpty) {
+      val extractFiles = filesList.map(a => a.substring(a.lastIndexOf("=") + 1))
+      val distinctValues = movies.select(partitionBy(0)).distinct.as[String].collect.toList
+      val checkLists = extractFiles.intersect(distinctValues)
+      test(s"partitionBy_$fileFormat") {
+        assert(checkLists.size == distinctValues.size)
+      }
+    }
+    if (bucketBy._2.nonEmpty) {
+      val check = filesList.map(f => getListOfFiles(f).size)
+      val bool = if (check.forall(_ == check.head)) check.head == 2 * bucketBy._1 else false
+      test(s"bucketBy_$fileFormat") {
+        assert(bool == true)
+      }
+    }
+  }
+
+  def getListOfDirectories(dir: String): List[File] = {
+    val d = new File(dir)
+    if (d.exists && d.isDirectory) {
+      d.listFiles.filter(_.isDirectory).toList
+    } else {
+      List[File]()
+    }
+  }
+
+  def getListOfFiles(dir: String): List[File] = {
+    val d = new File(dir)
+    if (d.exists && d.isDirectory) {
+      d.listFiles.filter(_.isFile).toList
+    } else {
+      List[File]()
+    }
+  }
+
+  def testSourceSql(tableName: String): DataFrame = {
+    almaren.builder
+      .sourceSql(s"select * from $tableName")
+      .batch
+
+  }
+
+  def testTargetFileTarget(format: String, path: String, saveMode: SaveMode, params: Map[String, String], partitionBy: List[String], bucketBy: (Int, List[String]), sortBy: List[String], tableName: Option[String]): DataFrame = {
+    almaren.builder
+      .sourceDataFrame(movies)
+      .targetFile(format, path, saveMode, params, partitionBy, bucketBy, sortBy, tableName)
+      .batch
+  }
+
+  def testTargetFileBucketPartition(path: String, partitionBy: List[String], bucketBy: (Int, List[String]),fileFormat: String) = {
     val filesList = getListOfDirectories(path).map(_.toString)
     if (partitionBy.nonEmpty) {
       val extractFiles = filesList.map(a => a.substring(a.lastIndexOf("=") + 1))
@@ -492,5 +544,6 @@ class Test extends FunSuite with BeforeAndAfter {
     }
 
   }
+
 
 }

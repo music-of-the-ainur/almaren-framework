@@ -15,6 +15,8 @@ private[almaren] trait Deserializer extends Core {
       XMLDeserializer(columnName,schemaInfo,options,autoFlatten)
     def avro: State =
       AvroDeserializer(columnName,None,options,autoFlatten,schemaInfo.getOrElse(throw SchemaRequired(decoder)))
+    def csv: State =
+      CSVDeserializer(columnName, schemaInfo, options, autoFlatten)
 
     decoder.toUpperCase match {
       case "JSON" => json

@@ -101,3 +101,23 @@ case class XMLDeserializer(columnName: String, schema: Option[String], options: 
       .withColumn(columnName, from_xml(col(columnName), xmlSchema, options))
   }
 }
+
+case class CSVDeserializer(columnName: String, schema: Option[String], options: Map[String, String], autoFlatten: Boolean) extends Deserializer {
+
+  import org.apache.spark.sql.functions._
+  import collection.JavaConversions._
+
+  override def deserializer(df: DataFrame): DataFrame = {
+    import df.sparkSession.implicits._
+    logger.info(s"columnName:{$columnName}, schema:{$schema}, options:{$options}, autoFlatten:{$autoFlatten}")
+    df.withColumn(columnName,
+      from_csv(
+        col(columnName),
+        schema.getOrElse(getSchemaDDL(df.selectExpr(columnName).as[(String)])),
+        options
+      ))
+  }
+
+  private def getSchemaDDL(df: Dataset[String]): String =
+    getDDL(getReadWithOptions.csv(sampleData(df)))
+}

@@ -12,6 +12,9 @@ private[almaren] trait Target extends Core {
   def targetJdbc(url: String, driver: String, dtable: String, saveMode: SaveMode = SaveMode.ErrorIfExists, user: Option[String] = None, password: Option[String] = None, params: Map[String, String] = Map()): Option[Tree] =
     TargetJdbc(url, driver, dtable, user, password, saveMode, params)
 
+  def targetKafka(servers: String, options: Map[String, String] = Map()): Option[Tree] =
+    TargetKafka(servers, options)
+
   def targetFile(format: String,
                  path: String,
                  saveMode: SaveMode = SaveMode.Overwrite,

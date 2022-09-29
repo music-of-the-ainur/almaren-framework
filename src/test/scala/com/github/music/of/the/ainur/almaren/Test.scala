@@ -110,6 +110,7 @@ class Test extends FunSuite with BeforeAndAfter {
   deserializerJsonTest()
   deserializerXmlTest()
   deserializerAvroTest()
+  deserializerCsvTest()
   testInferSchemaJsonColumn()
   testInferSchemaDataframe(moviesDf)
 
@@ -477,6 +478,27 @@ class Test extends FunSuite with BeforeAndAfter {
     val jsonSchema = "`address` STRING,`age` BIGINT,`name` STRING"
     val generatedSchema = Util.genDDLFromJsonString(df, "json_string", 0.1)
     testSchema(jsonSchema, generatedSchema, "Test infer schema for json column")
+  }
+
+  def deserializerCsvTest(): Unit = {
+    val df = Seq(
+      ("John,Chris", "Smith", "London"),
+      ("David,Michael", "Jones", "India"),
+      ("Joseph,Mike", "Lee", "Russia"),
+      ("Chris,Tony", "Brown", "Indonesia"),
+    ).toDF("first_name", "last_name", "country")
+    val newCsvDF = almaren.builder
+      .sourceDataFrame(df)
+      .deserializer("CSV", "first_name", options = Map("header" -> "false"))
+      .batch
+    val newCsvSchemaDf = almaren.builder
+      .sourceDataFrame(df)
+      .deserializer("CSV", "first_name", Some("`first_name_1` STRING,`first_name_2` STRING"), Map("header" -> "true"))
+      .batch
+    val csvDf = spark.read.parquet("src/test/resources/data/csvDeserializer.parquet")
+    val csvSchemaDf = spark.read.parquet("src/test/resources/data/csvDeserializerSchema.parquet")
+    test(newCsvDF, csvDf, "Deserialize CSV")
+    test(newCsvSchemaDf, csvSchemaDf, "Deserialize CSV Schema")
   }
 
   def testInferSchemaDataframe(df: DataFrame): Unit = {

@@ -54,20 +54,19 @@ case class AvroDeserializer(columnName: String, schema: Option[String] = None, o
 
   import org.apache.spark.sql.avro.functions.from_avro
   import org.apache.spark.sql.functions._
-  import collection.JavaConversions._
-
+  import scala.jdk.CollectionConverters._
   schema.map(_ => throw SchemaRequired(s"AvroDeserializer, don't use 'schema' it must be None, use 'mandatorySchema' "))
 
   override def deserializer(df: DataFrame): DataFrame = {
     logger.info(s"columnName:{$columnName}, schema:{$mandatorySchema}, options:{$options}, autoFlatten:{$autoFlatten}")
-    df.withColumn(columnName, from_avro(col(columnName), mandatorySchema, options))
+    df.withColumn(columnName, from_avro(col(columnName), mandatorySchema, options.asJava))
   }
 }
 
 case class JsonDeserializer(columnName: String, schema: Option[String], options: Map[String, String], autoFlatten: Boolean) extends Deserializer {
 
   import org.apache.spark.sql.functions._
-  import collection.JavaConversions._
+  import scala.jdk.CollectionConverters._
 
   override def deserializer(df: DataFrame): DataFrame = {
     import df.sparkSession.implicits._
@@ -105,7 +104,7 @@ case class XMLDeserializer(columnName: String, schema: Option[String], options: 
 case class CSVDeserializer(columnName: String, schema: Option[String], options: Map[String, String], autoFlatten: Boolean) extends Deserializer {
 
   import org.apache.spark.sql.functions._
-  import collection.JavaConversions._
+  import scala.jdk.CollectionConverters._
 
   override def deserializer(df: DataFrame): DataFrame = {
     import df.sparkSession.implicits._

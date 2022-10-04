@@ -21,8 +21,8 @@ jobs:
             cache: sbt
       - name: Build and test scala version
         run: |
-          psql -c 'create database almaren;' -U postgres
-          psql -c "ALTER USER postgres PASSWORD 'foo' ;"
+          psql -c 'create database almaren;' -U postgres -h localhost -p 5432
+          psql -c "ALTER USER postgres PASSWORD 'foo' ;" -h localhost -p 5432
           sbt ++2.12.10 test
           sbt ++2.13.9 test
           rm -rf "$HOME/.ivy2/local" || true

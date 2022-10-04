@@ -31,6 +31,7 @@ jobs:
           PGPASSWORD="postgres" psql -c 'create database almaren;' -U postgres -h localhost 
           PGPASSWORD="postgres" psql -c "ALTER USER postgres PASSWORD 'foo' ;" -U postgres -h localhost 
           PGPASSWORD="postgres" psql -c 'create role runner;' -U postgres -h localhost
+          PGPASSWORD="postgres" psql -c 'ALTER ROLE "runner" WITH SUPERUSER;' -U postgres -h localhost
           sbt ++2.12.10 test
           sbt ++2.13.9 test
           rm -rf "$HOME/.ivy2/local" || true

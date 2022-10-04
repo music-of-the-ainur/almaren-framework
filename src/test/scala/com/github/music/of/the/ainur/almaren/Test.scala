@@ -6,8 +6,7 @@ import org.apache.spark.sql.{AnalysisException, Column, DataFrame, SaveMode}
 import org.scalatest._
 import org.apache.spark.sql.avro._
 
-
-
+import java.io.File
 import scala.collection.immutable._
 
 class Test extends FunSuite with BeforeAndAfter {
@@ -62,10 +61,42 @@ class Test extends FunSuite with BeforeAndAfter {
 
   test(testSourceTargetJdbc(moviesDf), moviesDf, "SourceTargetJdbcTest")
   test(testSourceTargetJdbcUserPassword(moviesDf), moviesDf, "SourceTargetJdbcTestUserPassword")
-  test(testSourceFile("parquet","src/test/resources/sample_data/emp.parquet"),
-    spark.read.parquet("src/test/resources/sample_output/employee.parquet"),"SourceParquetFileTest")
-  test(testSourceFile("avro","src/test/resources/sample_data/emp.avro"),
-    spark.read.parquet("src/test/resources/sample_output/employee.parquet"),"SourceAvroFileTest")
+  test(testSourceFile("parquet", "src/test/resources/sample_data/emp.parquet"),
+    spark.read.parquet("src/test/resources/sample_output/employee.parquet"), "SourceParquetFileTest")
+  test(testSourceFile("avro", "src/test/resources/sample_data/emp.avro"),
+    spark.read.parquet("src/test/resources/sample_output/employee.parquet"), "SourceAvroFileTest")
+  test(testTargetFileTarget("parquet",
+    "/tmp/target.parquet",
+    SaveMode.Overwrite,
+    Map(),
+    List("year"),
+    (3, List("title")),
+    List("title"),
+    Some("table1")),
+    movies, "TargetParquetFileTest")
+  test(testTargetFileTarget("avro", "/tmp/target.avro",
+    SaveMode.Overwrite,
+    Map(),
+    List("year"),
+    (3, List("title")),
+    List("title"),
+    Some("table2")),
+    movies, "TargetAvroFileTest")
+
+  test(testSourceFile("parquet", "/tmp/target.parquet"), movies, "TargetParquetFileTest1")
+  test(testSourceFile("avro", "/tmp/target.avro"), movies, "TargetAvroFileTest1")
+
+  test(
+    testTargetFileTarget("parquet", "/tmp/target.parquet", SaveMode.Overwrite, Map(), List("year"), (3, List("title")), List("title"), Some("tableTarget1")),
+    testSourceSql("tableTarget1"),
+    "TargetParquetFileTest2")
+  test(
+    testTargetFileTarget("avro", "/tmp/target.avro", SaveMode.Overwrite, Map(), List("year"), (3, List("title")), List("title"), Some("tableTarget2")),
+    testSourceSql("tableTarget2"),
+    "TargetAvroFileTest2")
+
+  testTargetFileBucketPartition("/tmp/target.parquet", List("year"), (3, List("title")), "parquet")
+  testTargetFileBucketPartition("/tmp/target.avro", List("year"), (3, List("title")), "avro")
   repartitionAndColaeseTest(moviesDf)
   repartitionWithColumnTest(df)
   repartitionWithSizeAndColumnTest(df)
@@ -79,6 +110,7 @@ class Test extends FunSuite with BeforeAndAfter {
   deserializerJsonTest()
   deserializerXmlTest()
   deserializerAvroTest()
+  deserializerCsvTest()
   testInferSchemaJsonColumn()
   testInferSchemaDataframe(moviesDf)
 
@@ -160,11 +192,61 @@ class Test extends FunSuite with BeforeAndAfter {
       .batch
   }
 
-  def testSourceFile(format:String,path:String):DataFrame ={
+  def testSourceFile(format: String, path: String): DataFrame = {
     almaren.builder
-      .sourceFile(format,path,Map())
+      .sourceFile(format, path, Map())
       .batch
 
+  }
+
+  def testSourceSql(tableName: String): DataFrame = {
+    almaren.builder
+      .sourceSql(s"select * from $tableName")
+      .batch
+  }
+
+  def testTargetFileTarget(format: String, path: String, saveMode: SaveMode, params: Map[String, String], partitionBy: List[String], bucketBy: (Int, List[String]), sortBy: List[String], tableName: Option[String]): DataFrame = {
+    almaren.builder
+      .sourceDataFrame(movies)
+      .targetFile(format, path, saveMode, params, partitionBy, bucketBy, sortBy, tableName)
+      .batch
+  }
+
+  def testTargetFileBucketPartition(path: String, partitionBy: List[String], bucketBy: (Int, List[String]), fileFormat: String) = {
+    val filesList = getListOfDirectories(path).map(_.toString)
+    if (partitionBy.nonEmpty) {
+      val extractFiles = filesList.map(a => a.substring(a.lastIndexOf("=") + 1))
+      val distinctValues = movies.select(partitionBy(0)).distinct.as[String].collect.toList
+      val checkLists = extractFiles.intersect(distinctValues)
+      test(s"partitionBy_$fileFormat") {
+        assert(checkLists.size == distinctValues.size)
+      }
+    }
+    if (bucketBy._2.nonEmpty) {
+      val check = filesList.map(f => getListOfFiles(f).size)
+      val bool = if (check.forall(_ == check.head)) check.head == 2 * bucketBy._1 else false
+      test(s"bucketBy_$fileFormat") {
+        assert(bool == true)
+      }
+    }
+  }
+
+  def getListOfDirectories(dir: String): List[File] = {
+    val d = new File(dir)
+    if (d.exists && d.isDirectory) {
+      d.listFiles.filter(_.isDirectory).toList
+    } else {
+      List[File]()
+    }
+  }
+
+  def getListOfFiles(dir: String): List[File] = {
+    val d = new File(dir)
+    if (d.exists && d.isDirectory) {
+      d.listFiles.filter(_.isFile).toList
+    } else {
+      List[File]()
+    }
   }
 
   def repartitionAndColaeseTest(dataFrame: DataFrame) {
@@ -237,6 +319,7 @@ class Test extends FunSuite with BeforeAndAfter {
       assert(aliasTableCount > 0)
     }
   }
+
   def testingDrop(moviesDf: DataFrame): Unit = {
 
     moviesDf.createTempView("Test_drop")
@@ -247,6 +330,7 @@ class Test extends FunSuite with BeforeAndAfter {
     test(testDF, testDropcompare, "Testing Drop")
 
   }
+
   def testingWhere(moviesDf: DataFrame): Unit = {
 
     moviesDf.createTempView("Test_where")
@@ -257,6 +341,7 @@ class Test extends FunSuite with BeforeAndAfter {
 
     test(testDF, testWherecompare, "Testing Where")
   }
+
   def testingSqlExpr(): Unit = {
 
     val df = Seq(
@@ -269,10 +354,11 @@ class Test extends FunSuite with BeforeAndAfter {
     df.createOrReplaceTempView("person_info")
 
 
-    val testDF  = almaren.builder.sourceSql("select CAST (salary as INT) from person_info" ).batch
+    val testDF = almaren.builder.sourceSql("select CAST (salary as INT) from person_info").batch
     val testSqlExprcompare = almaren.builder.sourceSql("select * from person_info").sqlExpr("CAST(salary as int)").batch
     test(testDF, testSqlExprcompare, "Testing sqlExpr")
- }
+  }
+
   def testingSourceDataFrame(): Unit = {
 
     val testDS = spark.range(3)
@@ -283,8 +369,7 @@ class Test extends FunSuite with BeforeAndAfter {
   }
 
 
-
-    def cacheTest(df: DataFrame): Unit = {
+  def cacheTest(df: DataFrame): Unit = {
 
     df.createTempView("cache_test")
 
@@ -304,7 +389,7 @@ class Test extends FunSuite with BeforeAndAfter {
 
   def testingPipe(df: DataFrame): Unit = {
     df.createTempView("pipe_view")
-    val pipeDf = almaren.builder.sql("select * from pipe_view").pipe("echo","Testing Echo Command").batch
+    val pipeDf = almaren.builder.sql("select * from pipe_view").pipe("echo", "Testing Echo Command").batch
     val pipeDfCount = pipeDf.count()
     test("Testing Pipe") {
       assert(pipeDfCount > 0)
@@ -391,13 +476,34 @@ class Test extends FunSuite with BeforeAndAfter {
 
     val df = spark.sql("select * from sample_json_table")
     val jsonSchema = "`address` STRING,`age` BIGINT,`name` STRING"
-    val generatedSchema = Util.genDDLFromJsonString(df, "json_string",0.1)
+    val generatedSchema = Util.genDDLFromJsonString(df, "json_string", 0.1)
     testSchema(jsonSchema, generatedSchema, "Test infer schema for json column")
+  }
+
+  def deserializerCsvTest(): Unit = {
+    val df = Seq(
+      ("John,Chris", "Smith", "London"),
+      ("David,Michael", "Jones", "India"),
+      ("Joseph,Mike", "Lee", "Russia"),
+      ("Chris,Tony", "Brown", "Indonesia"),
+    ).toDF("first_name", "last_name", "country")
+    val newCsvDF = almaren.builder
+      .sourceDataFrame(df)
+      .deserializer("CSV", "first_name", options = Map("header" -> "false"))
+      .batch
+    val newCsvSchemaDf = almaren.builder
+      .sourceDataFrame(df)
+      .deserializer("CSV", "first_name", Some("`first_name_1` STRING,`first_name_2` STRING"), Map("header" -> "true"))
+      .batch
+    val csvDf = spark.read.parquet("src/test/resources/data/csvDeserializer.parquet")
+    val csvSchemaDf = spark.read.parquet("src/test/resources/data/csvDeserializerSchema.parquet")
+    test(newCsvDF, csvDf, "Deserialize CSV")
+    test(newCsvSchemaDf, csvSchemaDf, "Deserialize CSV Schema")
   }
 
   def testInferSchemaDataframe(df: DataFrame): Unit = {
     val dfSchema = "`cast` ARRAY<STRING>,`genres` ARRAY<STRING>,`title` STRING,`year` BIGINT"
-    val generatedSchema = Util.genDDLFromDataFrame(df,0.1)
+    val generatedSchema = Util.genDDLFromDataFrame(df, 0.1)
     testSchema(dfSchema, generatedSchema, "Test infer schema for dataframe")
   }
 

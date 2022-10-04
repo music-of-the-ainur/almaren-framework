@@ -2,7 +2,7 @@ package com.github.music.of.the.ainur.almaren.builder.core
 
 import com.github.music.of.the.ainur.almaren.Tree
 import com.github.music.of.the.ainur.almaren.builder.Core
-import com.github.music.of.the.ainur.almaren.state.core.{TargetJdbc, TargetSql, TargetKafka}
+import com.github.music.of.the.ainur.almaren.state.core.{TargetFile, TargetJdbc, TargetSql, TargetKafka}
 import org.apache.spark.sql.SaveMode
 
 private[almaren] trait Target extends Core {
@@ -14,4 +14,14 @@ private[almaren] trait Target extends Core {
 
   def targetKafka(servers: String, options: Map[String, String] = Map()): Option[Tree] =
     TargetKafka(servers, options)
+
+  def targetFile(format: String,
+                 path: String,
+                 saveMode: SaveMode = SaveMode.Overwrite,
+                 params: Map[String, String] = Map(),
+                 partitionBy: List[String] = List.empty,
+                 bucketBy: (Int, List[String]) = (64, List.empty),
+                 sortBy: List[String] = List.empty,
+                 tableName: Option[String]): Option[Tree] =
+    TargetFile(format, path, params, saveMode, partitionBy, bucketBy, sortBy, tableName)
 }

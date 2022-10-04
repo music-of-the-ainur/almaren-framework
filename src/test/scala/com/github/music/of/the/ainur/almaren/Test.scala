@@ -53,7 +53,7 @@ class Test extends FunSuite with BeforeAndAfter {
     ("Mike", "Brown", "Russia")
   ).toDF("first_name", "last_name", "country")
 
-  //test(readTest("foo_table"), movies, "foo")
+  test(readTest("foo_table"), movies, "foo")
   test(readTest("title_table"), spark.sql("select * from title"), "title")
   test(readTest("year_table"), spark.sql("select * from year"), "year")
 

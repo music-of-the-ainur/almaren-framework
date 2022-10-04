@@ -8,7 +8,7 @@ jobs:
       postgres:
         image: postgres:13.4
         env:
-         POSTGRES_HOST_AUTH_METHOD=trust
+         POSTGRES_HOST_AUTH_METHOD: trust
         ports:
           - 5432:5432
         options: >-

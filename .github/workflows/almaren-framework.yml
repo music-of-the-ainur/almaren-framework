@@ -1,0 +1,41 @@
+name: Almaren Framework
+on: [push, pull_request]
+
+jobs:
+  Build:
+    runs-on: ubuntu-20.04
+    services:
+      postgres:
+        image: postgres:13.4
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name : Check out repository code
+        uses: actions/checkout@v2
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 8
+          cache: sbt
+      - name: Build and test scala version
+        run: |
+          PGPASSWORD="postgres" psql -c 'create database almaren;' -U postgres -h localhost 
+          PGPASSWORD="postgres" psql -c "ALTER USER postgres PASSWORD 'foo' ;" -U postgres -h localhost 
+          PGPASSWORD="postgres" psql -c 'create role runner;' -U postgres -h localhost
+          PGPASSWORD="postgres" psql -c 'ALTER ROLE "runner" WITH  LOGIN SUPERUSER INHERIT CREATEDB CREATEROLE REPLICATION;' -U postgres -h localhost
+          sbt ++2.11.12 test
+          sbt ++2.12.10 test
+          rm -rf "$HOME/.ivy2/local" || true
+          find $HOME/Library/Caches/Coursier/v1        -name "ivydata-*.properties" -delete || true
+          find $HOME/.ivy2/cache                       -name "ivydata-*.properties" -delete || true
+          find $HOME/.cache/coursier/v1                -name "ivydata-*.properties" -delete || true
+          find $HOME/.sbt                              -name "*.lock"               -delete || true

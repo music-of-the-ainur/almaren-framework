@@ -114,6 +114,7 @@ class Test extends AnyFunSuite with BeforeAndAfter {
   deserializerXmlTest()
   deserializerAvroTest()
   deserializerCsvTest()
+  deserializerCsvSampleOptionsTest()
   testInferSchemaJsonColumn()
   testInferSchemaDataframe(moviesDf)
 
@@ -436,6 +437,22 @@ class Test extends AnyFunSuite with BeforeAndAfter {
     test(newCsvSchemaDf, csvSchemaDf, "Deserialize CSV Schema")
   }
 
+  def deserializerCsvSampleOptionsTest(): Unit = {
+    val df = Seq(
+      ("John,Chris", "Smith", "London"),
+      ("David,Michael", "Jones", "India"),
+      ("Joseph,Mike", "Lee", "Russia"),
+      ("Chris,Tony", "Brown", "Indonesia"),
+    ).toDF("first_name", "last_name", "country")
+    val newCsvDF = almaren.builder
+      .sourceDataFrame(df)
+      .deserializer("CSV", "first_name", options = Map("header" -> "false",
+        "samplingRatio" -> "0.5",
+        "samplingMaxLines" -> "1"))
+      .batch
+    val csvDf = spark.read.parquet("src/test/resources/data/csvDeserializer.parquet")
+    test(newCsvDF, csvDf, "Deserialize CSV Sample Options")
+  }
   def deserializerXmlTest(): Unit = {
     val xmlStr = Seq(
       """ <json_string>
@@ -497,15 +514,14 @@ class Test extends AnyFunSuite with BeforeAndAfter {
     val jsonStr = Seq("""{"name":"John","age":21,"address":"New York"}""",
       """{"name":"Peter","age":18,"address":"Prague"}""",
       """{"name":"Tony","age":40,"address":"New York"}""").toDF("json_string").createOrReplaceTempView("sample_json_table")
-
     val df = spark.sql("select * from sample_json_table")
-    val jsonSchema = "`address` STRING,`age` BIGINT,`name` STRING"
+    val jsonSchema = "address STRING,age BIGINT,name STRING"
     val generatedSchema = Util.genDDLFromJsonString(df, "json_string", 0.1)
     testSchema(jsonSchema, generatedSchema, "Test infer schema for json column")
   }
 
   def testInferSchemaDataframe(df: DataFrame): Unit = {
-    val dfSchema = "`cast` ARRAY<STRING>,`genres` ARRAY<STRING>,`title` STRING,`year` BIGINT"
+    val dfSchema = "cast ARRAY<STRING>,genres ARRAY<STRING>,title STRING,year BIGINT"
     val generatedSchema = Util.genDDLFromDataFrame(df, 0.1)
     testSchema(dfSchema, generatedSchema, "Test infer schema for dataframe")
   }

@@ -22,6 +22,7 @@ private[almaren] trait Deserializer extends Core {
       case "JSON" => json
       case "XML" => xml
       case "AVRO" => avro
+      case "CSV" => csv
       case d => throw InvalidDecoder(d)
     }
   }

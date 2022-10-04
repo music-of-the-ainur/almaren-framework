@@ -4,21 +4,13 @@ on: [push, pull_request]
 jobs:
   Build:
     runs-on: ubuntu-20.04
-    services:
-      postgres:
-        image: postgres:13.4
-        env:
-         POSTGRES_HOST_AUTH_METHOD=trust
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
     steps:
       - name : Check out repository code
         uses: actions/checkout@v2
+      - name: Setup PostgreSQL with PostgreSQL extensions and unprivileged user
+        uses: Daniel-Marynicz/postgresql-action@1.0.0
+        with:
+          postgres_image_tag: 13.4
       - name: Setup JDK
         uses: actions/setup-java@v3
         with:

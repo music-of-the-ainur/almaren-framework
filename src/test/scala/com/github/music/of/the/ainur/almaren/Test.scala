@@ -111,6 +111,7 @@ class Test extends FunSuite with BeforeAndAfter {
   deserializerXmlTest()
   deserializerAvroTest()
   deserializerCsvTest()
+  deserializerCsvSampleOptionsTest()
   testInferSchemaJsonColumn()
   testInferSchemaDataframe(moviesDf)
 
@@ -499,6 +500,23 @@ class Test extends FunSuite with BeforeAndAfter {
     val csvSchemaDf = spark.read.parquet("src/test/resources/data/csvDeserializerSchema.parquet")
     test(newCsvDF, csvDf, "Deserialize CSV")
     test(newCsvSchemaDf, csvSchemaDf, "Deserialize CSV Schema")
+  }
+
+  def deserializerCsvSampleOptionsTest(): Unit = {
+    val df = Seq(
+      ("John,Chris", "Smith", "London"),
+      ("David,Michael", "Jones", "India"),
+      ("Joseph,Mike", "Lee", "Russia"),
+      ("Chris,Tony", "Brown", "Indonesia"),
+    ).toDF("first_name", "last_name", "country")
+    val newCsvDF = almaren.builder
+      .sourceDataFrame(df)
+      .deserializer("CSV", "first_name", options = Map("header" -> "false",
+        "samplingRatio" -> "0.5",
+        "samplingMaxLines" -> "1"))
+      .batch
+    val csvDf = spark.read.parquet("src/test/resources/data/csvDeserializer.parquet")
+    test(newCsvDF, csvDf, "Deserialize CSV Sample Options")
   }
 
   def testInferSchemaDataframe(df: DataFrame): Unit = {

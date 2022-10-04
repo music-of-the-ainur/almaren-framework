@@ -5,14 +5,14 @@ import com.github.music.of.the.ainur.almaren.state.core._
 import com.github.music.of.the.ainur.almaren.{Tree, InvalidDecoder, SchemaRequired, State}
 
 private[almaren] trait Deserializer extends Core {
-  def deserializer(decoder:String,columnName:String,schemaInfo:Option[String] = None): Option[Tree] = {
+  def deserializer(decoder:String,columnName:String,schemaInfo:Option[String] = None,options:Map[String, String] = Map(),autoFlatten:Boolean = true): Option[Tree] = {
 
     def json(): State =
-      JsonDeserializer(columnName,schemaInfo)
+      JsonDeserializer(columnName,schemaInfo,options,autoFlatten)
     def xml(): State =
-      XMLDeserializer(columnName,schemaInfo)
-    def avro(): State =
-      AvroDeserializer(columnName,schemaInfo.getOrElse(throw SchemaRequired(decoder)))
+      XMLDeserializer(columnName,schemaInfo,options,autoFlatten)
+    def avro: State =
+      AvroDeserializer(columnName, None, options, autoFlatten,schemaInfo.getOrElse(throw SchemaRequired(decoder)))
 
 
     decoder.toUpperCase match {

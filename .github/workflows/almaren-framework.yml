@@ -11,6 +11,8 @@ jobs:
         uses: Daniel-Marynicz/postgresql-action@1.0.0
         with:
           postgres_image_tag: 13.4
+      - name: Setup Postgres CLI
+        uses: akanieski/setup-postgres-cli@v0.1.2
       - name: Setup JDK
         uses: actions/setup-java@v3
         with:

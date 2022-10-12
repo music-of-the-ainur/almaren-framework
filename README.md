@@ -72,13 +72,6 @@ spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.12:0.9
 
 ### Connector Usage
 
-#### Connector to Spark Compatibility Matrix
-| Connector \ Spark                     | 2.4<br>(Scala 2.11) | 2.4<br>(Scala 2.12) | 3.1<br>(Scala 2.12)     | 3.2 <br>(Scala 2.12)    | 3.3 <br>(Scala 2.12)    | 3.3 <br>(Scala 2.13) |
-|---------------------------------------|---------------------|---------------------|---------|---------|---------|-----------|
-| com.github.music-of-the-ainur:almaren-framework_2.11 | &check;                     |                    |         | | | |
-| com.github.music-of-the-ainur:almaren-framework_2.12|                     | &check;             | &check; | &check; | &check;         | |
-| com.github.music-of-the-ainur:almaren-framework_2.13 |             |                     |         |         |         | &check;| |
-
 #### Maven / Ivy Package Usage
 The connector is also available from the
 [Maven Central](https://mvnrepository.com/artifact/com.github.music-of-the-ainur)
@@ -87,13 +80,12 @@ repository. It can be used using the `--packages` option or the
 
 | version                    | Connector Artifact                                               |
 |----------------------------|------------------------------------------------------------------|
-| Spark 2.4.x and scala 2.11 | `com.github.music-of-the-ainur:almaren-framework_2.11:0.9.8-2.4` |
-| Spark 2.4.x and scala 2.12 | `com.github.music-of-the-ainur:almaren-framework_2.12:0.9.8-2.4` |
-| Spark 3.1.x and scala 2.12 | `com.github.music-of-the-ainur:almaren-framework_2.12:0.9.8-3.1` |
-| Spark 3.2.x and scala 2.12 | `com.github.music-of-the-ainur:almaren-framework_2.12:0.9.8-3.2` |
-| Spark 3.3.x and scala 2.12 | `com.github.music-of-the-ainur:almaren-framework_2.12:0.9.8-3.3` |
 | Spark 3.3.x and scala 2.13 | `com.github.music-of-the-ainur:almaren-framework_2.13:0.9.8-3.3` |
-
+| Spark 3.3.x and scala 2.12 | `com.github.music-of-the-ainur:almaren-framework_2.12:0.9.8-3.3` |
+| Spark 3.2.x and scala 2.12 | `com.github.music-of-the-ainur:almaren-framework_2.12:0.9.8-3.2` |
+| Spark 3.1.x and scala 2.12 | `com.github.music-of-the-ainur:almaren-framework_2.12:0.9.8-3.1` |
+| Spark 2.4.x and scala 2.12 | `com.github.music-of-the-ainur:almaren-framework_2.12:0.9.8-2.4` |
+| Spark 2.4.x and scala 2.11 | `com.github.music-of-the-ainur:almaren-framework_2.11:0.9.8-2.4` |
 
 ### Batch Example
 ```scala

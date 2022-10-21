@@ -3,7 +3,8 @@
 The Almaren Framework provides a simplified consistent minimalistic layer over Apache Spark, while still allowing you to take advantage of native Apache Spark features. You can even combine it with standard Spark code.
 
 [![Build Status](https://github.com/music-of-the-ainur/almaren-framework/actions/workflows/almaren-framework.yml/badge.svg)](https://github.com/music-of-the-ainur/almaren-framework/actions/workflows/almaren-framework.yml)
-[Discord](https://discord.com/channels/1033116685143646289/1033116686603264101)
+
+[Discord Group](https://discord.gg/PhCwwgDD)
 
 ## Table of Contents
 
@@ -69,14 +70,8 @@ To run in spark-shell:
 ```
 spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.12:0.9.8-3.2"
 ```
-
-### Connector Usage
-
-#### Maven / Ivy Package Usage
-The connector is also available from the
-[Maven Central](https://mvnrepository.com/artifact/com.github.music-of-the-ainur)
-repository. It can be used using the `--packages` option or the
-`spark.jars.packages` configuration property. Use the following value
+Almaren Framework is available in [Maven Central](https://mvnrepository.com/artifact/com.github.music-of-the-ainur)
+repository.
 
 | version                    | Connector Artifact                                               |
 |----------------------------|------------------------------------------------------------------|

@@ -4,8 +4,6 @@ The Almaren Framework provides a simplified consistent minimalistic layer over A
 
 [![Build Status](https://github.com/music-of-the-ainur/almaren-framework/actions/workflows/almaren-framework.yml/badge.svg)](https://github.com/music-of-the-ainur/almaren-framework/actions/workflows/almaren-framework.yml)
 
-[Discord Group](https://discord.gg/PhCwwgDD)
-
 ## Table of Contents
 
 - [Introduction](#introduction)

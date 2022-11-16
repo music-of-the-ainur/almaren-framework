@@ -8,8 +8,10 @@ import org.scalatest._
 
 import java.io.File
 import scala.collection.immutable._
+import org.scalatest.funsuite.AnyFunSuite
 
-class Test extends FunSuite with BeforeAndAfter {
+
+class Test extends AnyFunSuite with BeforeAndAfter {
   val almaren = Almaren("App Test")
 
   val spark = almaren.spark

@@ -29,7 +29,7 @@ jobs:
       - name: Build and test scala version
         run: |
           PGPASSWORD="postgres" psql -c 'create database almaren;' -U postgres -h localhost 
-          PGPASSWORD="postgres" psql -c "ALTER USER postgres PASSWORD 'foo' ;" -U postgres -h localhost 
+          PGPASSWORD="postgres" psql -c "ALTER USER postgres PASSWORD 'postgres' ;" -U postgres -h localhost 
           PGPASSWORD="postgres" psql -c 'create role runner;' -U postgres -h localhost
           PGPASSWORD="postgres" psql -c 'ALTER ROLE "runner" WITH  LOGIN SUPERUSER INHERIT CREATEDB CREATEROLE REPLICATION;' -U postgres -h localhost
           sbt ++2.11.12 test

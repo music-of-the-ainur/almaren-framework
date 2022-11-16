@@ -9,7 +9,6 @@ The Almaren Framework provides a simplified consistent minimalistic layer over A
 
 - [Introduction](#introduction)
   * [Dependency](#dependency)
-  * [Connector Usage](#connector-usage)
   * [Batch Example](#batch-example)
   * [Streaming Example](#streaming-example)
 - [Debugging](#debugging)
@@ -70,13 +69,10 @@ To run in spark-shell:
 spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.12:0.9.9-3.2"
 ```
 
-### Connector Usage
 
-#### Maven / Ivy Package Usage
-The connector is also available from the
+Almaren connector is available in 
 [Maven Central](https://mvnrepository.com/artifact/com.github.music-of-the-ainur)
-repository. It can be used using the `--packages` option or the
-`spark.jars.packages` configuration property. Use the following value
+repository. 
 
 | version                    | Connector Artifact                                               |
 |----------------------------|------------------------------------------------------------------|

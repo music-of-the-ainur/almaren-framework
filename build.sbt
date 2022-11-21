@@ -13,7 +13,7 @@ val majorVersionReg = "([0-9]+\\.[0-9]+).{0,}".r
 val majorVersionReg(majorVersion) = sparkVersion
 
 libraryDependencies ++= Seq(
-  "com.typesafe.scala-logging" %% "scala-logging" % "3.9.4",
+  "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5",
   "org.apache.spark" %% "spark-streaming" % sparkVersion % "provided",
   "org.apache.spark" %% "spark-core" % sparkVersion % "provided",
   "org.apache.spark" %% "spark-sql" % sparkVersion % "provided",

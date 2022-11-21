@@ -23,9 +23,10 @@ jobs:
       - name: Setup JDK
         uses: actions/setup-java@v3
         with:
-          distribution: temurin
-          java-version: 8
-          cache: sbt
+            distribution: temurin
+            java-version: 8
+            cache: sbt
+
       - name: Build and test scala version
         run: |
           PGPASSWORD="postgres" psql -c 'create database almaren;' -U postgres -h localhost 
@@ -33,6 +34,7 @@ jobs:
           PGPASSWORD="postgres" psql -c 'create role runner;' -U postgres -h localhost
           PGPASSWORD="postgres" psql -c 'ALTER ROLE "runner" WITH  LOGIN SUPERUSER INHERIT CREATEDB CREATEROLE REPLICATION;' -U postgres -h localhost
           sbt ++2.12.10 test
+          sbt ++2.13.9 test
           rm -rf "$HOME/.ivy2/local" || true
           find $HOME/Library/Caches/Coursier/v1        -name "ivydata-*.properties" -delete || true
           find $HOME/.ivy2/cache                       -name "ivydata-*.properties" -delete || true

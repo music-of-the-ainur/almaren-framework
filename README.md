@@ -3,6 +3,8 @@
 The Almaren Framework provides a simplified consistent minimalistic layer over Apache Spark, while still allowing you to take advantage of native Apache Spark features. You can even combine it with standard Spark code.
 
 [![Build Status](https://github.com/music-of-the-ainur/almaren-framework/actions/workflows/almaren-framework.yml/badge.svg)](https://github.com/music-of-the-ainur/almaren-framework/actions/workflows/almaren-framework.yml)
+[![Gitter Community](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/music-of-the-ainur/community)
+
 
 ## Table of Contents
 
@@ -60,16 +62,37 @@ The Almaren Framework provides a simplified consistent minimalistic layer over A
 To add Almaren Framework dependency to your sbt build:
 
 ```
+<<<<<<< HEAD
 libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % "0.9.8-3.2"
+=======
+libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % "0.9.8-3.3"
+>>>>>>> upstream/spark-3.3
 ```
 
 To run in spark-shell:
 
 ```
-spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.12:0.9.8-3.2"
+spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.12:0.9.8-3.3"
 ```
 Almaren Framework is available in [Maven Central](https://mvnrepository.com/artifact/com.github.music-of-the-ainur)
 repository.
+
+| version                    | Connector Artifact                                               |
+|----------------------------|------------------------------------------------------------------|
+| Spark 3.3.x and scala 2.13 | `com.github.music-of-the-ainur:almaren-framework_2.13:0.9.8-3.3` |
+| Spark 3.3.x and scala 2.12 | `com.github.music-of-the-ainur:almaren-framework_2.12:0.9.8-3.3` |
+| Spark 3.2.x and scala 2.12 | `com.github.music-of-the-ainur:almaren-framework_2.12:0.9.8-3.2` |
+| Spark 3.1.x and scala 2.12 | `com.github.music-of-the-ainur:almaren-framework_2.12:0.9.8-3.1` |
+| Spark 2.4.x and scala 2.12 | `com.github.music-of-the-ainur:almaren-framework_2.12:0.9.8-2.4` |
+| Spark 2.4.x and scala 2.11 | `com.github.music-of-the-ainur:almaren-framework_2.11:0.9.8-2.4` |
+
+### Connector Usage
+
+#### Maven / Ivy Package Usage
+The connector is also available from the
+[Maven Central](https://mvnrepository.com/artifact/com.github.music-of-the-ainur)
+repository. It can be used using the `--packages` option or the
+`spark.jars.packages` configuration property. Use the following value
 
 | version                    | Connector Artifact                                               |
 |----------------------------|------------------------------------------------------------------|

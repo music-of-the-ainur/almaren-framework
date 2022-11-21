@@ -62,17 +62,18 @@ The Almaren Framework provides a simplified consistent minimalistic layer over A
 To add Almaren Framework dependency to your sbt build:
 
 ```
-<<<<<<< HEAD
-libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % "0.9.8-3.2"
-=======
-libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % "0.9.8-3.3"
->>>>>>> upstream/spark-3.3
+libraryDependencies += "com.github.music-of-the-ainur" %% "almaren-framework" % "0.9.9-3.3"
 ```
 
 To run in spark-shell:
 
+For scala version(2.12):
 ```
-spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.12:0.9.8-3.3"
+spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.12:0.9.9-3.3"
+```
+For scala version(2.13):
+```
+spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.13:0.9.9-3.3"
 ```
 Almaren Framework is available in [Maven Central](https://mvnrepository.com/artifact/com.github.music-of-the-ainur)
 repository.

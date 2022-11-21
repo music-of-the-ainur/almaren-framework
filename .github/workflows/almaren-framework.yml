@@ -32,7 +32,7 @@ jobs:
           PGPASSWORD="postgres" psql -c "ALTER USER postgres PASSWORD 'postgres' ;" -U postgres -h localhost 
           PGPASSWORD="postgres" psql -c 'create role runner;' -U postgres -h localhost
           PGPASSWORD="postgres" psql -c 'ALTER ROLE "runner" WITH  LOGIN SUPERUSER INHERIT CREATEDB CREATEROLE REPLICATION;' -U postgres -h localhost
-          sbt ++2.12.15 test
+          sbt ++2.12.10 test
           rm -rf "$HOME/.ivy2/local" || true
           find $HOME/Library/Caches/Coursier/v1        -name "ivydata-*.properties" -delete || true
           find $HOME/.ivy2/cache                       -name "ivydata-*.properties" -delete || true

@@ -80,6 +80,8 @@ repository.
 
 | version                    | Connector Artifact                                               |
 |----------------------------|------------------------------------------------------------------|
+| Spark 3.4.x and scala 2.13 | `com.github.music-of-the-ainur:almaren-framework_2.13:0.9.9-3.4` |
+| Spark 3.4.x and scala 2.12 | `com.github.music-of-the-ainur:almaren-framework_2.12:0.9.9-3.4` |
 | Spark 3.3.x and scala 2.13 | `com.github.music-of-the-ainur:almaren-framework_2.13:0.9.9-3.3` |
 | Spark 3.3.x and scala 2.12 | `com.github.music-of-the-ainur:almaren-framework_2.12:0.9.9-3.3` |
 | Spark 3.2.x and scala 2.12 | `com.github.music-of-the-ainur:almaren-framework_2.12:0.9.9-3.2` |

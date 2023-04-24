@@ -5,12 +5,13 @@ import org.apache.spark.sql.avro._
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.{AnalysisException, Column, DataFrame, SaveMode}
 import org.scalatest._
+import org.scalatest.funsuite.AnyFunSuite
 import org.apache.spark.sql.avro._
 
 import java.io.File
 import scala.collection.immutable._
 
-class Test extends FunSuite with BeforeAndAfter {
+class Test extends AnyFunSuite with BeforeAndAfter {
   val almaren = Almaren("App Test")
 
   val spark = almaren.spark

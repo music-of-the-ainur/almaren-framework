@@ -6,11 +6,12 @@ import org.apache.spark.sql.functions._
 import org.apache.spark.sql.{AnalysisException, Column, DataFrame, SaveMode}
 import org.scalatest._
 import org.apache.spark.sql.avro._
+import org.scalatest.funsuite.AnyFunSuite
 
 import java.io.File
 import scala.collection.immutable._
 
-class Test extends FunSuite with BeforeAndAfter {
+class Test extends AnyFunSuite with BeforeAndAfter {
   val almaren = Almaren("App Test")
 
   val spark = almaren.spark
@@ -514,15 +515,14 @@ class Test extends FunSuite with BeforeAndAfter {
     val jsonStr = Seq("""{"name":"John","age":21,"address":"New York"}""",
       """{"name":"Peter","age":18,"address":"Prague"}""",
       """{"name":"Tony","age":40,"address":"New York"}""").toDF("json_string").createOrReplaceTempView("sample_json_table")
-
     val df = spark.sql("select * from sample_json_table")
-    val jsonSchema = "`address` STRING,`age` BIGINT,`name` STRING"
+    val jsonSchema = "address STRING,age BIGINT,name STRING"
     val generatedSchema = Util.genDDLFromJsonString(df, "json_string", 0.1)
     testSchema(jsonSchema, generatedSchema, "Test infer schema for json column")
   }
 
   def testInferSchemaDataframe(df: DataFrame): Unit = {
-    val dfSchema = "`cast` ARRAY<STRING>,`genres` ARRAY<STRING>,`title` STRING,`year` BIGINT"
+    val dfSchema = "cast ARRAY<STRING>,genres ARRAY<STRING>,title STRING,year BIGINT"
     val generatedSchema = Util.genDDLFromDataFrame(df, 0.1)
     testSchema(dfSchema, generatedSchema, "Test infer schema for dataframe")
   }

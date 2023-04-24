@@ -75,8 +75,8 @@ For scala version(2.13):
 ```
 spark-shell --packages "com.github.music-of-the-ainur:almaren-framework_2.13:0.9.9-3.4"
 ```
-Almaren Framework is available in [Maven Central](https://mvnrepository.com/artifact/com.github.music-of-the-ainur)
-repository.
+Almaren connector is available in
+[Maven Central](https://mvnrepository.com/artifact/com.github.music-of-the-ainur) repository.
 
 | version                    | Connector Artifact                                               |
 |----------------------------|------------------------------------------------------------------|

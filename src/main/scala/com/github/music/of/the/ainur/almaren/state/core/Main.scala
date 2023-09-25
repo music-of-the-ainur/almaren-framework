@@ -3,6 +3,7 @@ package com.github.music.of.the.ainur.almaren.state.core
 import com.github.music.of.the.ainur.almaren.State
 import com.github.music.of.the.ainur.almaren.util.Constants
 import org.apache.spark.sql.{Column, DataFrame}
+import org.apache.spark.storage.StorageLevel
 
 private[almaren] abstract class Main extends State {
   override def executor(df: DataFrame): DataFrame = core(df)
@@ -81,22 +82,30 @@ case class Alias(alias:String) extends Main {
   }
 }
 
-case class Cache(opType:Boolean = true,tableName:Option[String] = None) extends Main {
+case class Cache(opType: Boolean = true, tableName: Option[String] = None, storageLevel: Option[StorageLevel] = None) extends Main {
   override def core(df: DataFrame): DataFrame = cache(df)
+
   def cache(df: DataFrame): DataFrame = {
-    logger.info(s"opType:{$opType}, tableName{$tableName}")
+    logger.info(s"opType:{$opType}, tableName:{$tableName}, StorageType:{$storageLevel}")
     tableName match {
-      case Some(t) => cacheTable(df,t)
-      case None => cacheDf(df)
+      case Some(t) => cacheTable(df, t)
+      case None => cacheDf(df, storageLevel)
     }
     df
   }
-  private def cacheDf(df:DataFrame): Unit = opType match {
-    case true => df.persist()
+
+  private def cacheDf(df: DataFrame, storageLevel: Option[StorageLevel]): Unit = opType match {
+    case true => {
+      storageLevel match {
+        case Some(value) => df.persist(value)
+        case None => df.persist()
+      }
+    }
     case false => df.unpersist()
 
   }
-  private def cacheTable(df:DataFrame,tableName: String): Unit =
+
+  private def cacheTable(df: DataFrame, tableName: String): Unit =
     opType match {
       case true => df.sqlContext.cacheTable(tableName)
       case false => df.sqlContext.uncacheTable(tableName)

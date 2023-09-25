@@ -353,6 +353,12 @@ Cache/Uncache both DataFrame or Table
 cache(true)
 ```
 
+Cache Dataframe with Storage Level
+
+```scala
+cache(true,storageLevel = MEMORY_AND_DISK)
+```
+
 #### Coalesce
 
 Decrease the number of partitions in the RDD to numPartitions. Useful for running operations more efficiently after filtering down a large dataset.

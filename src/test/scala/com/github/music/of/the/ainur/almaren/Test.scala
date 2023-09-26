@@ -392,7 +392,7 @@ class Test extends AnyFunSuite with BeforeAndAfter {
 
     val testCacheDfMemoryStorage: DataFrame = almaren.builder.sourceSql("select * from cache_test").cache(true, storageLevel = Some(MEMORY_ONLY)).batch
     val bool_cache_memory_storage = testCacheDfMemoryStorage.storageLevel.useMemory
-    test("Testing Cache Storage") {
+    test("Testing Cache Memory Storage") {
       assert(bool_cache_memory_storage)
     }
 

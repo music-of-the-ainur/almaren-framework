@@ -384,16 +384,16 @@ class Test extends AnyFunSuite with BeforeAndAfter {
       assert(bool_cache)
     }
 
-    val testCacheDfStorage: DataFrame = almaren.builder.sourceSql("select * from cache_test").cache(true,storageLevel = Some(MEMORY_AND_DISK)).batch
+    val testCacheDfStorage: DataFrame = almaren.builder.sourceSql("select * from cache_test").cache(true,storageLevel = Some(MEMORY_ONLY)).batch
     val bool_cache_storage = testCacheDfStorage.storageLevel.useMemory
-    test("Testing Cache Storage") {
+    test("Testing Cache Memory Storage") {
       assert(bool_cache_storage)
     }
 
-    val testCacheDfMemoryStorage: DataFrame = almaren.builder.sourceSql("select * from cache_test").cache(true, storageLevel = Some(MEMORY_ONLY)).batch
-    val bool_cache_memory_storage = testCacheDfMemoryStorage.storageLevel.useMemory
-    test("Testing Cache Memory Storage") {
-      assert(bool_cache_memory_storage)
+    val testCacheDfDiskStorage: DataFrame = almaren.builder.sourceSql("select * from cache_test").cache(true, storageLevel = Some(DISK_ONLY)).batch
+    val bool_cache_disk_storage = testCacheDfDiskStorage.storageLevel.useDisk
+    test("Testing Cache Disk Storage") {
+      assert(bool_cache_disk_storage)
     }
 
     val testUnCacheDf = almaren.builder.sourceSql("select * from cache_test").cache(false).batch

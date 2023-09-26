@@ -7,7 +7,7 @@ import org.apache.spark.sql.{AnalysisException, Column, DataFrame, SaveMode}
 import org.scalatest._
 import org.scalatest.funsuite.AnyFunSuite
 import org.apache.spark.sql.avro._
-import org.apache.spark.storage.StorageLevel.MEMORY_AND_DISK
+import org.apache.spark.storage.StorageLevel._
 
 import java.io.File
 import scala.collection.immutable._
@@ -388,6 +388,12 @@ class Test extends AnyFunSuite with BeforeAndAfter {
     val bool_cache_storage = testCacheDfStorage.storageLevel.useMemory
     test("Testing Cache Storage") {
       assert(bool_cache_storage)
+    }
+
+    val testCacheDfMemoryStorage: DataFrame = almaren.builder.sourceSql("select * from cache_test").cache(true, storageLevel = Some(MEMORY_ONLY)).batch
+    val bool_cache_memory_storage = testCacheDfMemoryStorage.storageLevel.useMemory
+    test("Testing Cache Storage") {
+      assert(bool_cache_memory_storage)
     }
 
     val testUnCacheDf = almaren.builder.sourceSql("select * from cache_test").cache(false).batch

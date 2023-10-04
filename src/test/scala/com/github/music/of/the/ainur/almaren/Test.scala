@@ -5,8 +5,9 @@ import org.apache.spark.sql.avro._
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.{AnalysisException, Column, DataFrame, SaveMode}
 import org.scalatest._
-import org.apache.spark.sql.avro._
 import org.scalatest.funsuite.AnyFunSuite
+import org.apache.spark.sql.avro._
+import org.apache.spark.storage.StorageLevel._
 
 import java.io.File
 import scala.collection.immutable._
@@ -383,6 +384,18 @@ class Test extends AnyFunSuite with BeforeAndAfter {
       assert(bool_cache)
     }
 
+    val testCacheDfStorage: DataFrame = almaren.builder.sourceSql("select * from cache_test").cache(true,storageLevel = Some(MEMORY_ONLY)).batch
+    val bool_cache_storage = testCacheDfStorage.storageLevel.useMemory
+    test("Testing Cache Memory Storage") {
+      assert(bool_cache_storage)
+    }
+
+    val testCacheDfDiskStorage: DataFrame = almaren.builder.sourceSql("select * from cache_test").cache(true, storageLevel = Some(DISK_ONLY)).batch
+    val bool_cache_disk_storage = testCacheDfDiskStorage.storageLevel.useDisk
+    test("Testing Cache Disk Storage") {
+      assert(bool_cache_disk_storage)
+    }
+
     val testUnCacheDf = almaren.builder.sourceSql("select * from cache_test").cache(false).batch
     val bool_uncache = testUnCacheDf.storageLevel.useMemory
     test("Testing Uncache") {
@@ -453,6 +466,7 @@ class Test extends AnyFunSuite with BeforeAndAfter {
     val csvDf = spark.read.parquet("src/test/resources/data/csvDeserializer.parquet")
     test(newCsvDF, csvDf, "Deserialize CSV Sample Options")
   }
+
   def deserializerXmlTest(): Unit = {
     val xmlStr = Seq(
       """ <json_string>
@@ -514,14 +528,15 @@ class Test extends AnyFunSuite with BeforeAndAfter {
     val jsonStr = Seq("""{"name":"John","age":21,"address":"New York"}""",
       """{"name":"Peter","age":18,"address":"Prague"}""",
       """{"name":"Tony","age":40,"address":"New York"}""").toDF("json_string").createOrReplaceTempView("sample_json_table")
+
     val df = spark.sql("select * from sample_json_table")
-    val jsonSchema = "address STRING,age BIGINT,name STRING"
+    val jsonSchema = "`address` STRING,`age` BIGINT,`name` STRING"
     val generatedSchema = Util.genDDLFromJsonString(df, "json_string", 0.1)
     testSchema(jsonSchema, generatedSchema, "Test infer schema for json column")
   }
 
   def testInferSchemaDataframe(df: DataFrame): Unit = {
-    val dfSchema = "cast ARRAY<STRING>,genres ARRAY<STRING>,title STRING,year BIGINT"
+    val dfSchema = "`cast` ARRAY<STRING>,`genres` ARRAY<STRING>,`title` STRING,`year` BIGINT"
     val generatedSchema = Util.genDDLFromDataFrame(df, 0.1)
     testSchema(dfSchema, generatedSchema, "Test infer schema for dataframe")
   }

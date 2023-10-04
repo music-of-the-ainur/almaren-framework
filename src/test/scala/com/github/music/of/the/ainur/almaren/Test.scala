@@ -1,14 +1,16 @@
 package com.github.music.of.the.ainur.almaren
 
 import com.github.music.of.the.ainur.almaren.builder.Core.Implicit
+import org.apache.spark.sql.avro._
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.{AnalysisException, Column, DataFrame, SaveMode}
 import org.scalatest._
+import org.scalatest.funsuite.AnyFunSuite
 import org.apache.spark.sql.avro._
+import org.apache.spark.storage.StorageLevel._
 
 import java.io.File
 import scala.collection.immutable._
-import org.scalatest.funsuite.AnyFunSuite
 
 class Test extends AnyFunSuite with BeforeAndAfter {
   val almaren = Almaren("App Test")
@@ -16,6 +18,7 @@ class Test extends AnyFunSuite with BeforeAndAfter {
   val spark = almaren.spark
     .master("local[*]")
     .config("spark.sql.shuffle.partitions", "1")
+    .config("spark.some.config.option", "some-value")
     .getOrCreate()
 
   val testTable = "movies"
@@ -381,6 +384,18 @@ class Test extends AnyFunSuite with BeforeAndAfter {
       assert(bool_cache)
     }
 
+    val testCacheDfStorage: DataFrame = almaren.builder.sourceSql("select * from cache_test").cache(true,storageLevel = Some(MEMORY_ONLY)).batch
+    val bool_cache_storage = testCacheDfStorage.storageLevel.useMemory
+    test("Testing Cache Memory Storage") {
+      assert(bool_cache_storage)
+    }
+
+    val testCacheDfDiskStorage: DataFrame = almaren.builder.sourceSql("select * from cache_test").cache(true, storageLevel = Some(DISK_ONLY)).batch
+    val bool_cache_disk_storage = testCacheDfDiskStorage.storageLevel.useDisk
+    test("Testing Cache Disk Storage") {
+      assert(bool_cache_disk_storage)
+    }
+
     val testUnCacheDf = almaren.builder.sourceSql("select * from cache_test").cache(false).batch
     val bool_uncache = testUnCacheDf.storageLevel.useMemory
     test("Testing Uncache") {
@@ -412,6 +427,44 @@ class Test extends AnyFunSuite with BeforeAndAfter {
 
     test(jsondf, resDf, "Deserialize JSON")
     test(jsonschmeadf, resDf, "Deserialize JSON Schema")
+  }
+
+  def deserializerCsvTest(): Unit = {
+    val df = Seq(
+      ("John,Chris", "Smith", "London"),
+      ("David,Michael", "Jones", "India"),
+      ("Joseph,Mike", "Lee", "Russia"),
+      ("Chris,Tony", "Brown", "Indonesia"),
+    ).toDF("first_name", "last_name", "country")
+    val newCsvDF = almaren.builder
+      .sourceDataFrame(df)
+      .deserializer("CSV", "first_name", options = Map("header" -> "false"))
+      .batch
+    val newCsvSchemaDf = almaren.builder
+      .sourceDataFrame(df)
+      .deserializer("CSV", "first_name", Some("`first_name_1` STRING,`first_name_2` STRING"), Map("header" -> "true"))
+      .batch
+    val csvDf = spark.read.parquet("src/test/resources/data/csvDeserializer.parquet")
+    val csvSchemaDf = spark.read.parquet("src/test/resources/data/csvDeserializerSchema.parquet")
+    test(newCsvDF, csvDf, "Deserialize CSV")
+    test(newCsvSchemaDf, csvSchemaDf, "Deserialize CSV Schema")
+  }
+
+  def deserializerCsvSampleOptionsTest(): Unit = {
+    val df = Seq(
+      ("John,Chris", "Smith", "London"),
+      ("David,Michael", "Jones", "India"),
+      ("Joseph,Mike", "Lee", "Russia"),
+      ("Chris,Tony", "Brown", "Indonesia"),
+    ).toDF("first_name", "last_name", "country")
+    val newCsvDF = almaren.builder
+      .sourceDataFrame(df)
+      .deserializer("CSV", "first_name", options = Map("header" -> "false",
+        "samplingRatio" -> "0.5",
+        "samplingMaxLines" -> "1"))
+      .batch
+    val csvDf = spark.read.parquet("src/test/resources/data/csvDeserializer.parquet")
+    test(newCsvDF, csvDf, "Deserialize CSV Sample Options")
   }
 
   def deserializerXmlTest(): Unit = {
@@ -480,44 +533,6 @@ class Test extends AnyFunSuite with BeforeAndAfter {
     val jsonSchema = "`address` STRING,`age` BIGINT,`name` STRING"
     val generatedSchema = Util.genDDLFromJsonString(df, "json_string", 0.1)
     testSchema(jsonSchema, generatedSchema, "Test infer schema for json column")
-  }
-
-  def deserializerCsvTest(): Unit = {
-    val df = Seq(
-      ("John,Chris", "Smith", "London"),
-      ("David,Michael", "Jones", "India"),
-      ("Joseph,Mike", "Lee", "Russia"),
-      ("Chris,Tony", "Brown", "Indonesia"),
-    ).toDF("first_name", "last_name", "country")
-    val newCsvDF = almaren.builder
-      .sourceDataFrame(df)
-      .deserializer("CSV", "first_name", options = Map("header" -> "false"))
-      .batch
-    val newCsvSchemaDf = almaren.builder
-      .sourceDataFrame(df)
-      .deserializer("CSV", "first_name", Some("`first_name_1` STRING,`first_name_2` STRING"), Map("header" -> "true"))
-      .batch
-    val csvDf = spark.read.parquet("src/test/resources/data/csvDeserializer.parquet")
-    val csvSchemaDf = spark.read.parquet("src/test/resources/data/csvDeserializerSchema.parquet")
-    test(newCsvDF, csvDf, "Deserialize CSV")
-    test(newCsvSchemaDf, csvSchemaDf, "Deserialize CSV Schema")
-  }
-
-  def deserializerCsvSampleOptionsTest(): Unit = {
-    val df = Seq(
-      ("John,Chris", "Smith", "London"),
-      ("David,Michael", "Jones", "India"),
-      ("Joseph,Mike", "Lee", "Russia"),
-      ("Chris,Tony", "Brown", "Indonesia"),
-    ).toDF("first_name", "last_name", "country")
-    val newCsvDF = almaren.builder
-      .sourceDataFrame(df)
-      .deserializer("CSV", "first_name", options = Map("header" -> "false",
-        "samplingRatio" -> "0.5",
-        "samplingMaxLines" -> "1"))
-      .batch
-    val csvDf = spark.read.parquet("src/test/resources/data/csvDeserializer.parquet")
-    test(newCsvDF, csvDf, "Deserialize CSV Sample Options")
   }
 
   def testInferSchemaDataframe(df: DataFrame): Unit = {

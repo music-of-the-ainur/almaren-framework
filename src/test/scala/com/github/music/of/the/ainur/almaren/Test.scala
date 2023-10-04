@@ -504,7 +504,6 @@ class Test extends AnyFunSuite with BeforeAndAfter {
     testSchema(dfSchema, generatedSchema, "Test infer schema for dataframe")
   }
 
-
   def testSchema(jsonSchema: String, generatedSchema: String, name: String): Unit = {
     test(s"$name") {
       assert(jsonSchema.equals(generatedSchema))

@@ -5,11 +5,12 @@ import org.apache.spark.sql.avro._
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.{AnalysisException, Column, DataFrame, SaveMode}
 import org.scalatest._
+import org.scalatest.funsuite.AnyFunSuite
+import org.apache.spark.sql.avro._
+import org.apache.spark.storage.StorageLevel._
 
 import java.io.File
 import scala.collection.immutable._
-import org.scalatest.funsuite.AnyFunSuite
-
 
 class Test extends AnyFunSuite with BeforeAndAfter {
   val almaren = Almaren("App Test")
@@ -17,6 +18,7 @@ class Test extends AnyFunSuite with BeforeAndAfter {
   val spark = almaren.spark
     .master("local[*]")
     .config("spark.sql.shuffle.partitions", "1")
+    .config("spark.some.config.option", "some-value")
     .getOrCreate()
 
   val testTable = "movies"
@@ -28,19 +30,19 @@ class Test extends AnyFunSuite with BeforeAndAfter {
 
   // TODO improve it
   val movies = almaren.builder
-    .sourceSql(s"select monotonically_increasing_id() as id,* from $testTable")
-    .sql("select * from __table__")
+    .sourceSql(s"select monotonically_increasing_id() as id,* from $testTable").alias("temp")
+    .sql("select * from temp")
     .fork(
-      almaren.builder.sql("""select id,title from __TABLE__""").alias("title"),
-      almaren.builder.sql("""select id,year from __TABLE__""").alias("year")
+      almaren.builder.sql("""select id,title from temp""").alias("title"),
+      almaren.builder.sql("""select id,year from temp""").alias("year")
     ).dsl(
     """
 		|title$title:StringType
 		|year$year:LongType
 		|cast[0]$actor:StringType
 		|cast[1]$support_actor:StringType
- 		|genres[0]$genre:StringType""".stripMargin)
-    .sql("""SELECT * FROM __TABLE__""")
+ 		|genres[0]$genre:StringType""".stripMargin).alias("temp1")
+    .sql("""SELECT * FROM temp1""")
     .batch
 
   val df = Seq(
@@ -67,42 +69,38 @@ class Test extends AnyFunSuite with BeforeAndAfter {
     spark.read.parquet("src/test/resources/sample_output/employee.parquet"), "SourceParquetFileTest")
   test(testSourceFile("avro", "src/test/resources/sample_data/emp.avro"),
     spark.read.parquet("src/test/resources/sample_output/employee.parquet"), "SourceAvroFileTest")
-
-  test(
-    testTargetFileTarget("parquet",
-      "src/test/resources/sample_target/target.parquet",
-      SaveMode.Overwrite,
-      Map(),
-      List("year"),
-      (3, List("title")),
-      List("title"),
-      Some("table1")),
+  test(testTargetFileTarget("parquet",
+    "/tmp/target.parquet",
+    SaveMode.Overwrite,
+    Map(),
+    List("year"),
+    (3, List("title")),
+    List("title"),
+    Some("table1")),
     movies, "TargetParquetFileTest")
-  test(
-    testTargetFileTarget("avro", "src/test/resources/sample_target/target.avro",
-      SaveMode.Overwrite,
-      Map(),
-      List("year"),
-      (3, List("title")),
-      List("title"),
-      Some("table2")),
+  test(testTargetFileTarget("avro", "/tmp/target.avro",
+    SaveMode.Overwrite,
+    Map(),
+    List("year"),
+    (3, List("title")),
+    List("title"),
+    Some("table2")),
     movies, "TargetAvroFileTest")
 
-  test(testSourceFile("parquet", "src/test/resources/sample_target/target.parquet"), movies, "TargetParquetFileTest1")
-  test(testSourceFile("avro", "src/test/resources/sample_target/target.avro"), movies, "TargetAvroFileTest1")
+  test(testSourceFile("parquet", "/tmp/target.parquet"), movies, "TargetParquetFileTest1")
+  test(testSourceFile("avro", "/tmp/target.avro"), movies, "TargetAvroFileTest1")
 
   test(
-    testTargetFileTarget("parquet", "src/test/resources/sample_target/target.parquet", SaveMode.Overwrite, Map(), List("year"), (3, List("title")), List("title"), Some("tableTarget1")),
+    testTargetFileTarget("parquet", "/tmp/target.parquet", SaveMode.Overwrite, Map(), List("year"), (3, List("title")), List("title"), Some("tableTarget1")),
     testSourceSql("tableTarget1"),
     "TargetParquetFileTest2")
   test(
-    testTargetFileTarget("avro", "src/test/resources/sample_target/target.avro", SaveMode.Overwrite, Map(), List("year"), (3, List("title")), List("title"), Some("tableTarget2")),
+    testTargetFileTarget("avro", "/tmp/target.avro", SaveMode.Overwrite, Map(), List("year"), (3, List("title")), List("title"), Some("tableTarget2")),
     testSourceSql("tableTarget2"),
     "TargetAvroFileTest2")
 
-  testTargetFileBucketPartition("src/test/resources/sample_target/target.parquet", List("year"), (3, List("title")),"parquet")
-  testTargetFileBucketPartition("src/test/resources/sample_target/target.avro",List("year"),(3,List("title")),"avro")
-
+  testTargetFileBucketPartition("/tmp/target.parquet", List("year"), (3, List("title")), "parquet")
+  testTargetFileBucketPartition("/tmp/target.avro", List("year"), (3, List("title")), "avro")
   repartitionAndColaeseTest(moviesDf)
   repartitionWithColumnTest(df)
   repartitionWithSizeAndColumnTest(df)
@@ -116,6 +114,8 @@ class Test extends AnyFunSuite with BeforeAndAfter {
   deserializerJsonTest()
   deserializerXmlTest()
   deserializerAvroTest()
+  deserializerCsvTest()
+  deserializerCsvSampleOptionsTest()
   testInferSchemaJsonColumn()
   testInferSchemaDataframe(moviesDf)
 
@@ -178,22 +178,22 @@ class Test extends AnyFunSuite with BeforeAndAfter {
   def testSourceTargetJdbcUserPassword(df: DataFrame): DataFrame = {
     almaren.builder
       .sourceSql(s"select * from $testTable")
-      .targetJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "movies_test", SaveMode.Overwrite, Some("postgres"), Some("foo"))
+      .targetJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "movies_test1", SaveMode.Overwrite, Some("postgres"), Some("foo"))
       .batch
 
     almaren.builder
-      .sourceJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "select * from movies_test", Some("postgres"), Some("foo"))
+      .sourceJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "select * from movies_test1", Some("postgres"), Some("foo"))
       .batch
   }
 
   def testSourceTargetJdbc(df: DataFrame): DataFrame = {
     almaren.builder
       .sourceSql(s"select * from $testTable")
-      .targetJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "movies_test", SaveMode.Overwrite, Some("postgres"), Some("foo"))
+      .targetJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "movies_test2", SaveMode.Overwrite)
       .batch
 
     almaren.builder
-      .sourceJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "select * from movies_test", Some("postgres"), Some("foo"))
+      .sourceJdbc("jdbc:postgresql://localhost/almaren", "org.postgresql.Driver", "select * from movies_test2")
       .batch
   }
 
@@ -208,7 +208,6 @@ class Test extends AnyFunSuite with BeforeAndAfter {
     almaren.builder
       .sourceSql(s"select * from $tableName")
       .batch
-
   }
 
   def testTargetFileTarget(format: String, path: String, saveMode: SaveMode, params: Map[String, String], partitionBy: List[String], bucketBy: (Int, List[String]), sortBy: List[String], tableName: Option[String]): DataFrame = {
@@ -218,7 +217,7 @@ class Test extends AnyFunSuite with BeforeAndAfter {
       .batch
   }
 
-  def testTargetFileBucketPartition(path: String, partitionBy: List[String], bucketBy: (Int, List[String]),fileFormat: String) = {
+  def testTargetFileBucketPartition(path: String, partitionBy: List[String], bucketBy: (Int, List[String]), fileFormat: String) = {
     val filesList = getListOfDirectories(path).map(_.toString)
     if (partitionBy.nonEmpty) {
       val extractFiles = filesList.map(a => a.substring(a.lastIndexOf("=") + 1))
@@ -385,6 +384,18 @@ class Test extends AnyFunSuite with BeforeAndAfter {
       assert(bool_cache)
     }
 
+    val testCacheDfStorage: DataFrame = almaren.builder.sourceSql("select * from cache_test").cache(true,storageLevel = Some(MEMORY_ONLY)).batch
+    val bool_cache_storage = testCacheDfStorage.storageLevel.useMemory
+    test("Testing Cache Memory Storage") {
+      assert(bool_cache_storage)
+    }
+
+    val testCacheDfDiskStorage: DataFrame = almaren.builder.sourceSql("select * from cache_test").cache(true, storageLevel = Some(DISK_ONLY)).batch
+    val bool_cache_disk_storage = testCacheDfDiskStorage.storageLevel.useDisk
+    test("Testing Cache Disk Storage") {
+      assert(bool_cache_disk_storage)
+    }
+
     val testUnCacheDf = almaren.builder.sourceSql("select * from cache_test").cache(false).batch
     val bool_uncache = testUnCacheDf.storageLevel.useMemory
     test("Testing Uncache") {
@@ -416,6 +427,44 @@ class Test extends AnyFunSuite with BeforeAndAfter {
 
     test(jsondf, resDf, "Deserialize JSON")
     test(jsonschmeadf, resDf, "Deserialize JSON Schema")
+  }
+
+  def deserializerCsvTest(): Unit = {
+    val df = Seq(
+      ("John,Chris", "Smith", "London"),
+      ("David,Michael", "Jones", "India"),
+      ("Joseph,Mike", "Lee", "Russia"),
+      ("Chris,Tony", "Brown", "Indonesia"),
+    ).toDF("first_name", "last_name", "country")
+    val newCsvDF = almaren.builder
+      .sourceDataFrame(df)
+      .deserializer("CSV", "first_name", options = Map("header" -> "false"))
+      .batch
+    val newCsvSchemaDf = almaren.builder
+      .sourceDataFrame(df)
+      .deserializer("CSV", "first_name", Some("`first_name_1` STRING,`first_name_2` STRING"), Map("header" -> "true"))
+      .batch
+    val csvDf = spark.read.parquet("src/test/resources/data/csvDeserializer.parquet")
+    val csvSchemaDf = spark.read.parquet("src/test/resources/data/csvDeserializerSchema.parquet")
+    test(newCsvDF, csvDf, "Deserialize CSV")
+    test(newCsvSchemaDf, csvSchemaDf, "Deserialize CSV Schema")
+  }
+
+  def deserializerCsvSampleOptionsTest(): Unit = {
+    val df = Seq(
+      ("John,Chris", "Smith", "London"),
+      ("David,Michael", "Jones", "India"),
+      ("Joseph,Mike", "Lee", "Russia"),
+      ("Chris,Tony", "Brown", "Indonesia"),
+    ).toDF("first_name", "last_name", "country")
+    val newCsvDF = almaren.builder
+      .sourceDataFrame(df)
+      .deserializer("CSV", "first_name", options = Map("header" -> "false",
+        "samplingRatio" -> "0.5",
+        "samplingMaxLines" -> "1"))
+      .batch
+    val csvDf = spark.read.parquet("src/test/resources/data/csvDeserializer.parquet")
+    test(newCsvDF, csvDf, "Deserialize CSV Sample Options")
   }
 
   def deserializerXmlTest(): Unit = {
@@ -499,5 +548,5 @@ class Test extends AnyFunSuite with BeforeAndAfter {
 
   }
 
-}
 
+}

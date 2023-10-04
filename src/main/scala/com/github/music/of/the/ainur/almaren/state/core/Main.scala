@@ -84,6 +84,7 @@ case class Alias(alias:String) extends Main {
 
 case class Cache(opType: Boolean = true, tableName: Option[String] = None, storageLevel: Option[StorageLevel] = None) extends Main {
   override def core(df: DataFrame): DataFrame = cache(df)
+
   def cache(df: DataFrame): DataFrame = {
     logger.info(s"opType:{$opType}, tableName:{$tableName}, StorageType:{$storageLevel}")
     tableName match {

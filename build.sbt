@@ -21,8 +21,8 @@ libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-avro" % sparkVersion,
   "com.databricks" %% "spark-xml" % "0.13.0",
   "com.github.music-of-the-ainur" %% "quenya-dsl" % s"1.2.3-${majorVersion}",
-  "org.scalatest" %% "scalatest" % "3.2.14" % "test",
-  "org.postgresql" % "postgresql" % "42.2.8" % "test"
+  "org.scalatest" %% "scalatest" % "3.2.17" % "test",
+  "org.postgresql" % "postgresql" % "42.6.0" % "test"
 )
 
 enablePlugins(GitVersioning)

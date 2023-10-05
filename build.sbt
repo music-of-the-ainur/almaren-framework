@@ -6,7 +6,7 @@ lazy val scala212 = "2.12.10"
 crossScalaVersions := Seq(scala212)
 ThisBuild / scalaVersion := scala212
 
-val sparkVersion = "3.2.1"
+val sparkVersion = "3.2.4"
 val majorVersionReg = "([0-9]+\\.[0-9]+).{0,}".r
 
 val majorVersionReg(majorVersion) = sparkVersion
@@ -18,10 +18,10 @@ libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-sql" % sparkVersion % "provided",
   "org.apache.spark" %% "spark-sql-kafka-0-10" % sparkVersion % "provided",
   "org.apache.spark" %% "spark-avro" % sparkVersion,
-  "com.databricks" %% "spark-xml" % "0.14.0",
+  "com.databricks" %% "spark-xml" % "0.17.0",
   "com.github.music-of-the-ainur" %% "quenya-dsl" % s"1.2.3-${majorVersion}",
-  "org.scalatest" %% "scalatest" % "3.2.14" % "test",
-  "org.postgresql" % "postgresql" % "42.2.8" % "test"
+  "org.scalatest" %% "scalatest" % "3.2.17" % "test",
+  "org.postgresql" % "postgresql" % "42.6.0" % "test"
 )
 
 enablePlugins(GitVersioning)

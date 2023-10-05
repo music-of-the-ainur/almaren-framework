@@ -7,6 +7,7 @@ import org.apache.spark.sql.{AnalysisException, Column, DataFrame, SaveMode}
 import org.scalatest._
 import org.apache.spark.sql.avro._
 import org.scalatest.funsuite.AnyFunSuite
+import org.apache.spark.storage.StorageLevel._
 
 import java.io.File
 import scala.collection.immutable._
@@ -383,6 +384,18 @@ class Test extends AnyFunSuite with BeforeAndAfter {
       assert(bool_cache)
     }
 
+    val testCacheDfStorage: DataFrame = almaren.builder.sourceSql("select * from cache_test").cache(true, storageLevel = Some(MEMORY_ONLY)).batch
+    val bool_cache_storage = testCacheDfStorage.storageLevel.useMemory
+    test("Testing Cache Memory Storage") {
+      assert(bool_cache_storage)
+    }
+
+    val testCacheDfDiskStorage: DataFrame = almaren.builder.sourceSql("select * from cache_test").cache(true, storageLevel = Some(DISK_ONLY)).batch
+    val bool_cache_disk_storage = testCacheDfDiskStorage.storageLevel.useDisk
+    test("Testing Cache Disk Storage") {
+      assert(bool_cache_disk_storage)
+    }
+
     val testUnCacheDf = almaren.builder.sourceSql("select * from cache_test").cache(false).batch
     val bool_uncache = testUnCacheDf.storageLevel.useMemory
     test("Testing Uncache") {
@@ -415,6 +428,7 @@ class Test extends AnyFunSuite with BeforeAndAfter {
     test(jsondf, resDf, "Deserialize JSON")
     test(jsonschmeadf, resDf, "Deserialize JSON Schema")
   }
+
 
   def deserializerCsvTest(): Unit = {
     val df = Seq(

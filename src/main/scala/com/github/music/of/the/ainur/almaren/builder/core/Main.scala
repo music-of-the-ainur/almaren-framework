@@ -4,6 +4,7 @@ import com.github.music.of.the.ainur.almaren.Tree
 import com.github.music.of.the.ainur.almaren.builder.Core
 import com.github.music.of.the.ainur.almaren.state.core._
 import org.apache.spark.sql.Column
+import org.apache.spark.storage.StorageLevel
 
 private[almaren] trait Main extends Core {
   def sql(sql: String): Option[Tree] =
@@ -12,8 +13,8 @@ private[almaren] trait Main extends Core {
   def alias(alias:String): Option[Tree] =
     Alias(alias)
 
-  def cache(opType:Boolean = true,tableName:Option[String] = None): Option[Tree] = 
-    Cache(opType, tableName)
+  def cache(opType:Boolean = true,tableName:Option[String] = None,storageLevel: Option[StorageLevel] = None): Option[Tree] =
+    Cache(opType, tableName = tableName, storageLevel = storageLevel)
 
   def coalesce(size:Int): Option[Tree] =
     Coalesce(size)

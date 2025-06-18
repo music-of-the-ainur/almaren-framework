@@ -2,12 +2,12 @@ ThisBuild / name := "almaren-framework"
 ThisBuild / organization := "com.github.music-of-the-ainur"
 
 lazy val scala212 = "2.12.15"
-lazy val scala213 = "2.13.9"
+lazy val scala213 = "2.13.10"
 
 crossScalaVersions := Seq(scala212,scala213)
 ThisBuild / scalaVersion := scala213
 
-val sparkVersion = "3.5.0"
+val sparkVersion = "3.5.5"
 val majorVersionReg = "([0-9]+\\.[0-9]+).{0,}".r
 
 val majorVersionReg(majorVersion) = sparkVersion
@@ -61,11 +61,12 @@ ThisBuild / organizationHomepage := Some(url("https://github.com/music-of-the-ai
 // Remove all additional repository other than Maven Central from POM
 credentials += Credentials(Path.userHome / ".sbt" / "sonatype_credential")
 ThisBuild / pomIncludeRepository := { _ => false }
+ThisBuild / publishMavenStyle := true
+
 ThisBuild / publishTo := {
-  val nexus = "https://central.sonatype.com/"
-  if (isSnapshot.value) Some("snapshots" at nexus + "content/repositories/snapshots")
-  else Some("releases" at nexus + "service/local/staging/deploy/maven2")
+  val centralSnapshots = "https://central.sonatype.com/repository/maven-snapshots/"
+  if (isSnapshot.value) Some("central-snapshots" at centralSnapshots)
+  else localStaging.value
 }
 
-ThisBuild / publishMavenStyle := true
 updateOptions := updateOptions.value.withGigahorse(false)
